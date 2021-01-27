@@ -9,4 +9,7 @@
 .exe
 main.exe
 main
-static
+
+static/uploadfile/*
+temp/logs/*
+tmp/*

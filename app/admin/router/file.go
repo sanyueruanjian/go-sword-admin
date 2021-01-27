@@ -14,7 +14,7 @@ func init()  {
 func fileRouter(v1 *gin.RouterGroup) {
 	r := v1.Group("/file")
 	{
-		r.POST("uploadImage", public.UploadFileImage)
+		r.POST("uploadImage", public.UploadImage)
 		r.POST("uploadFile", public.UploadFile)
 	}
 }
