@@ -52,7 +52,7 @@ func UploadFile(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Success 200 {object} models._ResponseFile
 // @Router /api/file/uploadImage [post]
-func UploadFileImage(c *gin.Context) {
+func UploadImage(c *gin.Context) {
 	urlPerfix := fmt.Sprintf("http://%s/", c.Request.Host)
 	var fileResponse FileResponse
 	fileResponse, done := singleFile(c, fileResponse, urlPerfix, true)
@@ -139,19 +139,15 @@ func singleFile(c *gin.Context, fileResponse FileResponse, urlPerfix string, ima
 		return FileResponse{}, true
 	}
 
-	uploadPath := "static/uploadfile/"
-	if image {
-		if utils.GetFileType(tools.GetExt(files.Filename)) != "image" {
-			app.ResponseError(c, app.CodeFileImageFail)
-			return FileResponse{}, true
-		}
-		uploadPath = "static/image/"
+	if image && utils.GetFileType(tools.GetExt(files.Filename)[1:]) != "image" {
+		app.ResponseError(c, app.CodeFileImageFail)
+		return FileResponse{}, true
 	}
 
 	// 上传文件至指定目录
 	guid := uuid.New().String()
 	fileName := guid + tools.GetExt(files.Filename)
-	singleFile := uploadPath + fileName
+	singleFile := "static/uploadfile/" + fileName
 	err = c.SaveUploadedFile(files, singleFile)
 	if err != nil {
 		app.ResponseError(c, app.CodeFileUploadFail)
@@ -160,8 +156,8 @@ func singleFile(c *gin.Context, fileResponse FileResponse, urlPerfix string, ima
 	fileType, _ := tools.GetType(singleFile)
 	fileResponse = FileResponse{
 		Size:     utils.GetFileSize(singleFile),
-		Path:     singleFile,
-		FullPath: urlPerfix + singleFile,
+		Path:     fileName,
+		FullPath: urlPerfix + "api/file/download/" +fileName,
 		Name:     files.Filename,
 		Type:     fileType,
 	}

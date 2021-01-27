@@ -22,7 +22,7 @@ func Setup(mode string) *gin.Engine {
 
 	r := gin.New()
 	r.Use(middleware.Cors(), middleware.GinLogger(), middleware.GinRecovery(true), middleware.Sentinel(200))
-	r.Static("/static", "./static")
+	r.Static("/api/file/download/", "./static/uploadfile")
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "ok")
 	})
