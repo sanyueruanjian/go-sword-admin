@@ -1,0 +1,12 @@
+# Default ignored files
+/workspace.xml
+
+
+# Editor directories and files
+
+.idea
+.log
+.exe
+main.exe
+main
+

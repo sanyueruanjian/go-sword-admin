@@ -1,0 +1,180 @@
+definitions:
+  dto.UserLoginDto:
+    properties:
+      code:
+        description: 验证码
+        type: string
+      password:
+        description: 密码
+        type: string
+      username:
+        description: 用户名
+        type: string
+      uuid:
+        description: 验证码id
+        type: string
+    required:
+    - code
+    - password
+    - username
+    - uuid
+    type: object
+  models._ResponseCode:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      data:
+        description: base64验证码
+        type: string
+      message:
+        description: 提示信息
+        type: string
+      uuid:
+        description: 验证码id
+        type: string
+    type: object
+  models._ResponseFile:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      data:
+        $ref: '#/definitions/public.FileResponse'
+        description: 数据
+        type: object
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseLogin:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      data:
+        description: 数据
+        properties:
+          token:
+            description: 授权令牌
+            type: string
+        type: object
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  public.FileResponse:
+    properties:
+      full_path:
+        description: 文件完整地址
+        type: string
+      name:
+        description: 文件名
+        type: string
+      path:
+        description: 文件相对地址
+        type: string
+      size:
+        description: 文件大小
+        type: integer
+      type:
+        description: 文件类型
+        type: string
+    type: object
+host: 127.0.0.1:8977
+info:
+  contact:
+    name: marchsoft@golang
+    url: http://marchsoft.cn/
+  description: 基于gin的后台通用框架
+  license: {}
+  title: go-sword项目接口文档
+  version: 0.1.0
+paths:
+  /api/auth/code:
+    get:
+      consumes:
+      - application/json
+      description: Author：JiaKunLi 2021/01/26
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseCode'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取图片验证码
+      tags:
+      - 系统：系统授权接口 Authorization Controller
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Author：JiaKunLi 2021/01/26 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 登录授权接口
+      tags:
+      - 系统：系统授权接口 Authorization Controller
+  /api/file/uploadFile:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Author：JiaKunLi 2021/01/27
+      parameters:
+      - description: file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseFile'
+      security:
+      - ApiKeyAuth: []
+      summary: 文件上传（任意类型文件）
+      tags:
+      - 文件：文件管理 File Controller
+  /api/file/uploadImage:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Author：JiaKunLi 2021/01/27
+      parameters:
+      - description: file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseFile'
+      security:
+      - ApiKeyAuth: []
+      summary: 文件上传（图片）
+      tags:
+      - 文件：文件管理 File Controller
+swagger: "2.0"
