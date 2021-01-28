@@ -11,5 +11,4 @@ main.exe
 main
 
 static/uploadfile/*
-logs/*
 tmp/*
