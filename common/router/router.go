@@ -3,6 +3,7 @@ package router
 import (
 
 	"net/http"
+	"project/utils/config"
 
 	admin "project/app/admin/router"
 	"project/common/middleware"
@@ -15,14 +16,14 @@ import (
 )
 
 // Setup 路由设置
-func Setup(mode string) *gin.Engine {
-	if mode == string(utils.ModeProd) {
+func Setup(cfg *config.Application) *gin.Engine {
+	if cfg.Mode == string(utils.ModeProd) {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
 	r := gin.New()
 	r.Use(middleware.Cors(), middleware.GinLogger(), middleware.GinRecovery(true), middleware.Sentinel(200))
-	r.Static("/api/file/download/", "./static/uploadfile")
+	r.Static(cfg.StaticFileUrl, cfg.StaticPath)
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "ok")
 	})
