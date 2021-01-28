@@ -24,7 +24,7 @@ const (
 var LogoContent = ``
 
 func Run()  {
-	r := router.Setup(config.ApplicationConfig.Mode)
+	r := router.Setup(config.ApplicationConfig)
 
 	// 启动服务（优雅关机）
 	srv := &http.Server{
