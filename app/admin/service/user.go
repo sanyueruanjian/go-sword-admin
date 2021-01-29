@@ -17,5 +17,5 @@ func (e User) Login(p *dto.UserLoginDto) (token string, err error) {
 	if err = user.Login(); err != nil {
 		return "", err
 	}
-	return jwt.GenToken(int64(user.UserId), user.Username)
+	return jwt.GenToken(int64(user.ID), user.Username)
 }
