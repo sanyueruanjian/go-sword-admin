@@ -1,9 +1,8 @@
 package router
 
 import (
-	"project/app/admin/apis/public"
-
 	"github.com/gin-gonic/gin"
+	"project/app/admin/apis"
 )
 
 func init()  {
@@ -14,7 +13,7 @@ func init()  {
 func fileRouter(v1 *gin.RouterGroup) {
 	r := v1.Group("/file")
 	{
-		r.POST("uploadImage", public.UploadFileImage)
-		r.POST("uploadFile", public.UploadFile)
+		r.POST("uploadImage", apis.UploadImage)
+		r.POST("uploadFile", apis.UploadFile)
 	}
 }

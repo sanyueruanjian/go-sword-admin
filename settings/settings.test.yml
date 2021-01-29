@@ -9,9 +9,9 @@ settings:
     # 端口号
     port: 8977 # 服务端口号
     # 静态文件路由
-    staticfileurl: /static/
+    staticfileurl: /api/file/download/
     # 静态文件目录
-    staticpath: ./static
+    staticpath: ./static/uploadfile
     # 版本
     version: 0.1.0
   logger:
@@ -22,7 +22,7 @@ settings:
     # 日志备份数
     max_backups: 7
     # 日志存放路径
-    filename: temp/logs/web_app.log
+    filename: logs/web_app.log
     # 控制台日志
     stdout: true
     # 日志等级

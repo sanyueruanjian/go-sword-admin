@@ -1,7 +1,6 @@
 package models
 
 import (
-	"project/app/admin/apis/public"
 	"project/utils/app"
 )
 
@@ -24,7 +23,7 @@ type _ResponseCode struct {
 
 // _ResponseFile 文件上传响应结构体
 type _ResponseFile struct {
-	Code    app.ResCode         `json:"code"`    // 业务响应状态码
-	Message string              `json:"message"` // 提示信息
-	Data    public.FileResponse `json:"data"`    // 数据
+	Code    app.ResCode  `json:"code"`    // 业务响应状态码
+	Message string       `json:"message"` // 提示信息
+	Data    FileResponse `json:"data"`    // 数据
 }

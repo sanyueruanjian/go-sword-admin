@@ -1,4 +1,4 @@
-package public
+package apis
 
 import (
 	"encoding/base64"
@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"strings"
 
+	"project/app/admin/models"
 	"project/pkg/tools"
 	"project/utils"
 	"project/utils/app"
@@ -14,13 +15,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type FileResponse struct {
-	Size     int64  `json:"size"`      //文件大小
-	Path     string `json:"path"`      // 文件相对地址
-	FullPath string `json:"full_path"` // 文件完整地址
-	Name     string `json:"name"`      // 文件名
-	Type     string `json:"type"`      // 文件类型
-}
+
 
 // UploadFile 文件上传（任意类型文件）
 // @Summary 文件上传（任意类型文件）
@@ -34,7 +29,7 @@ type FileResponse struct {
 // @Router /api/file/uploadFile [post]
 func UploadFile(c *gin.Context) {
 	urlPerfix := fmt.Sprintf("http://%s/", c.Request.Host)
-	var fileResponse FileResponse
+	var fileResponse models.FileResponse
 	fileResponse, done := singleFile(c, fileResponse, urlPerfix, false)
 	if done {
 		return
@@ -52,9 +47,9 @@ func UploadFile(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Success 200 {object} models._ResponseFile
 // @Router /api/file/uploadImage [post]
-func UploadFileImage(c *gin.Context) {
+func UploadImage(c *gin.Context) {
 	urlPerfix := fmt.Sprintf("http://%s/", c.Request.Host)
-	var fileResponse FileResponse
+	var fileResponse models.FileResponse
 	fileResponse, done := singleFile(c, fileResponse, urlPerfix, true)
 	if done {
 		return
@@ -89,7 +84,7 @@ func UploadFileImage(c *gin.Context) {
 //	}
 //}
 
-func baseImg(c *gin.Context, fileResponse FileResponse, urlPerfix string) FileResponse {
+func baseImg(c *gin.Context, fileResponse models.FileResponse, urlPerfix string) models.FileResponse {
 	files, _ := c.GetPostForm("file")
 	file2list := strings.Split(files, ",")
 	ddd, _ := base64.StdEncoding.DecodeString(file2list[1])
@@ -98,7 +93,7 @@ func baseImg(c *gin.Context, fileResponse FileResponse, urlPerfix string) FileRe
 	base64File := "static/uploadfile/" + fileName
 	_ = ioutil.WriteFile(base64File, ddd, 0666)
 	typeStr := strings.Replace(strings.Replace(file2list[0], "data:", "", -1), ";base64", "", -1)
-	fileResponse = FileResponse{
+	fileResponse = models.FileResponse{
 		Size:     utils.GetFileSize(base64File),
 		Path:     base64File,
 		FullPath: urlPerfix + base64File,
@@ -108,9 +103,9 @@ func baseImg(c *gin.Context, fileResponse FileResponse, urlPerfix string) FileRe
 	return fileResponse
 }
 
-func multipleFile(c *gin.Context, urlPerfix string) []FileResponse {
+func multipleFile(c *gin.Context, urlPerfix string) []models.FileResponse {
 	files := c.Request.MultipartForm.File["file"]
-	var multipartFile []FileResponse
+	var multipartFile []models.FileResponse
 	for _, f := range files {
 		guid := uuid.New().String()
 		fileName := guid + utils.GetExt(f.Filename)
@@ -118,7 +113,7 @@ func multipleFile(c *gin.Context, urlPerfix string) []FileResponse {
 		e := c.SaveUploadedFile(f, multipartFileName)
 		fileType, _ := tools.GetType(multipartFileName)
 		if e == nil {
-			fileResponse := FileResponse{
+			fileResponse := models.FileResponse{
 				Size:     utils.GetFileSize(multipartFileName),
 				Path:     multipartFileName,
 				FullPath: urlPerfix + multipartFileName,
@@ -131,37 +126,33 @@ func multipleFile(c *gin.Context, urlPerfix string) []FileResponse {
 	return multipartFile
 }
 
-func singleFile(c *gin.Context, fileResponse FileResponse, urlPerfix string, image bool) (FileResponse, bool) {
+func singleFile(c *gin.Context, fileResponse models.FileResponse, urlPerfix string, image bool) (models.FileResponse, bool) {
 	files, err := c.FormFile("file")
 
 	if err != nil {
 		app.ResponseError(c, app.CodeImageIsNotNull)
-		return FileResponse{}, true
+		return models.FileResponse{}, true
 	}
 
-	uploadPath := "static/uploadfile/"
-	if image {
-		if utils.GetFileType(tools.GetExt(files.Filename)) != "image" {
-			app.ResponseError(c, app.CodeFileImageFail)
-			return FileResponse{}, true
-		}
-		uploadPath = "static/image/"
+	if image && utils.GetFileType(tools.GetExt(files.Filename)[1:]) != "image" {
+		app.ResponseError(c, app.CodeFileImageFail)
+		return models.FileResponse{}, true
 	}
 
 	// 上传文件至指定目录
 	guid := uuid.New().String()
 	fileName := guid + tools.GetExt(files.Filename)
-	singleFile := uploadPath + fileName
+	singleFile := "static/uploadfile/" + fileName
 	err = c.SaveUploadedFile(files, singleFile)
 	if err != nil {
 		app.ResponseError(c, app.CodeFileUploadFail)
-		return FileResponse{}, true
+		return models.FileResponse{}, true
 	}
 	fileType, _ := tools.GetType(singleFile)
-	fileResponse = FileResponse{
+	fileResponse = models.FileResponse{
 		Size:     utils.GetFileSize(singleFile),
-		Path:     singleFile,
-		FullPath: urlPerfix + singleFile,
+		Path:     fileName,
+		FullPath: urlPerfix + "api/file/download/" +fileName,
 		Name:     files.Filename,
 		Type:     fileType,
 	}
