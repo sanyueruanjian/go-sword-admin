@@ -1,14 +1,14 @@
 package router
 
 import (
-	"net/http"
+	"project/utils/app"
 
 	"project/app/admin/apis"
 
 	"github.com/gin-gonic/gin"
 )
 
-func init()  {
+func init() {
 	routerNoCheckRole = append(routerNoCheckRole, userRouter)
 	routerCheckRole = append(routerCheckRole, userAuthRouter)
 }
@@ -26,8 +26,7 @@ func userAuthRouter(v1 *gin.RouterGroup) {
 	r := v1.Group("/auth")
 	{
 		r.GET("ping", func(c *gin.Context) {
-			c.String(http.StatusOK, "ok")
+			c.String(int(app.CodeSuccess), "ok")
 		})
 	}
 }
-
