@@ -18,5 +18,5 @@ type SysLog struct {
 	UpdateBy        int       `json:"update_by"`             //更新人id
 	CreateTime      time.Time `json:"create_time"`           //创建时间
 	UpdateTime      time.Time `json:"update_time"`           //更新时间
-	IsDeleted       uint8     `json:"is_deleted"`            //软删除（默认值为0，1为删除）
+	IsDeleted       []byte    `json:"is_deleted"`            //软删除（默认值为0，1为删除）
 }

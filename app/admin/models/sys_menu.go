@@ -13,13 +13,13 @@ type SysMenu struct {
 	MenuSort   int       `json:"menu_sort"`             //排序
 	Icon       string    `json:"icon"`                  //图标
 	Path       string    `json:"path"`                  //链接地址
-	IFrame     uint8     `json:"i_frame"`               //是否外链
-	Cache      uint8     `json:"cache"`                 //缓存
-	Hidden     uint8     `json:"hidden"`                //隐藏
+	IFrame     []byte    `json:"i_frame"`               //是否外链
+	Cache      []byte    `json:"cache"`                 //缓存
+	Hidden     []byte    `json:"hidden"`                //隐藏
 	Permission string    `json:"permission"`            //权限
 	CreateBy   int       `json:"create_by"`             //创建者
 	UpdateBy   int       `json:"update_by"`             //更新者
 	CreateTime time.Time `json:"create_time"`           //创建日期
 	UpdateTime time.Time `json:"update_time"`           //更新时间
-	IsDeleted  uint8     `json:"is_deleted"`
+	IsDeleted  []byte    `json:"is_deleted"`
 }

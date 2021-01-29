@@ -3,6 +3,8 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"project/app/admin/apis"
+	"project/utils/app"
+	"strconv"
 )
 
 func init() {
@@ -19,10 +21,20 @@ func roleAuthRouter(v1 *gin.RouterGroup) {
 	r := v1.Group("/roles")
 	{
 		r.PUT("menu", apis.MenuRolesHandler)
-		r.GET(":id", apis.SelectRoleHandler)
-		//r.GET("all", apis.SelectRolesAllHandler)
-		//r.GET("download", apis.DownRolesHandler)
-		//r.GET("level", apis.LevelRolesHandler)
+		r.GET(":id", func(c *gin.Context) {
+			id, err := strconv.Atoi(c.Param("id"))
+			if err == nil {
+				c.String(int(app.CodeSuccess), apis.SelectRoleHandler(id))
+			}
+			if c.Param("id") == "all" {
+				c.String(int(app.CodeSuccess), apis.SelectRolesAllHandler())
+			}
+			if c.Param("id") == "download" {
+				c.String(int(app.CodeSuccess), apis.DownRolesHandler())
+			}
+			if c.Param("id") == "level" {
+				c.String(int(app.CodeSuccess), apis.LevelRolesHandler())
+			}
+		})
 	}
-
 }
