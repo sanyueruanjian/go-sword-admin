@@ -27,8 +27,8 @@ type authority struct {
 
 //返回用户详细列表
 type UserInfoListBo struct {
-	*paging           //分页器相关
-	Records []*record `json:"records"` //记录查询
+	*paging               //分页器相关
+	Records []*recordUser `json:"records"` //记录查询
 }
 
 //更新头像
