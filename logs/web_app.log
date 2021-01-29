@@ -1,0 +1,93 @@
+{"level":"DEBUG","time":"2021-01-28T14:00:14.305+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T14:00:14.340+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"FATAL","time":"2021-01-28T14:00:15.342+0800","caller":"mysql/mysql.go:43","msg":"\u001b[0;0;31mmysql connect error :\u001b[0m","error":"dial tcp 120.26.141.144:3306: i/o timeout"}
+{"level":"DEBUG","time":"2021-01-28T14:00:39.670+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T14:00:39.701+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T14:00:40.158+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T14:00:40.527+0800","caller":"GoSword-Admin/main.go:47","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T14:00:40.727+0800","caller":"GoSword-Admin/main.go:55","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T14:00:56.429+0800","caller":"run/run.go:59","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T14:00:56.429+0800","caller":"run/run.go:67","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T14:02:51.946+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T14:02:51.982+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T14:02:52.380+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T14:02:52.786+0800","caller":"GoSword-Admin/main.go:47","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T14:02:52.996+0800","caller":"GoSword-Admin/main.go:55","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T14:02:56.285+0800","caller":"middleware/logger.go:24","msg":"/","status":200,"method":"GET","path":"/","query":"","ip":"::1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.87 Safari/537.36 Edg/88.0.705.45","errors":"","cost":0}
+{"level":"INFO","time":"2021-01-28T14:02:56.409+0800","caller":"middleware/logger.go:24","msg":"/favicon.ico","status":404,"method":"GET","path":"/favicon.ico","query":"","ip":"::1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.87 Safari/537.36 Edg/88.0.705.45","errors":"","cost":0}
+{"level":"INFO","time":"2021-01-28T14:03:04.074+0800","caller":"run/run.go:59","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T14:03:04.075+0800","caller":"run/run.go:67","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T21:13:06.057+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:13:06.088+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:13:06.473+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"FATAL","time":"2021-01-28T21:13:08.397+0800","caller":"mysql/mysql.go:56","msg":"\u001b[0;0;31m migrateModel error :\u001b[0m","error":"Error 1075: Incorrect table definition; there can be only one auto column and it must be defined as a key"}
+{"level":"DEBUG","time":"2021-01-28T21:14:32.501+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:14:32.531+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:14:32.926+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"FATAL","time":"2021-01-28T21:14:33.414+0800","caller":"mysql/mysql.go:56","msg":"\u001b[0;0;31m migrateModel error :\u001b[0m","error":"Error 1075: Incorrect table definition; there can be only one auto column and it must be defined as a key"}
+{"level":"DEBUG","time":"2021-01-28T21:16:26.424+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:16:26.455+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:16:26.845+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"FATAL","time":"2021-01-28T21:16:27.981+0800","caller":"mysql/mysql.go:56","msg":"\u001b[0;0;31m migrateModel error :\u001b[0m","error":"Error 1075: Incorrect table definition; there can be only one auto column and it must be defined as a key"}
+{"level":"DEBUG","time":"2021-01-28T21:17:40.632+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:17:40.663+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:17:41.040+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"FATAL","time":"2021-01-28T21:17:41.500+0800","caller":"mysql/mysql.go:56","msg":"\u001b[0;0;31m migrateModel error :\u001b[0m","error":"Error 1075: Incorrect table definition; there can be only one auto column and it must be defined as a key"}
+{"level":"DEBUG","time":"2021-01-28T21:19:39.344+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:19:39.380+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:19:39.772+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"FATAL","time":"2021-01-28T21:19:40.301+0800","caller":"mysql/mysql.go:56","msg":"\u001b[0;0;31m migrateModel error :\u001b[0m","error":"Error 1075: Incorrect table definition; there can be only one auto column and it must be defined as a key"}
+{"level":"DEBUG","time":"2021-01-28T21:21:18.137+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:21:18.169+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:21:18.580+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T21:21:19.123+0800","caller":"GoSword-Admin/main.go:47","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T21:21:19.312+0800","caller":"GoSword-Admin/main.go:55","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:21:36.690+0800","caller":"middleware/logger.go:24","msg":"/","status":200,"method":"GET","path":"/","query":"","ip":"::1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.87 Safari/537.36 Edg/88.0.705.45","errors":"","cost":0}
+{"level":"INFO","time":"2021-01-28T21:21:40.477+0800","caller":"run/run.go:59","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:21:42.478+0800","caller":"run/run.go:67","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T21:45:22.954+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:45:22.985+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"FATAL","time":"2021-01-28T21:45:23.987+0800","caller":"mysql/mysql.go:43","msg":"\u001b[0;0;31mmysql connect error :\u001b[0m","error":"dial tcp 120.26.141.144:3306: i/o timeout"}
+{"level":"DEBUG","time":"2021-01-28T21:45:36.981+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:45:37.014+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:45:37.290+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T21:45:37.878+0800","caller":"GoSword-Admin/main.go:47","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T21:45:37.986+0800","caller":"GoSword-Admin/main.go:55","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T21:45:40.329+0800","caller":"middleware/logger.go:24","msg":"/","status":200,"method":"GET","path":"/","query":"","ip":"::1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.87 Safari/537.36 Edg/88.0.705.45","errors":"","cost":0.0009937}
+{"level":"INFO","time":"2021-01-28T22:29:16.206+0800","caller":"run/run.go:59","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T22:29:16.206+0800","caller":"run/run.go:67","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T22:29:25.990+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T22:29:26.021+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"FATAL","time":"2021-01-28T22:29:27.021+0800","caller":"mysql/mysql.go:43","msg":"\u001b[0;0;31mmysql connect error :\u001b[0m","error":"dial tcp 120.26.141.144:3306: i/o timeout"}
+{"level":"DEBUG","time":"2021-01-28T22:29:38.756+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T22:29:38.787+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"FATAL","time":"2021-01-28T22:29:39.787+0800","caller":"mysql/mysql.go:43","msg":"\u001b[0;0;31mmysql connect error :\u001b[0m","error":"dial tcp 120.26.141.144:3306: i/o timeout"}
+{"level":"DEBUG","time":"2021-01-28T22:30:14.584+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T22:30:14.616+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T22:30:15.049+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T22:30:15.452+0800","caller":"GoSword-Admin/main.go:47","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T22:30:15.648+0800","caller":"GoSword-Admin/main.go:55","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T22:31:22.880+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T22:31:22.910+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T22:31:23.346+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T22:31:23.797+0800","caller":"GoSword-Admin/main.go:47","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T22:31:23.989+0800","caller":"GoSword-Admin/main.go:55","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T22:32:31.522+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T22:32:31.552+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T22:32:31.901+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T22:32:32.245+0800","caller":"GoSword-Admin/main.go:47","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T22:32:32.436+0800","caller":"GoSword-Admin/main.go:55","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T22:39:01.226+0800","caller":"run/run.go:59","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T22:39:01.227+0800","caller":"run/run.go:67","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T22:39:10.406+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T22:39:10.437+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T22:39:10.833+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T22:39:11.217+0800","caller":"GoSword-Admin/main.go:47","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T22:39:11.397+0800","caller":"GoSword-Admin/main.go:55","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T22:49:54.726+0800","caller":"GoSword-Admin/main.go:39","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T22:49:54.757+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T22:49:55.259+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T22:49:55.696+0800","caller":"GoSword-Admin/main.go:47","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-28T22:49:55.917+0800","caller":"GoSword-Admin/main.go:55","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T22:53:33.289+0800","caller":"run/run.go:59","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-28T22:53:33.290+0800","caller":"run/run.go:67","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
