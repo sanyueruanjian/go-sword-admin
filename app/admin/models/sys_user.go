@@ -1,9 +1,11 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
-	orm "project/common/global"
+	"project/common/global"
 	"project/utils"
+	"strconv"
 	"time"
 
 	"go.uber.org/zap"
@@ -42,35 +44,43 @@ type SysUserId struct {
 
 type SysUserB struct {
 	DeptId       int       `json:"dept_id"`        //部门id
+	PostId       int       `json:"post_id"`        //
+	RoleId       int       `json:"role_id"`        //
 	NickName     string    `json:"nick_name"`      //
-	Gender       []byte    `json:"gender"`         //性别（0为男默认，1为女）
 	Phone        string    `json:"phone"`          //
 	Email        string    `json:"email"`          //
 	AvatarPath   string    `json:"avatar_path"`    //头像路径
-	IsAdmin      []byte    `json:"is_admin"`       //是否为admin账号
-	Enabled      []byte    `json:"enabled"`        //状态：1启用（默认）、0禁用
 	CreateBy     string    `json:"create_by"`      //
 	UpdateBy     string    `json:"update_by"`      //
-	PwdResetTime time.Time `json:"pwd_reset_time"` //修改密码的时间
-	CreateTime   time.Time `json:"create_time"`    //创建日期
-	UpdateTime   time.Time `json:"update_time"`    //更新时间
-	IsDeleted    []byte    `json:"is_deleted"`     //软删除（默认值为0，1为删除）
-	CreatedAt    time.Time `json:"created_at"`     //
 	Avatar       string    `json:"avatar"`         //
 	Sex          string    `json:"sex"`            //
 	Status       string    `json:"status"`         //
-	DeletedAt    time.Time `json:"deleted_at"`     //
 	Remark       string    `json:"remark"`         //
-	UpdatedAt    time.Time `json:"updated_at"`     //
 	Salt         string    `json:"salt"`           //
-	PostId       int       `json:"post_id"`        //
-	RoleId       int       `json:"role_id"`        //
+	Gender       []byte    `json:"gender"`         //性别（0为男默认，1为女）
+	IsAdmin      []byte    `json:"is_admin"`       //是否为admin账号
+	IsDeleted    []byte    `json:"is_deleted"`     //软删除（默认值为0，1为删除）
+	Enabled      []byte    `json:"enabled"`        //状态：1启用（默认）、0禁用
+	CreatedAt    time.Time `json:"created_at"`     //
+	PwdResetTime time.Time `json:"pwd_reset_time"` //修改密码的时间
+	CreateTime   time.Time `json:"create_time"`    //创建日期
+	UpdateTime   time.Time `json:"update_time"`    //更新时间
+	DeletedAt    time.Time `json:"deleted_at"`     //
+	UpdatedAt    time.Time `json:"updated_at"`     //
 }
 
 type SysUser struct {
 	SysUserId
 	LoginM
 	SysUserB
+}
+
+//redis 缓存model
+type RedisUserInfo struct {
+	UserId   int    `json:"user_id"`
+	UserName string `json:"user_name"`
+	Role     string `json:"role"`
+	DeptId   int    `json:"dept_id"` //部门id
 }
 
 func (SysUser) TableName() string {
@@ -87,7 +97,8 @@ var (
 // Login 查询用户是否存在，并验证密码
 func (e SysUser) Login() (err error) {
 	oPassword := e.Password
-	err = orm.Eloquent.Table(e.TableName()).Where("username = ?", e.Username).First(&e).Error
+	role := new(SysRole)
+	err = global.Eloquent.Table(e.TableName()).Where("username = ?", e.Username).First(&e).Error
 	if err == gorm.ErrRecordNotFound {
 		zap.L().Error("用户不存在", zap.Error(err))
 		return ErrorUserNotExist
@@ -99,6 +110,34 @@ func (e SysUser) Login() (err error) {
 	if e.Password != utils.EncodeMD5(oPassword) {
 		zap.L().Error("user account or password is error")
 		return ErrorInvalidPassword
+	}
+
+	//连表查询角色
+	err = global.Eloquent.Table("sys_role").Select("name").Joins("left join sys_users_roles on "+
+		"sys_users_roles.role_id = sys_role.id").Joins("left join sys_user on sys_user.id = sys_users_roles.user_id").Where("sys_user.id=?", e.ID).Scan(&role.Name).Error
+	if err == gorm.ErrRecordNotFound {
+		zap.L().Error("用户无角色", zap.Error(err))
+		return ErrorUserNotExist
+	}
+	if err != nil {
+		zap.L().Error("服务器繁忙", zap.Error(err))
+		return ErrorServerBusy
+	}
+
+	var userInfo []byte
+	userInfo, err = json.Marshal(RedisUserInfo{
+		UserId:   e.ID,
+		UserName: e.Username,
+		DeptId:   e.DeptId,
+		Role:     role.Name,
+	})
+	if err != nil {
+		zap.L().Error("RedisUserInfo Marshal failed", zap.Error(err))
+	}
+	//添加缓存
+	if err := global.Rdb.Set(strconv.Itoa(e.ID), userInfo, 0).Err(); err != nil {
+		zap.L().Error("用户缓存错误", zap.Error(err))
+		return err
 	}
 	return
 }
