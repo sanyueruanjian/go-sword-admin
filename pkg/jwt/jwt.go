@@ -10,20 +10,20 @@ import (
 )
 
 type MyClaims struct {
-	UserID   int64  `json:"user_id"`
+	UserID   int    `json:"user_id"`
 	Username string `json:"username"`
 	jwt.StandardClaims
 }
 
 // GenToken 生成JWT
-func GenToken(userID int64, username string) (string, error) {
+func GenToken(userID int, username string) (string, error) {
 	// 创建一个我们自己的声明
 	c := MyClaims{
 		userID,
 		username, // 自定义字段
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Duration(config.JwtConfig.Timeout)).Unix(), // 过期时间
-			Issuer:    "my-project",                                                   // 签发人
+			ExpiresAt: time.Now().Add(time.Duration(config.JwtConfig.Timeout) * time.Second).Unix(), // 过期时间
+			Issuer:    "my-project",                                                                 // 签发人
 		},
 	}
 	// 使用指定的签名方法创建签名对象

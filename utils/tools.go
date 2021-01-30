@@ -7,7 +7,7 @@ import (
 
 // 获取当前时间
 func NowTime() string {
-	return time.Unix(time.Now().Unix(), 0,).Format("2006-01-02 15:04:05")
+	return time.Unix(time.Now().Unix(), 0).Format("2006-01-02 15:04:05")
 }
 
 // 校验手机号
@@ -17,3 +17,20 @@ func VerifyMobileFormat(mobileNum string) bool {
 	return reg.MatchString(mobileNum)
 }
 
+//bool转[]bytez
+func BoolIntoByte(b bool) []byte {
+	if b {
+		return []byte{1}
+	} else {
+		return []byte{0}
+	}
+}
+
+//bool转int
+func BoolIntoInt(b bool) int {
+	if b {
+		return 1
+	} else {
+		return 0
+	}
+}
