@@ -49,7 +49,10 @@ func (e SysRole) UpdateRole() (err error) {
 
 // 删除角色
 func (e SysRole) DeleteRole(p []int) (err error) {
-	err = orm.Eloquent.Table("sys_role").Where("id = ?", p).Update("is_deleted", 1).Error
+	for _, values := range p {
+		err = orm.Eloquent.Table("sys_role").Where("id = ?", values).Update("is_deleted", 1).Error
+	}
+	// TODO 删除角色关系
 	return
 }
 

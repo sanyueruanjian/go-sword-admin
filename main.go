@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	mycasbin "project/pkg/casbin"
 	"project/utils"
 
 	"project/common/database/mysql"
@@ -54,6 +55,10 @@ func main() {
 	defer redis.Close()
 	zap.L().Debug(utils.Green("redis init success..."))
 
+	//初始化casbin
+	if err := mycasbin.Setup(); err != nil {
+		zap.L().Error("casbin failed set up", zap.Error(err))
+	}
 	// 5. 注册路由
 	run.Run()
 

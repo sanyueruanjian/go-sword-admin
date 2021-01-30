@@ -24,7 +24,6 @@ var r = new(service.Role)
 // @Security ApiKeyAuth
 // @Success 200 {object} models._ResponseLogin
 // @Router /api/roles [get]
-
 func SelectRolesHandler(c *gin.Context) {
 	// 1.获取参数 校验参数
 	var role dto.SelectRoleArrayDto
