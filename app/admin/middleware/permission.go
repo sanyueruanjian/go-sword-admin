@@ -28,7 +28,7 @@ func AuthCheckRole() gin.HandlerFunc {
 			return
 		}
 
-		fmt.Printf("%s [INFO] %s %s %s \r\n",
+		fmt.Printf("%s [INFO] %s %s \r\n",
 			//tools.GetCurrentTimeStr(),
 			c.Request.Method,
 			c.Request.URL.Path,

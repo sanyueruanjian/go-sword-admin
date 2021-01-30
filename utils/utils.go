@@ -3,9 +3,13 @@ package utils
 import (
 	"encoding/json"
 	"strconv"
+	"time"
+
+	"go.uber.org/zap"
+
+	"project/app/admin/models/bo"
 
 	"golang.org/x/crypto/bcrypt"
-	"project/app/admin/models/bo"
 )
 
 // 不建议使用的方法（即将过时）
@@ -59,4 +63,34 @@ func HasError(err error, msg string, code ...int) {
 func OrderJson(orders string) (orderData []bo.Order, err error) {
 	err = json.Unmarshal([]byte(orders), &orderData)
 	return
+}
+
+func GetOrderRule(orderData []bo.Order) (orderRule string) {
+	orderRule = ""
+	if orderData == nil || len(orderData) == 0 {
+		return
+	}
+	for _, v := range orderData {
+		if v.Asc == "true" {
+			orderRule += v.Column + " asc"
+		} else {
+			orderRule += v.Column + " desc"
+		}
+	}
+	return
+}
+
+func TimeToString(time time.Time) string {
+	var timeLayoutStr = "2006-01-02 15:04:05"
+	return time.Format(timeLayoutStr)
+}
+
+func StringToTime(t string) time.Time {
+	var timeLayoutStr = "2006-01-02 15:04:05"
+	tm, err := time.Parse(timeLayoutStr, t)
+	if err != nil {
+		zap.L().Error("StringToTime failed", zap.Error(err))
+		return time.Time{}
+	}
+	return tm
 }
