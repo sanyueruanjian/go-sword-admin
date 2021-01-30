@@ -5,11 +5,11 @@ type recordRole struct {
 	ID          int     `json:"id"`
 	Level       int     `json:"level"`
 	UpdateBy    int     `json:"updateBy"`
-	CreateTime  string  `json:"createTime"`
+	CreateTime  int64   `json:"createTime"`
 	DataScope   string  `json:"dataScope"`
 	Description string  `json:"description"`
 	Name        string  `json:"name"`
-	UpdateTime  string  `json:"updateTime"`
+	UpdateTime  int64   `json:"updateTime"`
 	Protection  bool    `json:"protection"`
 	Depts       []int   `json:"depts"`
 	Menus       []*menu `json:"menus"`
@@ -43,13 +43,11 @@ type menu struct {
 //SelectRoleArrayBo 多条件查询 角色列表
 type SelectRoleArrayBo struct {
 	Records []*recordRole `json:"records"`
-	Orders  []*order      `json:"orders"`
 	*paging
 }
 
 //SelectRoleBo 查询单个角色
 type SelectRoleBo struct {
-	Menus []*menu `json:"menus"`
 	*recordRole
 }
 

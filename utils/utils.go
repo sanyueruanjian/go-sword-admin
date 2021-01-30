@@ -1,9 +1,11 @@
 package utils
 
 import (
+	"encoding/json"
 	"strconv"
 
 	"golang.org/x/crypto/bcrypt"
+	"project/app/admin/models/bo"
 )
 
 // 不建议使用的方法（即将过时）
@@ -52,4 +54,9 @@ func HasError(err error, msg string, code ...int) {
 		}
 		panic("CustomError#" + strconv.Itoa(statusCode) + "#" + msg)
 	}
+}
+
+func OrderJson(orders string) (orderData []bo.Order, err error) {
+	err = json.Unmarshal([]byte(orders), &orderData)
+	return
 }

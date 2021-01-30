@@ -1,7 +1,11 @@
 package models
 
 import (
+	"fmt"
+	"project/utils"
 	"time"
+
+	orm "project/common/global"
 )
 
 type SysRole struct {
@@ -16,4 +20,49 @@ type SysRole struct {
 	CreateTime   time.Time `json:"create_time"`           //创建日期
 	UpdateTime   time.Time `json:"update_time"`           //更新时间
 	IsDeleted    []byte    `json:"is_deleted"`            //软删除（默认值为0，1为删除）
+}
+
+func (e SysRole) SelectRoles() (err error) {
+	return
+}
+
+func (e SysRole) InsertRole() (err error) {
+	e.IsProtection = append(e.IsProtection, 1)
+	// TODO 获取当前用户id
+	e.CreateBy = 1
+	e.UpdateBy = 1
+	e.CreateTime = utils.GetCurrentTime()
+	e.UpdateTime = utils.GetCurrentTime()
+	e.IsDeleted = append(e.IsDeleted, 0)
+	err = orm.Eloquent.Create(&e).Error
+	return
+}
+
+func (e SysRole) UpdateRole() (err error) {
+	e.CreateBy = 1
+	e.UpdateBy = 1
+	e.CreateTime = utils.GetCurrentTime()
+	e.UpdateTime = utils.GetCurrentTime()
+	err = orm.Eloquent.Model(&e).Updates(e).Error
+	return
+}
+
+// 删除角色
+func (e SysRole) DeleteRole(p []int) (err error) {
+	err = orm.Eloquent.Table("sys_role").Where("id = ?", p).Update("is_deleted", 1).Error
+	return
+}
+
+func (e SysRole) UpdateRoleMenu(id int, p []int) (err error) {
+	// TODO
+	fmt.Println(id)
+	fmt.Println(p)
+	return
+}
+
+func (e SysRole) SelectRoleOne() (role SysRole, err error) {
+	// TODO
+	//SelectRoleBo
+	err = orm.Eloquent.First(&role, e.ID).Error
+	return
 }

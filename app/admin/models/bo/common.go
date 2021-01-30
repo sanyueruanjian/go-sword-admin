@@ -1,9 +1,9 @@
 package bo
 
 //order 排序规则
-type order struct {
-	Column string `json:"column"`
-	Asc    bool   `json:"asc"`
+type Order struct {
+	Column string
+	Asc    string
 }
 
 type dept struct {
@@ -34,5 +34,5 @@ type paging struct {
 	Total            int      `json:"total"`
 	HitCount         bool     `json:"hitCount"`
 	OptimizeCountSql bool     `json:"optimizeCountSql"`
-	Orders           []*order `json:"orders"`
+	Orders           []*Order `json:"orders"`
 }
