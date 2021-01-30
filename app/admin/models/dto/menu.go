@@ -16,9 +16,9 @@ type InsertMenuDto struct {
 	Iframe     bool   `json:"iframe" binding:"required"`
 	MenuSort   bool   `json:"menu_sort" binding:"required"`
 	ID         int    `json:"id" binding:"required"`
-	Icon       int    `json:"icon" binding:"required"`
 	Pid        int    `json:"pid" binding:"required"`
 	Type       int    `json:"type" binding:"required"`
+	Icon       string `json:"icon" binding:"required"`
 	Component  string `json:"component" binding:"required"`
 	Name       string `json:"name" binding:"required"`
 	Path       string `json:"path" binding:"required"`
