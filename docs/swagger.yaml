@@ -1,4 +1,52 @@
 definitions:
+  dto.InsertMenuDto:
+    properties:
+      cache:
+        type: boolean
+      component:
+        type: string
+      hidden:
+        type: boolean
+      icon:
+        type: string
+      id:
+        type: integer
+      iframe:
+        type: boolean
+      menu_sort:
+        type: boolean
+      name:
+        type: string
+      path:
+        type: string
+      permission:
+        type: string
+      pid:
+        type: integer
+      roles:
+        items:
+          type: integer
+        type: array
+      title:
+        type: string
+      type:
+        type: integer
+    required:
+    - cache
+    - component
+    - hidden
+    - icon
+    - id
+    - iframe
+    - menu_sort
+    - name
+    - path
+    - permission
+    - pid
+    - roles
+    - title
+    - type
+    type: object
   dto.UserLoginDto:
     properties:
       code:
@@ -40,9 +88,17 @@ definitions:
         description: 业务响应状态码
         type: integer
       data:
-        $ref: '#/definitions/public.FileResponse'
+        $ref: '#/definitions/models.FileResponse'
         description: 数据
-        type: object
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseInsertMenu:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
       message:
         description: 提示信息
         type: string
@@ -63,7 +119,7 @@ definitions:
         description: 提示信息
         type: string
     type: object
-  public.FileResponse:
+  models.FileResponse:
     properties:
       full_path:
         description: 文件完整地址
@@ -87,7 +143,6 @@ info:
     name: marchsoft@golang
     url: http://marchsoft.cn/
   description: 基于gin的后台通用框架
-  license: {}
   title: go-sword项目接口文档
   version: 0.1.0
 paths:
@@ -177,4 +232,231 @@ paths:
       summary: 文件上传（图片）
       tags:
       - 文件：文件管理 File Controller
+  /api/menus:
+    post:
+      consumes:
+      - application/json
+      description: Author：Cgl 2021/01/30 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.InsertMenuDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseInsertMenu'
+      security:
+      - ApiKeyAuth: []
+      summary: 新增菜单
+      tags:
+      - 系统：系统授权接口 Menu Controller
+  /api/roles:
+    delete:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除角色
+      tags:
+      - 系统：系统授权接口 Role Controller
+    get:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 多条件查询角色
+      tags:
+      - 系统：系统授权接口 Role Controller
+    post:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 新增角色
+      tags:
+      - 系统：系统授权接口 Role Controller
+    put:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改角色
+      tags:
+      - 系统：系统授权接口 Role Controller
+  /api/roles/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取单个角色
+      tags:
+      - 系统：系统授权接口 Role Controller
+  /api/roles/all:
+    get:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 返回全部角色
+      tags:
+      - 系统：系统授权接口 Role Controller
+  /api/roles/download:
+    get:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 导出角色数据
+      tags:
+      - 系统：系统授权接口 Role Controller
+  /api/roles/level:
+    get:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取当前登录用户级别
+      tags:
+      - 系统：系统授权接口 Role Controller
+  /api/roles/menu:
+    put:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改角色菜单
+      tags:
+      - 系统：系统授权接口 Role Controller
 swagger: "2.0"

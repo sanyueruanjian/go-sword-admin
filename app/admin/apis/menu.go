@@ -19,7 +19,7 @@ import (
 // @Produce application/json
 // @Param object body dto.InsertMenuDto false "查询参数"
 // @Security ApiKeyAuth
-// @Success 200 {object} models._ResponseInsetMenu
+// @Success 200 {object} models._ResponseInsertMenu
 // @Router /api/menus [post]
 func InsertMenuHandler(c *gin.Context) {
 	// 1.获取参数 校验参数

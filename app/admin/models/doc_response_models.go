@@ -27,3 +27,9 @@ type _ResponseFile struct {
 	Message string       `json:"message"` // 提示信息
 	Data    FileResponse `json:"data"`    // 数据
 }
+
+//_ResponseInsertMenu 新增菜单
+type _ResponseInsertMenu struct {
+	Code    app.ResCode `json:"code"`    // 业务响应状态码
+	Message string      `json:"message"` // 提示信息
+}

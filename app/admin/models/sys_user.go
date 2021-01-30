@@ -95,7 +95,7 @@ var (
 )
 
 // Login 查询用户是否存在，并验证密码
-func (e SysUser) Login() (err error) {
+func (e *SysUser) Login() (err error) {
 	oPassword := e.Password
 	role := new(SysRole)
 	err = global.Eloquent.Table(e.TableName()).Where("username = ?", e.Username).First(&e).Error

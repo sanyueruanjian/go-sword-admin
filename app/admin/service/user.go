@@ -10,7 +10,7 @@ type User struct {
 }
 
 // Login 返回json web token
-func (e User) Login(p *dto.UserLoginDto) (token string, err error) {
+func (e *User) Login(p *dto.UserLoginDto) (token string, err error) {
 	user := new(models.SysUser)
 	user.Username = p.Username
 	user.Password = p.Password
