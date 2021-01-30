@@ -11,9 +11,5 @@ main.exe
 main
 
 static/uploadfile/*
-<<<<<<< HEAD
-logs/*
-=======
-logs/web_app.log
->>>>>>> 644b111927037a6ed751748ccdb2a038b15eac75
+/logs
 tmp/*
