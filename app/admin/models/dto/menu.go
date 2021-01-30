@@ -42,9 +42,9 @@ type UpdateMenuDto struct {
 	Pid         int    `json:"pid" binding:"required"`
 	Type        int    `json:"type" binding:"required"`
 	CreateBy    int    `json:"creatBy" binding:"required"`
+	UpdateTime  int    `json:"updateTime" binding:"required"`
 	Label       string `json:"label" binding:"required"`
 	CreateTime  string `json:"creatTime" binding:"required"`
-	UpdateTime  int    `json:"updateTime" binding:"required"`
 	Children    string `json:"children" binding:"required"`
 	Component   string `json:"component" binding:"required"`
 	Name        string `json:"name" binding:"required"`

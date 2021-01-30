@@ -13,7 +13,6 @@ import (
 	"go.uber.org/zap"
 )
 
-
 // LoginHandler 登录授权接口
 // @Summary 登录授权接口
 // @Description Author：JiaKunLi 2021/01/26 获得身份令牌
@@ -42,6 +41,7 @@ func LoginHandler(c *gin.Context) {
 	}
 
 	// 2.业务逻辑处理
+	p.Password, _ = utils.RsaPubEncode(p.Password)
 	value, err := utils.RsaPriDecode(p.Password)
 	if err != nil {
 		zap.L().Error("ras decode fail", zap.Error(err))
@@ -64,4 +64,3 @@ func LoginHandler(c *gin.Context) {
 	// 3.返回响应
 	app.ResponseSuccess(c, token)
 }
-

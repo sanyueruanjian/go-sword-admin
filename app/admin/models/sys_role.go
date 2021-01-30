@@ -17,3 +17,7 @@ type SysRole struct {
 	UpdateTime   time.Time `json:"update_time"`           //更新时间
 	IsDeleted    []byte    `json:"is_deleted"`            //软删除（默认值为0，1为删除）
 }
+
+func (SysRole) TableName() string {
+	return "sys_role"
+}
