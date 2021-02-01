@@ -24,3 +24,26 @@ type SelectMenuBo struct {
 	Title       string `json:"title"`
 	HasChildren string `json:"hasChildren"`
 }
+
+type meta struct {
+	Icon    string `json:"icon"`
+	NoCache bool   `json:"noCache"`
+	Title   string `json:"title"`
+}
+
+type children struct {
+	Component string  `json:"component"`
+	Hidden    string  `json:"hidden"`
+	Meta      []*meta `json:"meta"`
+}
+
+type SelectForeNeedMenuBo struct {
+	AlwaysShow bool        `json:"alwaysShow"`
+	Hidden     bool        `json:"hidden"`
+	Component  string      `json:"component"`
+	Name       string      `json:"name"`
+	Path       string      `json:"path"`
+	Redirect   string      `json:"redirect"`
+	Meta       *meta       `json:"meta"`
+	Children   []*children `json:"children"`
+}

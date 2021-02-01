@@ -53,3 +53,23 @@ type _ResponseUpdateMenu struct {
 	Code    app.ResCode `json:"code"`    // 业务响应状态码
 	Message string      `json:"message"` // 提示信息
 }
+
+//_ResponseInsertUser 新增用户
+type _ResponseInsertUser struct {
+	Code    app.ResCode `json:"code"`    // 业务响应状态码
+	Message string      `json:"message"` // 提示信息
+}
+
+//_ResponseSelectForeNeedMenu
+type _ResponseSelectForeNeedMenu struct {
+	Code    app.ResCode              `json:"code"`    // 业务响应状态码
+	Message string                   `json:"message"` // 提示信息
+	Data    *bo.SelectForeNeedMenuBo `json:"data"`    // 数据
+}
+
+//_ResponseSelectUserInfoList
+type _ResponseSelectUserInfoList struct {
+	Code    app.ResCode        `json:"code"`    // 业务响应状态码
+	Message string             `json:"message"` // 提示信息
+	Data    *bo.UserInfoListBo `json:"data"`    // 数据
+}

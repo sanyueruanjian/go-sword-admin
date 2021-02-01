@@ -39,20 +39,21 @@ func (m *Menu) SelectMenu(p *dto.SelectMenuDto) (data []*bo.SelectMenuBo, err er
 	Menus, err = menu.SelectMenu(p)
 	for _, v := range Menus {
 		tmp := &bo.SelectMenuBo{
-			CreateBy:    v.CreateBy,
-			UpdatedBy:   v.UpdateBy,
-			SubCount:    v.SubCount,
-			MenuSort:    v.MenuSort,
-			ID:          v.ID,
-			Pid:         v.Pid,
-			Type:        v.Type,
-			Cache:       utils.ByteIntoBool(v.Cache),
-			Hidden:      utils.ByteIntoBool(v.Hidden),
-			Leaf:        false,
-			Iframe:      utils.ByteIntoBool(v.IFrame),
-			CreateTime:  utils.UnixTimeToString(v.CreateTime),
-			UpdateTime:  utils.UnixTimeToString(v.UpdateTime),
-			Label:       "",
+			CreateBy:   v.CreateBy,
+			UpdatedBy:  v.UpdateBy,
+			SubCount:   v.SubCount,
+			MenuSort:   v.MenuSort,
+			ID:         v.ID,
+			Pid:        v.Pid,
+			Type:       v.Type,
+			Cache:      utils.ByteIntoBool(v.Cache),
+			Hidden:     utils.ByteIntoBool(v.Hidden),
+			Leaf:       false,
+			Iframe:     utils.ByteIntoBool(v.IFrame),
+			CreateTime: utils.UnixTimeToString(v.CreateTime),
+			UpdateTime: utils.UnixTimeToString(v.UpdateTime),
+			Label:      "",
+			//TODO
 			Children:    "",
 			Icon:        v.Icon,
 			Component:   v.Component,
@@ -79,4 +80,20 @@ func (m *Menu) DeleteMenu(ids *[]int) (err error) {
 func (m *Menu) UpdateMenu(p *dto.UpdateMenuDto, userId int) (err error) {
 	menu := new(models.SysMenu)
 	return menu.UpdateMenu(p, userId)
+}
+
+//TODO
+func (m *Menu) SelectForeNeedMenu() (data []*bo.SelectForeNeedMenuBo, err error) {
+	//var Menus []*models.SysMenu
+	//menu := new(models.SysMenu)
+	//Menus, err = menu.SelectForeNeedMenu()
+	//for _, v := range Menus {
+	//	tmp := &bo.SelectForeNeedMenuBo{}
+	//	data = append(data, tmp)
+	//}
+	//
+	//if err != nil {
+	//	return nil, err
+	//}
+	return data, nil
 }
