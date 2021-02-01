@@ -2,7 +2,6 @@ package apis
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 
@@ -62,7 +61,6 @@ func InsertRolesHandler(c *gin.Context) {
 	// 1.获取参数 校验参数
 	var insertrole dto.InsertRoleDto
 	if err := c.ShouldBind(&insertrole); err != nil {
-		fmt.Println(err)
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
@@ -91,7 +89,6 @@ func UpdateRolesHandler(c *gin.Context) {
 	// 1.获取参数 校验参数
 	var updaterole dto.UpdateRoleDto
 	if err := c.ShouldBind(&updaterole); err != nil {
-		fmt.Println(err)
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}

@@ -17,7 +17,7 @@ type InsertRoleDto struct {
 	Name        string `form:"name" binding:"required"`      //姓名
 	DataScope   string `form:"dataScope" binding:"required"` //数据权限
 	Description string `form:"description" default:""`       //描述
-	Depts       []int  `form:"depts"`                        //部门
+	Depts       string `form:"depts"`                        //部门
 }
 
 //UpdateRoleDto 修改角色
@@ -32,8 +32,8 @@ type UpdateRoleDto struct {
 	UpdateTime  string `form:"updateTime" binding:"required"` //更新时间
 	CreateTime  string `form:"createTime" binding:"required"` //创建时间
 	Protection  string `form:"protection"`                    //
-	Depts       []int  `form:"depts" binding:"required"`      //部门 (一般用为空)
-	Menus       []int  `form:"menus"`                         //菜单列表
+	Depts       string `form:"depts" binding:"required"`      //部门 (一般用为空)
+	Menus       string `form:"menus"`                         //菜单列表
 }
 
 //SelectAllRoleDto 查询所有角色

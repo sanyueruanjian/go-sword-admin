@@ -12,4 +12,6 @@ main
 
 static/uploadfile/*
 logs/*
+logs/web_app.log
 tmp/*
+settings/settings.dev.yml
