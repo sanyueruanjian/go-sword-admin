@@ -168,6 +168,78 @@ var doc = `{
             }
         },
         "/api/menus": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Cgl 2021/01/30 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：系统授权接口 Menu Controller"
+                ],
+                "summary": "查询菜单",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SelectMenuDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseInsertMenu"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Cgl 2021/01/30 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：系统授权接口 Menu Controller"
+                ],
+                "summary": "更新菜单",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.DeleteMenuDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseUpdateMenu"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -200,6 +272,42 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models._ResponseInsertMenu"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Cgl 2021/01/30 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：系统授权接口 Menu Controller"
+                ],
+                "summary": "删除菜单",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.DeleteMenuDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseDeleteMenu"
                         }
                     }
                 }
@@ -543,16 +651,16 @@ var doc = `{
         }
     },
     "definitions": {
+        "dto.DeleteMenuDto": {
+            "type": "object"
+        },
         "dto.InsertMenuDto": {
             "type": "object",
             "required": [
-                "cache",
                 "component",
-                "hidden",
                 "icon",
                 "id",
-                "iframe",
-                "menu_sort",
+                "menuSort",
                 "name",
                 "path",
                 "permission",
@@ -580,8 +688,8 @@ var doc = `{
                 "iframe": {
                     "type": "boolean"
                 },
-                "menu_sort": {
-                    "type": "boolean"
+                "menuSort": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
@@ -605,6 +713,38 @@ var doc = `{
                     "type": "string"
                 },
                 "type": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.SelectMenuDto": {
+            "type": "object",
+            "required": [
+                "current",
+                "orders",
+                "size"
+            ],
+            "properties": {
+                "blurry": {
+                    "type": "string"
+                },
+                "current": {
+                    "type": "integer"
+                },
+                "endTime": {
+                    "type": "integer"
+                },
+                "orders": {
+                    "type": "string"
+                },
+                "pid": {
+                    "description": "父id",
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "statTime": {
                     "type": "integer"
                 }
             }
@@ -682,6 +822,19 @@ var doc = `{
                 }
             }
         },
+        "models._ResponseDeleteMenu": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务响应状态码",
+                    "type": "integer"
+                },
+                "message": {
+                    "description": "提示信息",
+                    "type": "string"
+                }
+            }
+        },
         "models._ResponseFile": {
             "type": "object",
             "properties": {
@@ -728,6 +881,19 @@ var doc = `{
                             "type": "string"
                         }
                     }
+                },
+                "message": {
+                    "description": "提示信息",
+                    "type": "string"
+                }
+            }
+        },
+        "models._ResponseUpdateMenu": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务响应状态码",
+                    "type": "integer"
                 },
                 "message": {
                     "description": "提示信息",
