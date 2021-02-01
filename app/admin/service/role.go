@@ -76,12 +76,13 @@ func (e Role) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (roleD
 				menu.Type = value.Type
 				menu.UpdateBy = value.UpdateBy
 				menu.Component = value.Component
-				menu.CreateTime = value.CreateTime
+				// TODO
+				//menu.CreateTime = value.CreateTime
 				menu.Name = value.Name
 				menu.Path = value.Path
 				menu.Permission = value.Permission
 				menu.Title = value.Title
-				menu.UpdateTime = value.UpdateTime
+				//menu.UpdateTime = value.UpdateTime
 				if value.Cache[0] == 1 {
 					menu.Cache = true
 				} else {
