@@ -3,11 +3,11 @@ package middleware
 import (
 	"encoding/json"
 	"project/app/admin/models"
+	"project/common/global"
 	"strconv"
 	"strings"
 
 	"project/common/api"
-	"project/common/global"
 	"project/pkg/jwt"
 	"project/utils/app"
 

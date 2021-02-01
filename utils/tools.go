@@ -26,6 +26,15 @@ func BoolIntoByte(b bool) []byte {
 	}
 }
 
+//byte转bool
+func ByteIntoBool(b []byte) bool {
+	if b[0] == 1 {
+		return true
+	} else {
+		return false
+	}
+}
+
 //bool转int
 func BoolIntoInt(b bool) int {
 	if b {
