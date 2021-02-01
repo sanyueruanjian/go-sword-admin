@@ -24,11 +24,8 @@ func (m *Menu) InsertMenu(p *dto.InsertMenuDto, userID int) error {
 		Path:       p.Path,
 		Permission: p.Permission,
 		Title:      p.Title,
-		CreateTime: utils.GetCurrentTime(),
-		UpdateTime: utils.GetCurrentTime(),
 		CreateBy:   userID,
 		UpdateBy:   userID,
-		IsDeleted:  []byte{0},
 	}
 	if err := menu.InsertMenu(); err != nil {
 		return err
@@ -53,8 +50,8 @@ func (m *Menu) SelectMenu(p *dto.SelectMenuDto) (data []*bo.SelectMenuBo, err er
 			Hidden:      utils.ByteIntoBool(v.Hidden),
 			Leaf:        false,
 			Iframe:      utils.ByteIntoBool(v.IFrame),
-			CreateTime:  utils.TimeToString(v.CreateTime),
-			UpdateTime:  utils.TimeToString(v.UpdateTime),
+			CreateTime:  utils.UnixTimeToString(v.CreateTime),
+			UpdateTime:  utils.UnixTimeToString(v.UpdateTime),
 			Label:       "",
 			Children:    "",
 			Icon:        v.Icon,
@@ -79,7 +76,7 @@ func (m *Menu) DeleteMenu(ids *[]int) (err error) {
 	return menu.DeleteMenu(ids)
 }
 
-func (m *Menu) UpdateMenu(p *dto.UpdateMenuDto) (err error) {
+func (m *Menu) UpdateMenu(p *dto.UpdateMenuDto, userId int) (err error) {
 	menu := new(models.SysMenu)
-	return menu.UpdateMenu(p)
+	return menu.UpdateMenu(p, userId)
 }

@@ -36,7 +36,6 @@ func InsertMenuHandler(c *gin.Context) {
 		zap.L().Error("InsertMenuHandler failed", zap.String("username", user.UserName), zap.Error(err))
 		c.Error(err)
 		_, ok := err.(validator.ValidationErrors)
-		//errs, ok := err.(validator.ValidationErrors)
 		if !ok {
 			app.ResponseError(c, app.CodeParamIsInvalid)
 			return
@@ -156,6 +155,7 @@ func UpdateMenuHandler(c *gin.Context) {
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
 		return
 	}
+	userId := user.UserId
 	//	绑定校验参数
 	p := new(dto.UpdateMenuDto)
 	if err := c.ShouldBind(p); err != nil {
@@ -171,7 +171,7 @@ func UpdateMenuHandler(c *gin.Context) {
 		return
 	}
 	menu := new(service.Menu)
-	if err := menu.UpdateMenu(p); err != nil {
+	if err := menu.UpdateMenu(p, userId); err != nil {
 		zap.L().Error("UpdateMenu failed", zap.Error(err))
 		app.ResponseError(c, app.CodeUpdateOperationFail)
 		return

@@ -85,6 +85,11 @@ func TimeToString(time time.Time) string {
 	return time.Format(timeLayoutStr)
 }
 
+func UnixTimeToString(t int64) string {
+	tTime := time.Unix(t/1000, 0)
+	return TimeToString(tTime)
+}
+
 func StringToTime(t string) time.Time {
 	var timeLayoutStr = "2006-01-02 15:04:05"
 	tm, err := time.Parse(timeLayoutStr, t)
