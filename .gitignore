@@ -12,9 +12,6 @@ main
 
 static/uploadfile/*
 logs/*
-<<<<<<< HEAD
 logs/web_app.log
-=======
->>>>>>> 0fa7c81cb540d42674d5d0097a23f6c054caaa49
 tmp/*
 settings/settings.dev.yml
