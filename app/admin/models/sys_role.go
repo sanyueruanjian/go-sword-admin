@@ -178,9 +178,8 @@ func (e SysRole) UpdateRoleMenu(id int, p []int) (err error) {
 	return
 }
 
+// 查询单个角色
 func (e SysRole) SelectRoleOne() (role SysRole, err error) {
-	// TODO
-	//SelectRoleBo
 	err = orm.Eloquent.First(&role, e.ID).Error
 	return
 }
