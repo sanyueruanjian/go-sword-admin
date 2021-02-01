@@ -2,10 +2,13 @@ package dto
 
 //SelectMenuDto 查询菜单
 type SelectMenuDto struct {
-	Current int    `form:"current" binding:"required"`
-	Size    int    `form:"size" binding:"required"`
-	Pid     int    `form:"pid"` //父id
-	Orders  string `form:"orders" binding:"required"`
+	Current  int    `form:"current" binding:"required"`
+	Size     int    `form:"size" binding:"required"`
+	Pid      int    `form:"pid"` //父id
+	StatTime int    `form:"startTime"`
+	EndTime  int    `form:"endTime"`
+	Blurry   string `form:"blurry"`
+	Orders   string `form:"orders" binding:"required"`
 }
 
 //InsertMenuDto 新增菜单

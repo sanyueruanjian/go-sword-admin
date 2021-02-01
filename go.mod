@@ -5,11 +5,7 @@ go 1.14
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/alibaba/sentinel-golang v0.6.1
-	github.com/casbin/casbin v1.9.1 // indirect
 	github.com/casbin/casbin/v2 v2.22.0
-	github.com/casbin/casbin/v3 v3.0.0-beta.7 // indirect
-	github.com/casbin/gorm-adapter v1.0.0 // indirect
-	github.com/casbin/gorm-adapter/v2 v2.1.0 // indirect
 	github.com/casbin/gorm-adapter/v3 v3.0.6
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/pprof v1.3.0
@@ -20,7 +16,6 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/google/uuid v1.1.2
-	github.com/jinzhu/gorm v1.9.16 // indirect
 	github.com/mojocn/base64Captcha v1.3.1
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/shamsher31/goimgext v1.0.0
