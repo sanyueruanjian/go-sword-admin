@@ -1,6 +1,10 @@
 package middleware
 
 import (
+	"encoding/json"
+	"project/app/admin/models"
+	"project/common/global"
+	"strconv"
 	"strings"
 
 	"project/common/api"
@@ -39,37 +43,12 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 			return
 		}
 		// 将当前请求的user_id信息保存到请求的上下文c上
-		//global.Rdb.Get(mc.UserID)
+		var UserInfoByte []byte
+		UserInfo := new(models.RedisUserInfo)
+		UserInfoByte, err = global.Rdb.Get(strconv.Itoa(mc.UserID)).Bytes()
+		err = json.Unmarshal(UserInfoByte, UserInfo)
 		c.Set(api.CtxUserIDKey, mc.UserID)
-		//c.Set()
+		c.Set(api.CtxUserInfoKey, UserInfo)
 		c.Next() // 后续的处理函数可以用过c.Get("username")来获取当前请求的用户信息
 	}
 }
-
-//func Authorize() gin.HandlerFunc {
-//	return func(c *gin.Context) {
-//		// 权限拦截
-//		value, _ := c.Get("userMessage")
-//		userMessage := value.(*sys_model.UserMessage)
-//		req := c.Request
-//		role := userMessage.RoleId
-//		e := mycasbin.Casbin()
-//		b, err := e.Enforce(role, req.URL.Path, req.Method)
-//		if err != nil {
-//			c.JSON(http.StatusForbidden, gin.H{
-//				"code": msg_code.IdentityNotPowCode,
-//				"msg":  msg_code.IdentityNotPowMsg,
-//			})
-//			c.Abort()
-//			return
-//		}
-//		if !b {
-//			c.JSON(http.StatusForbidden, gin.H{
-//				"code": msg_code.IdentityNotPowCode,
-//				"msg":  msg_code.IdentityNotPowMsg,
-//			})
-//			c.Abort()
-//			return
-//		}
-//	}
-//}

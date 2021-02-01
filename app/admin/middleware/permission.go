@@ -3,8 +3,9 @@ package middleware
 import (
 	"fmt"
 	"net/http"
+	"project/app/admin/models"
+	"project/common/api"
 	mycasbin "project/pkg/casbin"
-	"project/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,19 +13,26 @@ import (
 //权限检查中间件
 func AuthCheckRole() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		data, _ := c.Get("JWT_PAYLOAD")
-		v := data.(jwt.MyClaims)
+		data, _ := c.Get(api.CtxUserInfoKey)
+		v := data.(models.RedisUserInfo)
 		e, err := mycasbin.Casbin()
-		//tool.HasError(err, "", 500)
+		if err != nil {
+			c.Abort()
+			return
+		}
 		//检查权限
-		res, err := e.Enforce(v["rolekey"], c.Request.URL.Path, c.Request.Method)
-		//tools.HasError(err, "", 500)
+		var res bool
+		res, err = e.Enforce(v.Role, c.Request.URL.Path, c.Request.Method)
+		if err != nil {
+			c.Abort()
+			return
+		}
 
-		fmt.Printf("%s [INFO] %s %s %s \r\n",
+		fmt.Printf("%s [INFO] %s %s \r\n",
 			//tools.GetCurrentTimeStr(),
 			c.Request.Method,
 			c.Request.URL.Path,
-			v["rolekey"],
+			v.Role,
 		)
 
 		if res {

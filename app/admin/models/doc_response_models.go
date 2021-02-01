@@ -1,6 +1,7 @@
 package models
 
 import (
+	"project/app/admin/models/bo"
 	"project/utils/app"
 )
 
@@ -26,4 +27,29 @@ type _ResponseFile struct {
 	Code    app.ResCode  `json:"code"`    // 业务响应状态码
 	Message string       `json:"message"` // 提示信息
 	Data    FileResponse `json:"data"`    // 数据
+}
+
+//_ResponseInsertMenu 新增菜单
+type _ResponseInsertMenu struct {
+	Code    app.ResCode `json:"code"`    // 业务响应状态码
+	Message string      `json:"message"` // 提示信息
+}
+
+//_ResponseInsertMenu 查询菜单
+type _ResponseSelectMenu struct {
+	Code    app.ResCode      `json:"code"`    // 业务响应状态码
+	Message string           `json:"message"` // 提示信息
+	Data    *bo.SelectMenuBo `json:"data"`    // 数据
+}
+
+//_ResponseDeleteMenu 删除菜单
+type _ResponseDeleteMenu struct {
+	Code    app.ResCode `json:"code"`    // 业务响应状态码
+	Message string      `json:"message"` // 提示信息
+}
+
+//_ResponseUpdateMenu 删除菜单
+type _ResponseUpdateMenu struct {
+	Code    app.ResCode `json:"code"`    // 业务响应状态码
+	Message string      `json:"message"` // 提示信息
 }
