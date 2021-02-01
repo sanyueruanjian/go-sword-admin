@@ -35,16 +35,23 @@ func (m *SysMenu) InsertMenu() error {
 }
 
 func (m *SysMenu) SelectMenu(p *dto.SelectMenuDto) (data []*SysMenu, err error) {
+	//排序条件
 	var orderJson []bo.Order
 	orderJson, err = utils.OrderJson(p.Orders)
 	orderRule := utils.GetOrderRule(orderJson)
+	//模糊条件
 	blurry := "%" + p.Blurry + "%"
+	//时间条件
 	if p.EndTime != 0 && p.StatTime != 0 {
-		err = global.Eloquent.Table("sys_menu").Where("is_deleted=? AND create_time > ? AND create_time < ? AND title like ?", []byte{0}, p.StatTime, p.EndTime, blurry).
-			Limit(p.Size).Offset(p.Current - 1*p.Size).Order(orderRule).Find(&data).Error
+		if err := global.Eloquent.Table("sys_menu").Where("is_deleted=? AND create_time > ? AND create_time < ? AND title like ?", []byte{0}, p.StatTime, p.EndTime, blurry).
+			Limit(p.Size).Offset(p.Current - 1*p.Size).Order(orderRule).Find(&data).Error; err != nil {
+			return nil, err
+		}
 	} else {
-		err = global.Eloquent.Table("sys_menu").Where("is_deleted=? AND title like ?", []byte{0}, blurry).
-			Limit(p.Size).Offset(p.Current - 1*p.Size).Order(orderRule).Find(&data).Error
+		if err := global.Eloquent.Table("sys_menu").Where("is_deleted=? AND title like ?", []byte{0}, blurry).
+			Limit(p.Size).Offset(p.Current - 1*p.Size).Order(orderRule).Find(&data).Error; err != nil {
+			return nil, err
+		}
 	}
 	return data, err
 }
@@ -70,4 +77,11 @@ func (m *SysMenu) UpdateMenu(p *dto.UpdateMenuDto, userId int) (err error) {
 		"cache":      utils.BoolIntoByte(p.Cache),
 		"hidden":     utils.BoolIntoByte(p.Iframe),
 	}).Error
+}
+
+//TODO
+func (m *SysMenu) SelectForeNeedMenu() (err error) {
+	//global.Eloquent.Find
+	//寻找子集
+	return nil
 }

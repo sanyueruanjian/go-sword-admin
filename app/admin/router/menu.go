@@ -26,6 +26,7 @@ func menuRouter(v1 *gin.RouterGroup) {
 func menuAuthRouter(v1 *gin.RouterGroup) {
 	r := v1.Group("/menus")
 	{
+		r.GET("/build", apis.SelectForeNeedMenuHandler)
 		r.GET("/", apis.SelectMenuHandler)
 		r.POST("/", apis.InsertMenuHandler)
 		r.DELETE("/", apis.DeleteMenuHandle)

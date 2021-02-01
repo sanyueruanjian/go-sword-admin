@@ -43,3 +43,12 @@ func BoolIntoInt(b bool) int {
 		return 0
 	}
 }
+
+//用于转化前端字符串布尔值为[]byte
+func StrBoolIntoByte(s string) []byte {
+	if s == "true" {
+		return []byte{1}
+	} else {
+		return []byte{0}
+	}
+}

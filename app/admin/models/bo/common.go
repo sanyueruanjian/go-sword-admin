@@ -6,17 +6,17 @@ type Order struct {
 	Asc    string
 }
 
-type dept struct {
+type DeptCommon struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-type job struct {
+type Job struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-type role struct {
+type Role struct {
 	ID        int    `json:"id"`
 	Level     int    `json:"level"`
 	Name      string `json:"name"`
