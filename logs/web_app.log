@@ -1,20 +1,297 @@
-{"level":"INFO","time":"2021-01-30T09:55:39.838+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
-{"level":"INFO","time":"2021-01-30T09:55:39.839+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
-{"level":"DEBUG","time":"2021-01-30T09:56:54.938+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
-{"level":"INFO","time":"2021-01-30T09:56:54.968+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
-{"level":"INFO","time":"2021-01-30T09:56:55.394+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
-{"level":"DEBUG","time":"2021-01-30T09:56:55.884+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
-{"level":"DEBUG","time":"2021-01-30T09:56:56.103+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
-{"level":"INFO","time":"2021-01-30T09:56:59.452+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"DELETE","path":"/api/roles","query":"","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.2260049}
-{"level":"INFO","time":"2021-01-30T09:57:01.210+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"DELETE","path":"/api/roles","query":"","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.2179857}
-{"level":"INFO","time":"2021-01-30T09:57:54.357+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
-{"level":"INFO","time":"2021-01-30T09:57:54.357+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
-{"level":"DEBUG","time":"2021-01-30T09:58:04.171+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
-{"level":"INFO","time":"2021-01-30T09:58:04.203+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
-{"level":"INFO","time":"2021-01-30T09:58:04.605+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
-{"level":"DEBUG","time":"2021-01-30T09:58:05.075+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
-{"level":"DEBUG","time":"2021-01-30T09:58:05.308+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
-{"level":"INFO","time":"2021-01-30T09:58:32.556+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"DELETE","path":"/api/roles","query":"","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.4869984}
-{"level":"INFO","time":"2021-01-30T09:58:34.441+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"DELETE","path":"/api/roles","query":"","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.6290035}
-{"level":"INFO","time":"2021-01-30T09:59:04.313+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
-{"level":"INFO","time":"2021-01-30T09:59:04.313+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T17:25:48.239+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T17:25:48.240+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T19:20:25.609+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:20:25.676+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:20:26.119+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T19:20:26.697+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T19:20:26.900+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:45:34.052+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:45:34.053+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T19:45:44.749+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:45:44.782+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:45:45.194+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T19:45:45.634+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T19:45:45.850+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:45:52.222+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=go","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":1.5747703}
+{"level":"INFO","time":"2021-01-30T19:47:10.667+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:47:10.667+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T19:47:21.219+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:47:21.254+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:47:21.643+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T19:47:22.067+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T19:47:22.285+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:47:26.676+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=go","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":2.3185114}
+{"level":"INFO","time":"2021-01-30T19:52:03.032+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:52:03.033+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T19:52:13.327+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:52:13.362+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:52:13.788+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T19:52:14.251+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T19:52:14.467+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:52:18.558+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=go","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.8849576}
+{"level":"INFO","time":"2021-01-30T19:58:21.751+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:58:21.752+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T19:58:31.922+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:58:31.954+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:58:32.360+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T19:58:32.831+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T19:58:33.051+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T19:58:38.509+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=go","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.8899674}
+{"level":"INFO","time":"2021-01-30T20:04:07.305+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:04:07.305+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:04:16.988+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:04:17.020+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:04:17.440+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:04:17.924+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:04:18.143+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:04:46.225+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:04:46.225+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:04:56.599+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:04:56.630+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:04:57.008+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:04:57.477+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:04:57.717+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:05:03.398+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=go","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.8554275}
+{"level":"INFO","time":"2021-01-30T20:06:09.223+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:06:09.223+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:06:18.936+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:06:18.967+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:06:19.364+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:06:19.774+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:06:19.980+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:06:49.098+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=go","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1204613}
+{"level":"INFO","time":"2021-01-30T20:07:27.490+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:07:27.490+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:07:37.194+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:07:37.230+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:07:37.638+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:07:38.046+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:07:38.243+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:07:41.730+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=go","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":1.4366923}
+{"level":"INFO","time":"2021-01-30T20:11:13.123+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:11:13.124+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:11:23.677+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:11:23.710+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:11:24.109+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:11:24.575+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:11:24.796+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:11:34.318+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=go","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":3.2638398}
+{"level":"INFO","time":"2021-01-30T20:11:45.134+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=go","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":2.9355202}
+{"level":"INFO","time":"2021-01-30T20:51:06.682+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:51:06.683+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:54:29.031+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:54:29.061+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:54:29.492+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:54:29.917+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T20:54:30.123+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T20:54:36.467+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=go","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":3.1394829}
+{"level":"INFO","time":"2021-01-30T20:55:54.051+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=go","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":2.9528561}
+{"level":"INFO","time":"2021-01-30T20:56:04.714+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=go","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":2.8861439}
+{"level":"INFO","time":"2021-01-30T21:34:52.412+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:34:52.413+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:35:06.625+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:35:06.662+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:35:07.082+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:35:07.549+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:35:07.856+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:35:12.385+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=name","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.077615}
+{"level":"INFO","time":"2021-01-30T21:37:29.730+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:37:29.731+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:37:40.973+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:37:41.028+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:37:41.417+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:37:41.816+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:37:42.044+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:37:44.231+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=name","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1551066}
+{"level":"INFO","time":"2021-01-30T21:37:54.197+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=name","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1591183}
+{"level":"INFO","time":"2021-01-30T21:38:17.297+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=name229","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1557585}
+{"level":"INFO","time":"2021-01-30T21:38:18.815+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=name229","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1438291}
+{"level":"INFO","time":"2021-01-30T21:39:04.288+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:39:04.289+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:39:15.619+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:39:15.659+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:39:16.097+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:39:16.564+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:39:16.781+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:39:19.381+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=name229","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1580607}
+{"level":"INFO","time":"2021-01-30T21:39:21.786+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=name229","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1626596}
+{"level":"INFO","time":"2021-01-30T21:39:22.826+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=name229","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1408839}
+{"level":"INFO","time":"2021-01-30T21:39:23.655+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=name229","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1345562}
+{"level":"INFO","time":"2021-01-30T21:39:24.506+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=name229","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.147971}
+{"level":"INFO","time":"2021-01-30T21:39:25.318+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=name229","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1445026}
+{"level":"INFO","time":"2021-01-30T21:39:26.162+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=name229","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1138968}
+{"level":"INFO","time":"2021-01-30T21:40:02.351+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:40:02.351+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:40:13.289+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:40:13.321+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:40:13.673+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:40:14.045+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:40:14.236+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:40:15.305+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=name229","ip":"127.0.0.1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1169862}
+{"level":"INFO","time":"2021-01-30T21:40:50.173+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam","ip":"127.0.0.1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1312714}
+{"level":"INFO","time":"2021-01-30T21:43:20.633+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:43:20.633+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:43:31.602+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:43:31.633+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:43:31.968+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:43:32.349+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:43:32.524+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:43:51.393+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1362274}
+{"level":"INFO","time":"2021-01-30T21:44:42.293+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:44:42.294+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:44:53.465+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:44:53.499+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:44:53.869+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:44:54.244+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:44:54.462+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:47:17.198+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:47:17.199+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:47:26.198+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:47:26.235+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:47:26.642+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:47:27.106+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:47:27.294+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:47:36.665+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1490655}
+{"level":"INFO","time":"2021-01-30T21:47:40.351+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1399538}
+{"level":"INFO","time":"2021-01-30T21:47:56.277+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:47:56.277+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:48:07.212+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:48:07.252+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:48:07.659+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:48:08.161+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:48:08.371+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:48:31.586+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1685222}
+{"level":"INFO","time":"2021-01-30T21:52:21.283+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:52:21.285+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:52:32.350+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:52:32.381+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:52:32.839+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:52:33.309+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:52:33.532+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:52:41.604+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":3.0590971}
+{"level":"INFO","time":"2021-01-30T21:53:30.991+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:53:30.992+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:53:41.782+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:53:41.812+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:53:42.233+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:53:42.659+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T21:53:42.882+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T21:53:51.421+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":3.0490061}
+{"level":"INFO","time":"2021-01-30T21:54:36.062+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam&endTime=1609603200000&startTime=1613923199000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":3.1330019}
+{"level":"INFO","time":"2021-01-30T21:55:16.349+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&endTime=1609603200000&startTime=1613923199000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.140005}
+{"level":"INFO","time":"2021-01-30T21:55:26.741+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&endTime=1609603200000&startTime=1613923199000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.152}
+{"level":"INFO","time":"2021-01-30T21:55:37.792+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam&endTime=1609603200000&startTime=1613923199000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":3.0241943}
+{"level":"INFO","time":"2021-01-30T22:18:38.500+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T22:18:38.501+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T22:18:52.158+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T22:18:52.196+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T22:18:52.607+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T22:18:52.979+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T22:18:53.160+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T22:18:55.418+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&endTime=1609603200000&startTime=1613923199000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1679932}
+{"level":"INFO","time":"2021-01-30T22:19:29.449+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam&endTime=1609603200000&startTime=1613923199000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":3.2922827}
+{"level":"INFO","time":"2021-01-30T22:21:31.751+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T22:21:31.752+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T22:21:44.310+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T22:21:44.345+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T22:21:44.758+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T22:21:45.170+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T22:21:45.438+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T22:21:55.534+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam&endTime=1609603200000&startTime=1613923199000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":2.9629392}
+{"level":"INFO","time":"2021-01-30T22:23:31.277+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam&endTime=1607615999000&startTime=1606665600000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":3.3221455}
+{"level":"INFO","time":"2021-01-30T22:24:02.694+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam&endTime=1607615999000&startTime=1606665600000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":3.2544575}
+{"level":"INFO","time":"2021-01-30T22:24:16.505+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam&endTime=1607615999000&startTime=1606665600000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":3.3870936}
+{"level":"INFO","time":"2021-01-30T22:25:19.143+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T22:25:19.143+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T22:25:28.974+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T22:25:29.008+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T22:25:29.463+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T22:25:29.936+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-30T22:25:30.158+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T22:27:23.848+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-30T22:27:23.848+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-31T20:13:42.440+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-31T20:13:42.577+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-31T20:13:43.069+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-31T20:13:43.520+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-31T20:13:43.753+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-31T20:13:50.239+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam&endTime=1607615999000&startTime=1606665600000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":3.3119772}
+{"level":"INFO","time":"2021-01-31T21:02:28.349+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-31T21:02:28.350+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-31T21:02:38.703+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-31T21:02:38.738+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-01-31T21:02:39.099+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-31T21:02:39.474+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-01-31T21:02:39.641+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-01-31T21:02:47.476+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam&endTime=1607615999000&startTime=1606665600000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":2.7009792}
+{"level":"INFO","time":"2021-01-31T21:24:28.503+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-01-31T21:24:28.503+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:08:06.036+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:08:06.075+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"FATAL","time":"2021-02-01T08:08:07.110+0800","caller":"mysql/mysql.go:43","msg":"\u001b[0;0;31mmysql connect error :\u001b[0m","error":"dial tcp 120.26.141.144:3306: i/o timeout"}
+{"level":"DEBUG","time":"2021-02-01T08:08:41.735+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:08:41.778+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:08:42.243+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:08:42.666+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:08:42.864+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:10:32.221+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam&endTime=1607615999000&startTime=1611925704000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":1.9391031}
+{"level":"INFO","time":"2021-02-01T08:12:03.878+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:12:03.878+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:12:12.887+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:12:12.918+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:12:13.424+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:12:13.902+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:12:14.157+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:12:19.281+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam&endTime=1607615999000&startTime=1611925704000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":2.2772735}
+{"level":"INFO","time":"2021-02-01T08:12:54.125+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:12:54.125+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:13:25.421+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:13:25.452+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:13:25.811+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:13:26.193+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:13:26.369+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:13:41.077+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam&endTime=1607615999000&startTime=1611925704000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":2.7000109}
+{"level":"INFO","time":"2021-02-01T08:25:14.868+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:25:14.868+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:25:25.432+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:25:25.465+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:25:25.889+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:25:26.271+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:25:26.517+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:26:04.633+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=nam&endTime=1607615999000&startTime=1611925704000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":2.9100086}
+{"level":"INFO","time":"2021-02-01T08:26:30.572+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=229","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.0890689}
+{"level":"INFO","time":"2021-02-01T08:27:21.637+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:27:21.637+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:27:32.070+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:27:32.102+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:27:32.511+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:27:32.917+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:27:33.153+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:28:46.725+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:28:46.725+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:28:56.800+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:28:56.832+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:28:57.229+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:28:57.629+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:28:57.813+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:29:08.374+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=229","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.4780279}
+{"level":"INFO","time":"2021-02-01T08:29:20.408+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&blurry=229&endTime=1607615999000&startTime=1611925704000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.4279675}
+{"level":"INFO","time":"2021-02-01T08:29:30.116+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&startTime=1611925704000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.0010181}
+{"level":"INFO","time":"2021-02-01T08:29:37.088+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&endTime=1607615999000&startTime=1611925704000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.137149}
+{"level":"INFO","time":"2021-02-01T08:30:23.146+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&endTime=1611925704000&startTime=1615910399000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.1360062}
+{"level":"INFO","time":"2021-02-01T08:30:42.404+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&startTime=1611925704000&endTime=1615910399000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":2.8519996}
+{"level":"INFO","time":"2021-02-01T08:31:11.185+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&startTime=1617724800000&endTime=1619798399000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":2.9412956}
+{"level":"INFO","time":"2021-02-01T08:33:22.192+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&startTime=1628438400000&endTime=1629561599000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":2.7260022}
+{"level":"INFO","time":"2021-02-01T08:36:18.091+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:36:18.091+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:36:27.919+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:36:27.952+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:36:28.349+0800","caller":"mysql/mysql.go:46","msg":"\u001b[0;0;32mmysql connect success !\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:36:28.791+0800","caller":"GoSword-Admin/main.go:48","msg":"\u001b[0;0;32mmysql init success...\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:36:28.981+0800","caller":"GoSword-Admin/main.go:56","msg":"\u001b[0;0;32mredis init success...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:36:40.456+0800","caller":"middleware/logger.go:24","msg":"/api/roles","status":200,"method":"GET","path":"/api/roles","query":"current=1&size=10&orders=[{%22column%22:%22level%22,%22asc%22:%22false%22},{%22column%22:%22level%22,%22asc%22:%22false%22}]&startTime=1628438400000&endTime=1629561599000","ip":"::1","user-agent":"PostmanRuntime/7.26.10","errors":"","cost":0.4000088}
+{"level":"INFO","time":"2021-02-01T08:44:56.012+0800","caller":"run/run.go:71","msg":"\u001b[0;0;31mShutdown Server ...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:44:56.012+0800","caller":"run/run.go:79","msg":"\u001b[0;0;31mServer exiting\u001b[0m"}
+{"level":"DEBUG","time":"2021-02-01T08:45:06.408+0800","caller":"GoSword-Admin/main.go:40","msg":"\u001b[0;0;32mlogger init success...\u001b[0m"}
+{"level":"INFO","time":"2021-02-01T08:45:06.441+0800","caller":"mysql/mysql.go:27","msg":"\u001b[0;0;32mroot:123456@tcp(120.26.141.144:3306)/go_sword?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms\u001b[0m"}
+{"level":"FATAL","time":"2021-02-01T08:45:07.442+0800","caller":"mysql/mysql.go:43","msg":"\u001b[0;0;31mmysql connect error :\u001b[0m","error":"dial tcp 120.26.141.144:3306: i/o timeout"}
