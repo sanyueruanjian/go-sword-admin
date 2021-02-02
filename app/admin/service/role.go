@@ -35,71 +35,18 @@ func (e Role) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (roleD
 			} else {
 				recordRole.Protection = false
 			}
-			sysDept, sysMenu, err1 := role.SysDeptAndMenu(value.ID)
-			if err1 != nil {
-				err = err1
+			sysDept, sysMenu, errSysMenu := role.SysDeptAndMenu(value.ID)
+			if errSysMenu != nil {
+				err = errSysMenu
 				return
 			}
-			// Dept
-			for _, value := range sysDept {
-				var dept bo.Dept
-				dept.CreateBy = value.CreateBy
-				dept.CreateTime = value.CreateTime
-				dept.DeptSort = value.DeptSort
-				if value.Enabled[0] == 1 {
-					dept.Enabled = true
-				} else {
-					dept.Enabled = false
-				}
-				if value.SubCount > 0 {
-					dept.HasChildren = true
-				} else {
-					dept.HasChildren = false
-				}
-				dept.ID = value.ID
-				dept.Name = value.Name
-				dept.Pid = value.Pid
-				dept.SubCount = value.SubCount
-				dept.UpdateTime = value.UpdateTime
-				dept.UpdateBy = value.UpdateBy
-				recordRole.Depts = append(recordRole.Depts, dept)
+			deptList, menuList, errGetMenu := getDeptsMenus(sysDept, sysMenu)
+			if errGetMenu != nil {
+				err = errGetMenu
+				return
 			}
-			// Menu
-			for _, value := range sysMenu {
-				var menu bo.Menu
-				menu.CreateBy = value.CreateBy
-				menu.Icon = value.Icon
-				menu.ID = value.ID
-				menu.MenuSort = value.MenuSort
-				menu.Pid = value.Pid
-				menu.SubCount = value.SubCount
-				menu.Type = value.Type
-				menu.UpdateBy = value.UpdateBy
-				menu.Component = value.Component
-				// TODO
-				//menu.CreateTime = value.CreateTime
-				menu.Name = value.Name
-				menu.Path = value.Path
-				menu.Permission = value.Permission
-				menu.Title = value.Title
-				//menu.UpdateTime = value.UpdateTime
-				if value.Cache[0] == 1 {
-					menu.Cache = true
-				} else {
-					menu.Cache = false
-				}
-				if value.Hidden[0] == 1 {
-					menu.Hidden = true
-				} else {
-					menu.Hidden = false
-				}
-				if value.IFrame[0] == 1 {
-					menu.Iframe = true
-				} else {
-					menu.Iframe = false
-				}
-				recordRole.Menus = append(recordRole.Menus, menu)
-			}
+			recordRole.Depts = deptList
+			recordRole.Menus = menuList
 			roleData.Records = append(roleData.Records, recordRole)
 		}
 	}
@@ -114,13 +61,78 @@ func (e Role) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (roleD
 	return
 }
 
+func getDeptsMenus(sysDept []models.SysDept, sysMenu []models.SysMenu) (deptList []bo.Dept, menuList []bo.Menu, err error) {
+	// Dept
+	for _, value := range sysDept {
+		var dept bo.Dept
+		dept.CreateBy = value.CreateBy
+		dept.CreateTime = value.CreateTime
+		dept.DeptSort = value.DeptSort
+		if value.Enabled[0] == 1 {
+			dept.Enabled = true
+		} else {
+			dept.Enabled = false
+		}
+		if value.SubCount > 0 {
+			dept.HasChildren = true
+		} else {
+			dept.HasChildren = false
+		}
+		dept.ID = value.ID
+		dept.Name = value.Name
+		dept.Pid = value.Pid
+		dept.SubCount = value.SubCount
+		dept.UpdateTime = value.UpdateTime
+		dept.UpdateBy = value.UpdateBy
+		deptList = append(deptList, dept)
+	}
+	// Menu
+	for _, value := range sysMenu {
+		var menu bo.Menu
+		menu.CreateBy = value.CreateBy
+		menu.Icon = value.Icon
+		menu.ID = value.ID
+		menu.MenuSort = value.MenuSort
+		menu.Pid = value.Pid
+		menu.SubCount = value.SubCount
+		menu.Type = value.Type
+		menu.UpdateBy = value.UpdateBy
+		menu.Component = value.Component
+		menu.CreateTime = value.CreateTime
+		menu.Name = value.Name
+		menu.Path = value.Path
+		menu.Permission = value.Permission
+		menu.Title = value.Title
+		menu.UpdateTime = value.UpdateTime
+		if value.Cache[0] == 1 {
+			menu.Cache = true
+		} else {
+			menu.Cache = false
+		}
+		if value.Hidden[0] == 1 {
+			menu.Hidden = true
+		} else {
+			menu.Hidden = false
+		}
+		if value.IFrame[0] == 1 {
+			menu.Iframe = true
+		} else {
+			menu.Iframe = false
+		}
+		menuList = append(menuList, menu)
+	}
+	return
+}
+
 // 新增角色
-func (e Role) InsertRole(p dto.InsertRoleDto) (err error) {
+func (e Role) InsertRole(p dto.InsertRoleDto, userId int) (err error) {
 	role := new(models.SysRole)
 	role.Level = p.Level
 	role.Name = p.Name
 	role.DataScope = p.DataScope
 	role.Description = p.Description
+	role.CreateBy = userId
+	role.UpdateBy = userId
 	depts := []byte(p.Depts)
 	deptsData := []int{}
 	err = json.Unmarshal(depts, &deptsData)
@@ -131,7 +143,7 @@ func (e Role) InsertRole(p dto.InsertRoleDto) (err error) {
 }
 
 // 修改角色
-func (e Role) UpdateRole(p dto.UpdateRoleDto) (err error) {
+func (e Role) UpdateRole(p dto.UpdateRoleDto, userId int) (err error) {
 	role := new(models.SysRole)
 	role.ID = p.ID
 	role.Level = p.Level
@@ -140,6 +152,7 @@ func (e Role) UpdateRole(p dto.UpdateRoleDto) (err error) {
 	role.Name = p.Name
 	role.DataScope = p.DataScope
 	role.Description = p.Description
+	role.UpdateBy = userId
 	//  参数格式化
 	updateTime, err := strconv.ParseInt(p.UpdateTime, 10, 64)
 	if err != nil {
@@ -169,8 +182,9 @@ func (e Role) UpdateRole(p dto.UpdateRoleDto) (err error) {
 }
 
 // 删除角色
-func (e Role) DeleteRole(p []int) (err error) {
+func (e Role) DeleteRole(p []int, userId int) (err error) {
 	role := new(models.SysRole)
+	role.ID = userId
 	if err = role.DeleteRole(p); err != nil {
 		return
 	}
@@ -187,11 +201,38 @@ func (e Role) UpdateRoleMenu(id int, p []int) (err error) {
 }
 
 // 获取单个角色
-func (e Role) SelectRoleOne(id int) (roleone models.SysRole, err error) {
+func (e Role) SelectRoleOne(id int) (roleData bo.SelectRoleBo, err error) {
 	role := new(models.SysRole)
 	role.ID = id
-	if roleone, err = role.SelectRoleOne(); err != nil {
+	roleOne, err := role.SelectRoleOne()
+	if err != nil {
 		return
 	}
+	sysDept, sysMenu, err := role.SysDeptAndMenu(roleOne.ID)
+	if err != nil {
+		return
+	}
+	roleData.CreateBy = roleOne.CreateBy
+	roleData.ID = roleOne.ID
+	roleData.Level = roleOne.Level
+	roleData.UpdateBy = roleOne.UpdateBy
+	roleData.CreateTime = roleOne.CreateTime
+	roleData.DataScope = roleOne.DataScope
+	roleData.Description = roleOne.Description
+	roleData.Name = roleOne.Name
+	roleData.UpdateTime = roleOne.UpdateTime
+	if roleOne.IsProtection[0] == 1 {
+		roleData.Protection = true
+	} else {
+		roleData.Protection = false
+	}
+	deptList, menuList, err := getDeptsMenus(sysDept, sysMenu)
+	if err != nil {
+		return
+	}
+	// Depts
+	roleData.Depts = deptList
+	// Menu
+	roleData.Menus = menuList
 	return
 }

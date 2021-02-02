@@ -3,6 +3,7 @@ package apis
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"project/common/api"
 	"strconv"
 
 	"project/app/admin/models/dto"
@@ -65,7 +66,12 @@ func InsertRolesHandler(c *gin.Context) {
 		return
 	}
 	// 2.参数正确执行响应
-	err := r.InsertRole(insertrole)
+	user, err := api.GetCurrentUserInfo(c)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+	err = r.InsertRole(insertrole, user.UserId)
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
@@ -93,7 +99,12 @@ func UpdateRolesHandler(c *gin.Context) {
 		return
 	}
 	// 2.参数正确执行响应
-	err := r.UpdateRole(updaterole)
+	user, err := api.GetCurrentUserInfo(c)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+	err = r.UpdateRole(updaterole, user.UserId)
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
@@ -124,7 +135,12 @@ func DeleteRolesHandler(c *gin.Context) {
 	}
 
 	// 2.参数正确执行响应
-	err = r.DeleteRole(idsData)
+	user, err := api.GetCurrentUserInfo(c)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+	err = r.DeleteRole(idsData, user.UserId)
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return

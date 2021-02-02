@@ -24,6 +24,7 @@ type SysRole struct {
 	IsDeleted    []byte `json:"is_deleted"`                             //软删除（默认值为0，1为删除）
 }
 
+// 多条件查询角色
 func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sysRole []SysRole, err error) {
 	var order string
 	for key, value := range orderData {
@@ -107,12 +108,10 @@ func (e SysRole) SysDeptAndMenu(id int) (sysDept []SysDept, sysMenu []SysMenu, e
 	return
 }
 
+// 新建角色
 func (e SysRole) InsertRole(deptsData []int) (err error) {
 	tx := orm.Eloquent.Begin()
 	e.IsProtection = append(e.IsProtection, 1)
-	// TODO 获取当前用户id
-	e.CreateBy = 1
-	e.UpdateBy = 1
 	e.CreateTime = utils.GetCurrentTimeUnix()
 	e.UpdateTime = utils.GetCurrentTimeUnix()
 	e.IsDeleted = append(e.IsDeleted, 0)
@@ -137,8 +136,6 @@ func (e SysRole) InsertRole(deptsData []int) (err error) {
 // 修改角色
 func (e SysRole) UpdateRole(deptsData []int, menusData []int) (err error) {
 	tx := orm.Eloquent.Begin()
-	// TODO 获取当前用户id
-	e.UpdateBy = 1
 	e.UpdateTime = utils.GetCurrentTimeUnix()
 	// 修改sysrole表
 	if err = tx.Model(&e).Updates(e).Error; err != nil {
@@ -166,7 +163,7 @@ func (e SysRole) UpdateRole(deptsData []int, menusData []int) (err error) {
 // 删除角色
 func (e SysRole) DeleteRole(p []int) (err error) {
 	for _, values := range p {
-		err = orm.Eloquent.Table("sys_role").Where("id = ?", values).Update("is_deleted", 1).Error
+		err = orm.Eloquent.Table("sys_role").Where("id = ?", values).Updates(SysRole{UpdateBy: e.ID, IsDeleted: []byte{1}}).Error
 	}
 	return
 }

@@ -64,7 +64,7 @@ type SelectRoleArrayBo struct {
 
 //SelectRoleBo 查询单个角色
 type SelectRoleBo struct {
-	*RecordRole
+	RecordRole
 }
 
 //SelectAllRoleBo 查询所有角色
