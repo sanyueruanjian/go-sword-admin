@@ -18,7 +18,7 @@ type _ResponseLogin struct {
 type _ResponseCode struct {
 	Code    app.ResCode `json:"code"`    // 业务响应状态码
 	Message string      `json:"message"` // 提示信息
-	Img     string      `json:"data"`    // base64验证码
+	Img     string      `json:"img"`     // base64验证码
 	UuId    string      `json:"uuid"`    // 验证码id
 }
 
@@ -72,6 +72,13 @@ type _ResponseSelectUserInfoList struct {
 	Code    app.ResCode        `json:"code"`    // 业务响应状态码
 	Message string             `json:"message"` // 提示信息
 	Data    *bo.UserInfoListBo `json:"data"`    // 数据
+}
+
+//_ResponseGetJobList 查询岗位
+type _ResponseGetJobList struct {
+	Code    app.ResCode      `json:"code"`    // 业务响应状态码
+	Message string           `json:"message"` // 提示信息
+	Data    []*bo.GetJobList `json:"data"`    // 数据
 }
 
 //_ResponseDeleteUser 删除用户

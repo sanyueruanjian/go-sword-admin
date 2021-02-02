@@ -1,5 +1,207 @@
 definitions:
+  bo.DeptCommon:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  bo.GetJobList:
+    properties:
+      enabled:
+        description: 状态：1启用（默认）、0禁用
+        type: integer
+      job_sort:
+        description: 排序
+        type: integer
+      name:
+        description: 岗位名称
+        type: string
+    type: object
+  bo.Job:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  bo.Order:
+    properties:
+      asc:
+        type: string
+      column:
+        type: string
+    type: object
+  bo.Role:
+    properties:
+      dataScope:
+        type: string
+      id:
+        type: integer
+      level:
+        type: integer
+      name:
+        type: string
+    type: object
+  bo.SelectForeNeedMenuBo:
+    properties:
+      alwaysShow:
+        type: boolean
+      children:
+        items:
+          $ref: '#/definitions/bo.children'
+        type: array
+      component:
+        type: string
+      hidden:
+        type: boolean
+      meta:
+        $ref: '#/definitions/bo.meta'
+        type: object
+      name:
+        type: string
+      path:
+        type: string
+      redirect:
+        type: string
+    type: object
+  bo.UserInfoListBo:
+    properties:
+      count_id:
+        type: integer
+      current:
+        type: integer
+      hitCount:
+        type: boolean
+      maxLimit:
+        type: integer
+      optimizeCountSql:
+        type: boolean
+      orders:
+        items:
+          $ref: '#/definitions/bo.Order'
+        type: array
+      page:
+        type: integer
+      records:
+        description: 记录查询
+        items:
+          $ref: '#/definitions/bo.recordUser'
+        type: array
+      searchCount:
+        type: boolean
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  bo.children:
+    properties:
+      component:
+        type: string
+      hidden:
+        type: string
+      meta:
+        items:
+          $ref: '#/definitions/bo.meta'
+        type: array
+    type: object
+  bo.meta:
+    properties:
+      icon:
+        type: string
+      noCache:
+        type: boolean
+      title:
+        type: string
+    type: object
+  bo.recordUser:
+    properties:
+      avatarName:
+        type: string
+      avatarPath:
+        type: string
+      createBy:
+        type: integer
+      createTime:
+        type: integer
+      dept:
+        $ref: '#/definitions/bo.DeptCommon'
+        type: object
+      deptId:
+        type: integer
+      email:
+        type: string
+      enabled:
+        type: boolean
+      gender:
+        type: boolean
+      id:
+        type: integer
+      jobs:
+        $ref: '#/definitions/bo.Job'
+        type: object
+      nickName:
+        type: string
+      phone:
+        type: string
+      pwdResetTime:
+        type: integer
+      role:
+        $ref: '#/definitions/bo.Role'
+        type: object
+      updateTime:
+        type: integer
+      updatedBy:
+        type: integer
+      username:
+        type: string
+    type: object
+  dto.AddJob:
+    properties:
+      enabled:
+        description: 岗位状态
+        type: boolean
+      id:
+        description: ID
+        type: integer
+      jobSort:
+        description: 排序
+        type: integer
+      name:
+        description: 岗位名称
+        type: string
+    required:
+    - enabled
+    - jobSort
+    - name
+    type: object
   dto.DeleteMenuDto:
+    type: object
+  dto.GetJobList:
+    properties:
+      current:
+        description: 当前页
+        type: integer
+      endTime:
+        description: 结束时间
+        type: integer
+      name:
+        description: 模糊查询
+        type: string
+      orders:
+        description: 排序规则
+        type: string
+      size:
+        description: 每页数据
+        type: integer
+      startTime:
+        description: 创建时间
+        type: integer
+    required:
+    - current
+    - orders
+    - size
     type: object
   dto.InsertMenuDto:
     properties:
@@ -68,6 +270,25 @@ definitions:
     - orders
     - size
     type: object
+  dto.UpdateJob:
+    properties:
+      enabled:
+        description: 岗位状态
+        type: boolean
+      id:
+        description: ID
+        type: integer
+      jobSort:
+        description: 排序
+        type: integer
+      name:
+        description: 岗位名称
+        type: string
+    required:
+    - enabled
+    - jobSort
+    - name
+    type: object
   dto.UserLoginDto:
     properties:
       code:
@@ -93,7 +314,7 @@ definitions:
       code:
         description: 业务响应状态码
         type: integer
-      data:
+      img:
         description: base64验证码
         type: string
       message:
@@ -120,11 +341,35 @@ definitions:
       data:
         $ref: '#/definitions/models.FileResponse'
         description: 数据
+        type: object
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseGetJobList:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      data:
+        description: 数据
+        items:
+          $ref: '#/definitions/bo.GetJobList'
+        type: array
       message:
         description: 提示信息
         type: string
     type: object
   models._ResponseInsertMenu:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseInsertUser:
     properties:
       code:
         description: 业务响应状态码
@@ -144,6 +389,32 @@ definitions:
           token:
             description: 授权令牌
             type: string
+        type: object
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseSelectForeNeedMenu:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      data:
+        $ref: '#/definitions/bo.SelectForeNeedMenuBo'
+        description: 数据
+        type: object
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseSelectUserInfoList:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      data:
+        $ref: '#/definitions/bo.UserInfoListBo'
+        description: 数据
         type: object
       message:
         description: 提示信息
@@ -176,12 +447,13 @@ definitions:
         description: 文件类型
         type: string
     type: object
-host: 127.0.0.1:8977
+host: 127.0.0.1:8000
 info:
   contact:
     name: marchsoft@golang
     url: http://marchsoft.cn/
   description: 基于gin的后台通用框架
+  license: {}
   title: go-sword项目接口文档
   version: 0.1.0
 paths:
@@ -271,6 +543,161 @@ paths:
       summary: 文件上传（图片）
       tags:
       - 文件：文件管理 File Controller
+  /api/job:
+    delete:
+      consumes:
+      - application/json
+      description: Author：JiaKunLi 2021/02/1
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseInsertMenu'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除岗位
+      tags:
+      - 系统：岗位管理 job Controller
+    get:
+      consumes:
+      - application/json
+      description: Author：JiaKunLi 2021/02/1
+      parameters:
+      - description: 当前页
+        in: query
+        name: current
+        required: true
+        type: integer
+      - description: 结束时间
+        in: query
+        name: endTime
+        type: integer
+      - description: 模糊查询
+        in: query
+        name: name
+        type: string
+      - description: 排序规则
+        in: query
+        name: orders
+        required: true
+        type: string
+      - description: 每页数据
+        in: query
+        name: size
+        required: true
+        type: integer
+      - description: 创建时间
+        in: query
+        name: startTime
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseGetJobList'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询岗位
+      tags:
+      - 系统：岗位管理 job Controller
+    post:
+      consumes:
+      - application/json
+      description: Author：JiaKunLi 2021/02/1
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.AddJob'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseInsertMenu'
+      security:
+      - ApiKeyAuth: []
+      summary: 新增岗位
+      tags:
+      - 系统：岗位管理 job Controller
+    put:
+      consumes:
+      - application/json
+      description: Author：JiaKunLi 2021/02/1
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UpdateJob'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseInsertMenu'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改岗位
+      tags:
+      - 系统：岗位管理 job Controller
+  /api/job/download:
+    get:
+      consumes:
+      - application/json
+      description: Author：JiaKunLi 2021/02/1
+      parameters:
+      - description: 当前页
+        in: query
+        name: current
+        required: true
+        type: integer
+      - description: 结束时间
+        in: query
+        name: endTime
+        type: integer
+      - description: 模糊查询
+        in: query
+        name: name
+        type: string
+      - description: 排序规则
+        in: query
+        name: orders
+        required: true
+        type: string
+      - description: 每页数据
+        in: query
+        name: size
+        required: true
+        type: integer
+      - description: 创建时间
+        in: query
+        name: startTime
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 导出岗位数据
+      tags:
+      - 系统：岗位管理 job Controller
   /api/menus:
     delete:
       consumes:
@@ -358,6 +785,29 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 更新菜单
+      tags:
+      - 系统：系统授权接口 Menu Controller
+  /api/menus/build:
+    get:
+      consumes:
+      - application/json
+      description: Author：Cgl 2021/02/01 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.DeleteMenuDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseSelectForeNeedMenu'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询前端所需菜单
       tags:
       - 系统：系统授权接口 Menu Controller
   /api/roles:
@@ -564,4 +1014,9 @@ paths:
       summary: 修改角色菜单
       tags:
       - 系统：系统授权接口 Role Controller
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
