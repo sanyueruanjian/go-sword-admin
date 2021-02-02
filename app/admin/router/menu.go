@@ -29,7 +29,7 @@ func menuAuthRouter(v1 *gin.RouterGroup) {
 		r.GET("/build", apis.SelectForeNeedMenuHandler)
 		r.GET("/", apis.SelectMenuHandler)
 		r.POST("/", apis.InsertMenuHandler)
-		r.DELETE("/", apis.DeleteMenuHandle)
+		r.DELETE("/", apis.DeleteMenuHandler)
 		r.PUT("/", apis.UpdateMenuHandler)
 	}
 }

@@ -73,3 +73,28 @@ type _ResponseSelectUserInfoList struct {
 	Message string             `json:"message"` // 提示信息
 	Data    *bo.UserInfoListBo `json:"data"`    // 数据
 }
+
+//_ResponseDeleteUser 删除用户
+type _ResponseDeleteUser struct {
+	Code    app.ResCode `json:"code"`    // 业务响应状态码
+	Message string      `json:"message"` // 提示信息
+}
+
+//_ResponseUpdateUser 更新用户
+type _ResponseUpdateUser struct {
+	Code    app.ResCode `json:"code"`    // 业务响应状态码
+	Message string      `json:"message"` // 提示信息
+}
+
+//_ResponseUpdateUserCenter //更新用户个人信息
+type _ResponseUpdateUserCenter struct {
+	Code    app.ResCode `json:"code"`    // 业务响应状态码
+	Message string      `json:"message"` // 提示信息
+}
+
+//_ResponseSelectUserInfo  //单个用户详细
+type _ResponseSelectUserInfo struct {
+	Code    app.ResCode          `json:"code"`    // 业务响应状态码
+	Message string               `json:"message"` // 提示信息
+	Data    *bo.UserCenterInfoBo `json:"data"`    //数据
+}
