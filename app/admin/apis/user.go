@@ -7,8 +7,11 @@ import (
 	"project/app/admin/models/dto"
 	"project/app/admin/service"
 	"project/common/api"
+	"project/pkg/tools"
 	"project/utils"
 	"project/utils/app"
+
+	"github.com/google/uuid"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -353,4 +356,48 @@ func UpdatePassWordHandler(c *gin.Context) {
 		return
 	}
 	app.ResponseSuccess(c, nil)
+}
+
+// UpdateAvatarHandler 文件上传（图片）
+// @Summary 文件上传（图片）
+// @Description Author：Cgl 2021/02/02
+// @Tags 文件：文件管理 User Controller
+// @Accept multipart/form-data
+// @Produce application/json
+// @Param file formData file true "file"
+// @Security ApiKeyAuth
+// @Success 200 {object} models._ResponseFile
+// @Router /api/users/updateAvatar [post]
+func UpdateAvatarHandler(c *gin.Context) {
+	//获取上下文中信息
+	user, err := api.GetCurrentUserInfo(c)
+	if err != nil {
+		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
+		return
+	}
+	//上传图片
+	files, err := c.FormFile("avatar")
+	if err != nil {
+		zap.L().Error("FormFile failed", zap.String("username", user.UserName), zap.Error(err))
+		app.ResponseError(c, app.CodeImageIsNotNull)
+		return
+	}
+	if utils.GetFileType(tools.GetExt(files.Filename)[1:]) != "image" {
+		app.ResponseError(c, app.CodeFileImageFail)
+		return
+	}
+	// 上传文件至指定目录
+	guid := uuid.New().String()
+	fileName := guid + tools.GetExt(files.Filename)
+	singleFile := "static/uploadfile/" + fileName
+	err = c.SaveUploadedFile(files, singleFile)
+	if err != nil {
+		app.ResponseError(c, app.CodeFileUploadFail)
+		return
+	}
+	u := new(service.User)
+	if err := u.UpdateAvatar(fileName, user.UserId); err != nil {
+		return
+	}
+	app.ResponseSuccess(c, fileName)
 }

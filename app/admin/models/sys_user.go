@@ -436,3 +436,9 @@ func (u *SysUser) UpdatePassWord(p *dto.UpdateUserPassDto, optionId int) (err er
 		"pwd_reset_time": utils.GetCurrentTimeUnix(),
 	}).Error
 }
+
+func (u *SysUser) UpdateAvatar(path string, userId int) (err error) {
+	return global.Eloquent.Table("sys_user").Where("id=?", userId).Updates(map[string]interface{}{
+		"avatar_path": path,
+	}).Error
+}

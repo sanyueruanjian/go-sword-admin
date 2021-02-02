@@ -79,3 +79,8 @@ func (u *User) UpdatePassWord(p *dto.UpdateUserPassDto, optionId int) (err error
 	user := new(models.SysUser)
 	return user.UpdatePassWord(p, optionId)
 }
+
+func (u *User) UpdateAvatar(path string, userId int) (err error) {
+	user := new(models.SysUser)
+	return user.UpdateAvatar(path, userId)
+}
