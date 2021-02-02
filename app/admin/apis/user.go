@@ -2,6 +2,7 @@ package apis
 
 import (
 	"errors"
+
 	"project/app/admin/models"
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
@@ -56,11 +57,11 @@ func LoginHandler(c *gin.Context) {
 	token, err := u.Login(p)
 	if err != nil {
 		c.Error(err)
-		if errors.Is(err, models.ErrorInvalidPassword) {
-			app.ResponseError(c, app.CodeSeverError)
+		if errors.Is(err, models.ErrorInvalidPassword) || errors.Is(err, models.ErrorUserNotExist) {
+			app.ResponseError(c, app.CodeLoginFailResCode)
 			return
 		}
-		app.ResponseError(c, app.CodeLoginFailResCode)
+		app.ResponseError(c, app.CodeSeverError)
 		return
 	}
 
