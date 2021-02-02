@@ -21,6 +21,7 @@ func AuthCheckRole() gin.HandlerFunc {
 			return
 		}
 		//检查权限
+		//此处为多角色 要在做处理
 		var res bool
 		res, err = e.Enforce(v.Role, c.Request.URL.Path, c.Request.Method)
 		if err != nil {

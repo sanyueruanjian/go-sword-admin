@@ -178,3 +178,48 @@ func UpdateMenuHandler(c *gin.Context) {
 	}
 	app.ResponseSuccess(c, nil)
 }
+
+// SelectForeNeedMenuHandler 查询前端所需菜单
+// @Summary 查询前端所需菜单
+// @Description Author：Cgl 2021/02/01 获得身份令牌
+// @Tags 系统：系统授权接口 Menu Controller
+// @Accept application/json
+// @Produce application/json
+// @Param object body dto.DeleteMenuDto false "查询参数"
+// @Security ApiKeyAuth
+// @Success 200 {object} models._ResponseSelectForeNeedMenu
+// @Router /api/menus/build [get]
+func SelectForeNeedMenuHandler(c *gin.Context) {
+	// 1.获取参数 校验参数
+	p := new(dto.SelectMenuDto)
+	//获取上下文中信息
+	user, err := api.GetCurrentUserInfo(c)
+	if err != nil {
+		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
+		return
+	}
+	if err := c.ShouldBindQuery(p); err != nil {
+		// 请求参数有误， 直接返回响应
+		zap.L().Error("SelectForeNeedMenuHandler failed", zap.String("username", user.UserName), zap.Error(err))
+		c.Error(err)
+		_, ok := err.(validator.ValidationErrors)
+		if !ok {
+			app.ResponseError(c, app.CodeParamIsInvalid)
+			return
+		}
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+	//业务逻辑处理
+	//TODO
+	m := new(service.Menu)
+	var data []*bo.SelectForeNeedMenuBo
+	data, err = m.SelectForeNeedMenu()
+	if err != nil {
+		zap.L().Error("select menu failed", zap.Error(err))
+		app.ResponseError(c, app.CodeSelectOperationFail)
+		return
+	}
+	//返回响应
+	app.ResponseSuccess(c, data)
+}
