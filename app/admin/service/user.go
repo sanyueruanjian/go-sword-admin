@@ -46,13 +46,41 @@ func (u *User) InsertUser(p *dto.InsertUserDto, userID int) (err error) {
 	return nil
 }
 
-func (u *User) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data []*bo.UserInfoListBo, err error) {
-	//var users []*models.SysUser
-	//user := new(models.SysUser)
-	//users, err = user.SelectUserInfoList(p)
-
-	//if err != nil {
-	//	return nil, err
-	//}
+func (u *User) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.UserInfoListBo, err error) {
+	user := new(models.SysUser)
+	data, err = user.SelectUserInfoList(p)
+	if err != nil {
+		return nil, err
+	}
 	return data, nil
+}
+
+func (u *User) DeleteUser(ids *[]int) error {
+	user := new(models.SysUser)
+	return user.DeleteUser(ids)
+}
+
+func (u *User) UpdateUser(p *dto.UpdateUserDto, optionId int) error {
+	user := new(models.SysUser)
+	return user.UpdateUser(p, optionId)
+}
+
+func (u *User) UpdateUserCenter(p *dto.UpdateUserCenterDto, optionId int) (err error) {
+	user := new(models.SysUser)
+	return user.UpdateUserCenter(p, optionId)
+}
+
+func (u *User) SelectUserInfo(p *models.RedisUserInfo) (data *bo.UserCenterInfoBo, err error) {
+	user := new(models.SysUser)
+	return user.SelectUserInfo(p)
+}
+
+func (u *User) UpdatePassWord(p *dto.UpdateUserPassDto, optionId int) (err error) {
+	user := new(models.SysUser)
+	return user.UpdatePassWord(p, optionId)
+}
+
+func (u *User) UpdateAvatar(path string, userId int) (err error) {
+	user := new(models.SysUser)
+	return user.UpdateAvatar(path, userId)
 }
