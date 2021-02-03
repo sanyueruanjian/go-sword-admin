@@ -129,7 +129,7 @@ var doc = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Author：Cgl 2021/01/30 获得身份令牌",
+                "description": "Author：Lbl 2021/02/2 获得身份令牌",
                 "consumes": [
                     "application/json"
                 ],
@@ -137,7 +137,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "系统：系统授权接口 Menu Controller"
+                    "系统：部门管理 Dept Controller"
                 ],
                 "summary": "查询部门",
                 "parameters": [
@@ -165,7 +165,7 @@ var doc = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Author：Cgl 2021/01/30 获得身份令牌",
+                "description": "Author：Lbl 2021/02/2 获得身份令牌",
                 "consumes": [
                     "application/json"
                 ],
@@ -173,7 +173,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "系统：系统授权接口 Menu Controller"
+                    "系统：部门管理 Dept Controller"
                 ],
                 "summary": "修改部门",
                 "parameters": [
@@ -191,6 +191,123 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models._ResponseDept"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/dept/download": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Lbl 2021/02/3",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：部门管理 Dept Controller"
+                ],
+                "summary": "导出部门数据",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "当前页",
+                        "name": "current",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "状态：1启用（默认）、0禁用",
+                        "name": "enabled",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "过期时间",
+                        "name": "endTime",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "模糊",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序规则",
+                        "name": "orders",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "上级部门（顶级部门为0，默认为0）",
+                        "name": "pid",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "创建时间",
+                        "name": "startTime",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/api/dept/superior": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Lbl 2021/02/3 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：部门管理 Dept Controller"
+                ],
+                "summary": "查询部门",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseSelectDeptList"
                         }
                     }
                 }

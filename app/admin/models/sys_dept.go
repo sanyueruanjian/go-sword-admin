@@ -77,3 +77,28 @@ func (d SysDept) DeleteDept(ids *[]int) (err error) {
 	err = global.Eloquent.Table("sys_dept").Where("id IN (?)", *ids).Updates(map[string]interface{}{"is_deleted": []byte{1}}).Error
 	return
 }
+
+func (d SysDept) SuperiorDept(ids *[]int) (sysDeptList []*SysDept, err error) {
+	err = orm.Eloquent.Table("sys_dept").Where("enabled = ? AND pid = ? AND is_deleted = ?", 1, 0, []byte{0}).
+		Order("dept_sort").Find(&sysDeptList).Error
+	return
+}
+
+// 获取要下载的数据
+func (d SysDept) DownloadDept(de *dto.SelectDeptDto, orderJson []bo.Order) (sysDeptList []*SysDept, err error) {
+	order := utils.GetOrderRule(orderJson)
+
+	// 模糊查询
+	blurry := "%" + de.Name + "%"
+
+	// 时间条件
+	if de.EndTime != 0 && de.StartTime != 0 {
+		err = global.Eloquent.Table("sys_dept").Where("pid = ? AND is_deleted=? AND create_time > ? AND create_time < ? AND title like ?", 0, []byte{0}, de.StartTime, de.EndTime, blurry).
+			Limit(de.Size).Offset(de.Current - 1*de.Size).Order(order).Find(&sysDeptList).Error
+		return
+	} else {
+		err = global.Eloquent.Table("sys_dept").Where("pid = ? AND is_deleted=? AND name like ?", 0, []byte{0}, blurry).
+			Limit(de.Size).Offset(de.Current - 1*de.Size).Order(order).Find(&sysDeptList).Error
+	}
+	return
+}

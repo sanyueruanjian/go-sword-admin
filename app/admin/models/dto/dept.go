@@ -5,8 +5,8 @@ type SelectDeptDto struct {
 	Pid       int    `form:"pid"`                        // 上级部门（顶级部门为0，默认为0）
 	Current   int    `form:"current" binding:"required"` // 当前页
 	Size      int    `form:"size" binding:"required"`    // 每页数据
-	StartTime int    `form:"startTime"`                  // 创建时间
-	EndTime   int    `form:"endTime"`                    // 过期时间
+	StartTime int64  `form:"startTime"`                  // 创建时间
+	EndTime   int64  `form:"endTime"`                    // 过期时间
 	Enabled   bool   `form:"enabled"`                    // 状态：1启用（默认）、0禁用
 	Orders    string `form:"orders" binding:"required"`  // 排序规则
 	Name      string `form:"name"`                       // 模糊
