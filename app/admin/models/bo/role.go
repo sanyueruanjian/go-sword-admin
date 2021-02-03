@@ -1,5 +1,7 @@
 package bo
 
+import "time"
+
 type RecordRole struct {
 	CreateBy    int    `json:"createBy"`
 	ID          int    `json:"id"`
@@ -69,11 +71,15 @@ type SelectRoleBo struct {
 
 //SelectAllRoleBo 查询所有角色
 type SelectAllRoleBo struct {
+	Records []RecordRole
 }
 
 //导出角色数据
 type DownloadRoleInfoBo struct {
-	//	输出文件
+	Level       int       `json:"level, horizontal,omitempty"`
+	Name        string    `json:"name, horizontal,omitempty"`
+	Description string    `json:"description, horizontal,omitempty"`
+	CreateTime  time.Time `json:"createTime, horizontal,omitempty"`
 }
 
 type SelectCurrentUserLevel struct {

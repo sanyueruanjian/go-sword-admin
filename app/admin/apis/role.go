@@ -2,6 +2,7 @@ package apis
 
 import (
 	"encoding/json"
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/gin-gonic/gin"
 	"project/common/api"
 	"strconv"
@@ -218,6 +219,15 @@ func SelectRoleHandler(c *gin.Context, id int) {
 // @Success 200 {object} models._ResponseLogin
 // @Router /api/roles/all [get]
 func SelectRolesAllHandler(c *gin.Context) {
+	// TODO 加缓存
+	role, err := r.SelectRoleAll()
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+
+	// 3.返回数据
+	app.ResponseSuccess(c, role)
 }
 
 // SelectRolesHandler 导出角色数据
@@ -231,6 +241,44 @@ func SelectRolesAllHandler(c *gin.Context) {
 // @Success 200 {object} models._ResponseLogin
 // @Router /api/roles/download [get]
 func DownRolesHandler(c *gin.Context) {
+	// 1.获取参数 校验参数
+	var role dto.SelectRoleArrayDto
+	if err := c.ShouldBindQuery(&role); err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+	orderJsonData, err := utils.OrderJson(role.Orders)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+
+	// 2.参数正确执行响应
+	roleData, err := r.DownloadRoleInfoBo(role, orderJsonData)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+
+	// 3.返回文件数据
+	xlsx := excelize.NewFile()
+	c.Header("Content-Type", "application/octet-stream")
+	c.Header("Content-Disposition", "attachment; filename="+utils.GetCurrentTimeStr()+"角色数据.xlsx")
+	c.Header("Content-Transfer-Encoding", "binary")
+	//回写到web 流媒体 形成下载
+	xlsx.SetCellValue("Sheet1", "A1", "角色名称")
+	xlsx.SetCellValue("Sheet1", "B1", "角色级别")
+	xlsx.SetCellValue("Sheet1", "C1", "描述")
+	xlsx.SetCellValue("Sheet1", "D1", "创建日期")
+	j := 0
+	for i := 2; i < len(roleData); i++ {
+		xlsx.SetCellValue("Sheet1", "A"+strconv.Itoa(i), roleData[j].Name)
+		xlsx.SetCellValue("Sheet1", "B"+strconv.Itoa(i), roleData[j].Level)
+		xlsx.SetCellValue("Sheet1", "C"+strconv.Itoa(i), roleData[j].Description)
+		xlsx.SetCellValue("Sheet1", "D"+strconv.Itoa(i), roleData[j].CreateTime)
+		j++
+	}
+	_ = xlsx.Write(c.Writer)
 }
 
 // SelectRolesHandler 获取当前登录用户级别
@@ -244,4 +292,18 @@ func DownRolesHandler(c *gin.Context) {
 // @Success 200 {object} models._ResponseLogin
 // @Router /api/roles/level [get]
 func LevelRolesHandler(c *gin.Context) {
+	//user, err := api.GetCurrentUserInfo(c)
+	//if err != nil {
+	//	app.ResponseError(c, app.CodeParamNotComplete)
+	//	return
+	//}
+	//level, err := r.SelectRoleLevel(user.Role)
+	// TODO
+	level, err := r.SelectRoleLevel([]string{"超级管理员", "普通用户"})
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+	// 3.返回数据
+	app.ResponseSuccess(c, level)
 }

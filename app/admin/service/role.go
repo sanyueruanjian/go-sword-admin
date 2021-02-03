@@ -5,6 +5,7 @@ import (
 	"project/app/admin/models"
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
+	"project/utils"
 	"strconv"
 )
 
@@ -234,5 +235,42 @@ func (e Role) SelectRoleOne(id int) (roleData bo.SelectRoleBo, err error) {
 	roleData.Depts = deptList
 	// Menu
 	roleData.Menus = menuList
+	return
+}
+
+// 获取所有角色
+func (e Role) SelectRoleAll() (roleAll bo.SelectAllRoleBo, err error) {
+	role := new(models.SysRole)
+	roleAll, err = role.SelectRoleAll()
+	return
+}
+
+// 获取当前登录用户级别
+func (e Role) SelectRoleLevel(roleName []string) (level bo.SelectCurrentUserLevel, err error) {
+	role := new(models.SysRole)
+	level, err = role.SelectRoleLevel(roleName)
+	return
+}
+
+// 导出角色数据
+func (e Role) DownloadRoleInfoBo(p dto.SelectRoleArrayDto, orderData []bo.Order) (roleData []bo.DownloadRoleInfoBo, err error) {
+	role := new(models.SysRole)
+	sysRole, err := role.SelectRoles(p, orderData)
+	if err != nil {
+		return
+	}
+	for _, values := range sysRole {
+		var role bo.DownloadRoleInfoBo
+		createTime, errTime := utils.UnixToTime(strconv.FormatInt(values.CreateTime, 10))
+		if errTime != nil {
+			err = errTime
+			return
+		}
+		role.CreateTime = createTime
+		role.Name = values.Name
+		role.Level = values.Level
+		role.Description = values.Description
+		roleData = append(roleData, role)
+	}
 	return
 }

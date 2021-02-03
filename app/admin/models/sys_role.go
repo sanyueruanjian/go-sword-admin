@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
 	"project/utils"
@@ -46,7 +45,6 @@ func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sy
 	// 查询
 	if p.Blurry != "" && p.StartTime == "" {
 		// 查询Blurry
-		fmt.Println("查询Blurry")
 		err = orm.Eloquent.Where("name like ? or description like ?",
 			"%"+p.Blurry+"%", "%"+p.Blurry+"%").
 			Limit(p.Size).Offset((p.Current - 1) * p.Size).Order(order).Find(&sysRole).Error
@@ -54,7 +52,6 @@ func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sy
 	}
 	if p.Blurry == "" && p.StartTime != "" {
 		// 查询Time
-		fmt.Println("查询Time")
 		startTime, err1 := strconv.ParseInt(p.StartTime, 10, 64)
 		if err1 != nil {
 			err = err1
@@ -71,7 +68,6 @@ func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sy
 	}
 	if p.Blurry != "" && p.StartTime != "" {
 		// 查询All
-		fmt.Println("All")
 		startTime, err1 := strconv.ParseInt(p.StartTime, 10, 64)
 		if err1 != nil {
 			err = err1
@@ -168,15 +164,113 @@ func (e SysRole) DeleteRole(p []int) (err error) {
 	return
 }
 
+// 修改角色菜单
 func (e SysRole) UpdateRoleMenu(id int, p []int) (err error) {
-	// TODO
-	fmt.Println(id)
-	fmt.Println(p)
+	tx := orm.Eloquent.Begin()
+	var sysRoleMenus SysRolesMenus
+	tx.Where("role_id = ?", id).Delete(&sysRoleMenus)
+	for _, menuID := range p {
+		var sysRoleMenus SysRolesMenus
+		sysRoleMenus.RoleId = id
+		sysRoleMenus.MenuId = menuID
+		results := tx.Table("sys_roles_menus").Create(&sysRoleMenus)
+		if results.Error != nil {
+			tx.Rollback()
+			return results.Error
+		}
+	}
+	tx.Commit()
 	return
 }
 
 // 查询单个角色
 func (e SysRole) SelectRoleOne() (role SysRole, err error) {
 	err = orm.Eloquent.First(&role, e.ID).Error
+	return
+}
+
+// 查询所有角色
+func (e SysRole) SelectRoleAll() (roleAll bo.SelectAllRoleBo, err error) {
+	var sysRoleAll []SysRole
+	if err = orm.Eloquent.Find(&sysRoleAll).Error; err != nil {
+		return
+	}
+	for _, roleID := range sysRoleAll {
+		var menuIDAll []SysRolesMenus
+		// 格式化角色数据
+		var roleDate bo.RecordRole
+		// 格式化Menu数据
+		var menuData bo.Menu
+		orm.Eloquent.Where("role_id = ?", roleID.ID).Find(&menuIDAll)
+		for _, menuID := range menuIDAll {
+			var sysMenu SysMenu
+			orm.Eloquent.Where(map[string]interface{}{"id": menuID.MenuId}).First(&sysMenu)
+			if sysMenu.Cache[0] == 1 {
+				menuData.Cache = true
+			} else {
+				menuData.Cache = false
+			}
+			menuData.Component = sysMenu.Component
+			menuData.CreateBy = sysMenu.CreateBy
+			menuData.CreateTime = sysMenu.CreateTime
+			if sysMenu.Hidden[0] == 1 {
+				menuData.Hidden = true
+			} else {
+				menuData.Hidden = false
+			}
+			menuData.Icon = sysMenu.Icon
+			menuData.ID = sysMenu.ID
+			if sysMenu.IFrame[0] == 1 {
+				menuData.Iframe = true
+			} else {
+				menuData.Iframe = false
+			}
+			menuData.Label = sysMenu.Title
+			menuData.Leaf = false
+			menuData.MenuSort = sysMenu.MenuSort
+			menuData.Name = sysMenu.Name
+			menuData.Path = sysMenu.Path
+			menuData.Permission = sysMenu.Permission
+			menuData.Pid = sysMenu.Pid
+			menuData.SubCount = sysMenu.SubCount
+			menuData.Title = sysMenu.Title
+			menuData.Type = sysMenu.Type
+			menuData.UpdateTime = sysMenu.UpdateTime
+			menuData.UpdateBy = sysMenu.UpdateBy
+			roleDate.Menus = append(roleDate.Menus, menuData)
+		}
+		roleDate.CreateBy = roleID.CreateBy
+		roleDate.ID = roleID.ID
+		roleDate.Level = roleID.Level
+		roleDate.UpdateBy = roleID.UpdateBy
+		roleDate.CreateTime = roleID.CreateTime
+		roleDate.DataScope = roleID.DataScope
+		roleDate.Description = roleID.Description
+		roleDate.Name = roleID.Name
+		roleDate.UpdateTime = roleID.UpdateTime
+		if roleID.IsProtection[0] == 1 {
+			roleDate.Protection = true
+		} else {
+			roleDate.Protection = false
+		}
+		roleAll.Records = append(roleAll.Records, roleDate)
+	}
+	return
+}
+
+func (e SysRole) SelectRoleLevel(roleName []string) (level bo.SelectCurrentUserLevel, err error) {
+	for _, values := range roleName {
+		var role SysRole
+		err = orm.Eloquent.Where("name = ?", values).First(&role).Error
+		if err != nil {
+			return
+		}
+		if level.Level > role.Level {
+			level.Level = role.Level
+		}
+	}
+	if level.Level == 0 {
+		level.Level = 1
+	}
 	return
 }
