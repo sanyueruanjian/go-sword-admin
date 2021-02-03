@@ -179,7 +179,11 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.Us
 	//查询用户基本信息
 	var userHalfs []*bo.RecordUserHalf
 	var users []*bo.RecordUser
-	err = global.Eloquent.Table("sys_user").Where("is_deleted=?", []byte{0}).Limit(p.Size).Offset(p.Current - 1*p.Size).Order(orderRule).Find(&userHalfs).Error
+	enabled := 0
+	if p.Enabled {
+		enabled = 1
+	}
+	err = global.Eloquent.Table("sys_user").Where("is_deleted=? AND enabled=?", []byte{0}, enabled).Limit(p.Size).Offset(p.Current - 1*p.Size).Order(orderRule).Find(&userHalfs).Error
 	if err != nil {
 		return nil, err
 	}
@@ -441,4 +445,20 @@ func (u *SysUser) UpdateAvatar(path string, userId int) (err error) {
 	return global.Eloquent.Table("sys_user").Where("id=?", userId).Updates(map[string]interface{}{
 		"avatar_path": path,
 	}).Error
+}
+
+// UserDownload 导出用户数据
+func (u *SysUser) UserDownload(p *dto.DownloadUserInfoDto) (userList *bo.UserInfoListBo, err error) {
+	selectArrayParam := &dto.SelectUserInfoArrayDto{
+		Orders:  p.Orders,
+		Current: p.Current,
+		Size:    p.Size,
+		Enabled: p.Enabled,
+	}
+	//查询用户详细列表
+	userList, err = u.SelectUserInfoList(selectArrayParam)
+	if err != nil {
+		return
+	}
+	return
 }

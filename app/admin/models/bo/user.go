@@ -1,13 +1,14 @@
 package bo
 
+//返回用户详细列表
 type RecordUserHalf struct {
 	Id           int    `json:"id"`
 	DeptId       int    `json:"deptId"`
-	PwdResetTime int    `json:"pwdResetTime"`
 	CreateBy     int    `json:"createBy"`
-	CreateTime   int    `json:"createTime"`
 	UpdateBy     int    `json:"updatedBy"`
 	UpdateTime   int    `json:"updateTime"`
+	PwdResetTime int64  `json:"pwdResetTime"`
+	CreateTime   int64  `json:"createTime"`
 	AvatarName   string `json:"avatarName"`
 	AvatarPath   string `json:"avatarPath"`
 	Email        string `json:"email"`
@@ -16,6 +17,7 @@ type RecordUserHalf struct {
 	Username     string `json:"username"`
 }
 
+//返回用户详细列表
 type RoleDeptJobBool struct {
 	Enabled bool        `json:"enabled"`
 	Gender  bool        `json:"gender"`
@@ -24,19 +26,20 @@ type RoleDeptJobBool struct {
 	Dept    *DeptCommon `json:"dept"`
 }
 
+//返回用户详细列表
 type RecordUser struct {
 	*RecordUserHalf
 	*RoleDeptJobBool
-}
-
-type authority struct {
-	Authority string `json:"authority"`
 }
 
 //返回用户详细列表
 type UserInfoListBo struct {
 	*paging               //分页器相关
 	Records []*RecordUser `json:"records"` //记录查询
+}
+
+type authority struct {
+	Authority string `json:"authority"`
 }
 
 //更新头像
@@ -49,4 +52,16 @@ type UserCenterInfoBo struct {
 	DataScopes []string    `json:"dataScopes"`
 	Roles      []string    `json:"roles"`
 	User       *RecordUser `json:"user"`
+}
+
+type DownloadUserBo struct {
+	Username     string `json:"username"`
+	Role         string `json:"role"`
+	Dept         string `json:"dept"`
+	Jobs         string `json:"jobs"`
+	Email        string `json:"email"`
+	Enabled      string `json:"enabled"`
+	Phone        string `json:"phone"`
+	PwdResetTime string `json:"pwdResetTime"`
+	CreateTime   string `json:"createTime"`
 }

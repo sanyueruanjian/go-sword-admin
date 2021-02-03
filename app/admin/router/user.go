@@ -35,6 +35,7 @@ func userAuthRouter(v1 *gin.RouterGroup) {
 		r.DELETE("/", apis.DeleteUserHandler)
 		r.POST("/updatePass", apis.UpdatePassWordHandler)
 		r.POST("/updateAvatar", apis.UpdateAvatarHandler)
+		r.GET("/download", apis.UserDownloadHandler)
 	}
 	r1 := v1.Group("/auth")
 	{

@@ -74,7 +74,7 @@ func LoginHandler(c *gin.Context) {
 // InsertUserHandler 新增用户
 // @Summary 新增用户
 // @Description Author：Cgl 2021/02/01 获得身份令牌
-// @Tags 系统：系统授权接口 User Controller
+// @Tags 系统：用户管理 User Controller
 // @Accept application/json
 // @Produce application/json
 // @Param object body dto.InsertMenuDto false "查询参数"
@@ -115,7 +115,7 @@ func InsertUserHandler(c *gin.Context) {
 // SelectUserInfoListHandler 查询用户详细
 // @Summary 查询用户详细
 // @Description Author：Cgl 2021/02/01 获得身份令牌
-// @Tags 系统：系统授权接口 User Controller
+// @Tags 系统：用户管理 User Controller
 // @Accept application/json
 // @Produce application/json
 // @Param object body dto.SelectUserInfoArrayDto false "查询参数"
@@ -158,7 +158,7 @@ func SelectUserInfoListHandler(c *gin.Context) {
 // DeleteUserHandler 删除用户
 // @Summary 删除用户
 // @Description Author：Cgl 2021/02/02 获得身份令牌
-// @Tags 系统：系统授权接口 User Controller
+// @Tags 系统：用户管理 User Controller
 // @Accept application/json
 // @Produce application/json
 // @Param object body dto.DeleteUserDto false "查询参数"
@@ -197,7 +197,7 @@ func DeleteUserHandler(c *gin.Context) {
 // UpdateUserHandler 更新用户
 // @Summary 更新用户
 // @Description Author：Cgl 2021/02/02 获得身份令牌
-// @Tags 系统：系统授权接口 User Controller
+// @Tags 系统：用户管理 User Controller
 // @Accept application/json
 // @Produce application/json
 // @Param object body dto.UpdateUserDto false "查询参数"
@@ -236,7 +236,7 @@ func UpdateUserHandler(c *gin.Context) {
 // UpdateUserCenterHandler 更新用户 个人中心
 // @Summary 更新用户 个人中心
 // @Description Author：Cgl 2021/02/02 获得身份令牌
-// @Tags 系统：系统授权接口 User Controller
+// @Tags 系统：用户管理 User Controller
 // @Accept application/json
 // @Produce application/json
 // @Param object body dto.UpdateUserCenterDto false "查询参数"
@@ -275,7 +275,7 @@ func UpdateUserCenterHandler(c *gin.Context) {
 // SelectUserInfoHandler 查询用户详细
 // @Summary 查询用户详细
 // @Description Author：Cgl 2021/02/01 获得身份令牌
-// @Tags 系统：系统授权接口 User Controller
+// @Tags 系统：用户管理 User Controller
 // @Accept application/json
 // @Produce application/json
 // @Security ApiKeyAuth
@@ -303,7 +303,7 @@ func SelectUserInfoHandler(c *gin.Context) {
 // UpdatePassWordHandler 更新用户
 // @Summary 更新用户
 // @Description Author：Cgl 2021/02/02 获得身份令牌
-// @Tags 系统：系统授权接口 User Controller
+// @Tags 系统：用户管理 User Controller
 // @Accept application/json
 // @Produce application/json
 // @Param object body dto.UpdateUserPassDto false "查询参数"
@@ -360,10 +360,10 @@ func UpdatePassWordHandler(c *gin.Context) {
 	app.ResponseSuccess(c, nil)
 }
 
-// UpdateAvatarHandler 文件上传（图片）
-// @Summary 文件上传（图片）
+// UpdateAvatarHandler 更换头像（图片）
+// @Summary 更换头像（图片）
 // @Description Author：Cgl 2021/02/02
-// @Tags 文件：文件管理 User Controller
+// @Tags 系统：用户管理 User Controller
 // @Accept multipart/form-data
 // @Produce application/json
 // @Param file formData file true "file"
@@ -402,4 +402,49 @@ func UpdateAvatarHandler(c *gin.Context) {
 		return
 	}
 	app.ResponseSuccess(c, fileName)
+}
+
+// UserDownloadHandler 导出用户数据
+// @Summary 导出用户数据
+// @Description Author：JiaKunLi 2021/02/1
+// @Tags 系统：用户管理 User Controller
+// @Accept application/json
+// @Produce application/json
+// @Param object query dto.DownloadUserInfoDto false "查询参数"
+// @Security ApiKeyAuth
+// @Success 200
+// @Router /api/user/download [get]
+func UserDownloadHandler(c *gin.Context) {
+	p := new(dto.DownloadUserInfoDto)
+	//获取上下文中信息
+	user, err := api.GetCurrentUserInfo(c)
+	if err != nil {
+		c.Error(err)
+		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
+		return
+	}
+	if err := c.ShouldBindQuery(p); err != nil {
+		// 请求参数有误， 直接返回响应
+		zap.L().Error("user bind params failed", zap.String("username", user.UserName), zap.Error(err))
+		c.Error(err)
+		_, ok := err.(validator.ValidationErrors)
+		if !ok {
+			app.ResponseError(c, app.CodeParamIsInvalid)
+			return
+		}
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+
+	//业务逻辑处理
+	s := new(service.User)
+	res, err := s.UserDownload(p)
+	if err != nil {
+		c.Error(err)
+		zap.L().Error("get user list failed", zap.String("username", user.UserName), zap.Error(err))
+		app.ResponseError(c, app.CodeSelectOperationFail)
+		return
+	}
+
+	utils.ResponseXls(c, res, "用户数据")
 }
