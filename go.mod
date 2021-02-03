@@ -5,8 +5,8 @@ go 1.14
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/alibaba/sentinel-golang v0.6.1
-	github.com/casbin/casbin/v2 v2.22.0
-	github.com/casbin/gorm-adapter/v3 v3.0.6
+	github.com/casbin/casbin/v2 v2.21.0
+	github.com/casbin/gorm-adapter/v3 v3.1.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/pprof v1.3.0
 	github.com/gin-gonic/gin v1.6.3
