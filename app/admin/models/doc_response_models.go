@@ -105,3 +105,16 @@ type _ResponseSelectUserInfo struct {
 	Message string               `json:"message"` // 提示信息
 	Data    *bo.UserCenterInfoBo `json:"data"`    //数据
 }
+
+// _ResponseSelectDeptList 查询部门
+type _ResponseSelectDeptList struct {
+	Code    app.ResCode    `json:"code"`    // 业务响应状态码
+	Message string         `json:"message"` // 提示信息
+	Data    *bo.RecordDept `json:"data"`    // 数据
+}
+
+//_ResponseDept 新增删除更新部门
+type _ResponseDept struct {
+	Code    app.ResCode `json:"code"`    // 业务响应状态码
+	Message string      `json:"message"` // 提示信息
+}
