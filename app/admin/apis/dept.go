@@ -15,10 +15,10 @@ import (
 
 var d = new(service.Dept)
 
-// SelectMenuHandler 查询部门
+// SelectDept 查询部门
 // @Summary 查询部门
-// @Description Author：Cgl 2021/01/30 获得身份令牌
-// @Tags 系统：系统授权接口 Menu Controller
+// @Description Author：Lbl 2021/02/2 获得身份令牌
+// @Tags 系统：部门管理 Dept Controller
 // @Accept application/json
 // @Produce application/json
 // @Param object body dto.SelectDeptDto false "查询参数"
@@ -32,7 +32,7 @@ func SelectDeptHandler(c *gin.Context) {
 	// 获取缓存信息
 	user, err := api.GetCurrentUserInfo(c)
 	if err != nil {
-		zap.L().Error("SelectDeptHandler GetCurrentUserInfo failed", zap.Error(err))
+		zap.L().Error("SelectDeptHandler GetUserMsg failed", zap.Error(err))
 		app.ResponseError(c, app.CodeLoginExpire)
 		return
 	}
@@ -70,10 +70,10 @@ func SelectDeptHandler(c *gin.Context) {
 	app.ResponseSuccess(c, data)
 }
 
-// SelectMenuHandler 添加部门
+// InsertDept 添加部门
 // @Summary 添加部门
-// @Description Author：Cgl 2021/01/30 获得身份令牌
-// @Tags 系统：系统授权接口 Menu Controller
+// @Description Author：Lbl 2021/02/2 获得身份令牌
+// @Tags 系统：部门管理 Dept Controller
 // @Accept application/json
 // @Produce application/json
 // @Param object body dto.InsertDeptDto false "查询参数"
@@ -87,7 +87,7 @@ func InsertDeptHandler(c *gin.Context) {
 	// 获取缓存信息
 	user, err := api.GetCurrentUserInfo(c)
 	if err != nil {
-		zap.L().Error("InsertDeptHandler GetCurrentUserInfo failed", zap.Error(err))
+		zap.L().Error("InsertDeptHandler GetUserMsg failed", zap.Error(err))
 		app.ResponseError(c, app.CodeLoginExpire)
 		return
 	}
@@ -117,10 +117,10 @@ func InsertDeptHandler(c *gin.Context) {
 	app.ResponseSuccess(c, nil)
 }
 
-// SelectMenuHandler 修改部门
+// UpdateDept 修改部门
 // @Summary 修改部门
-// @Description Author：Cgl 2021/01/30 获得身份令牌
-// @Tags 系统：系统授权接口 Menu Controller
+// @Description Author：Lbl 2021/02/2 获得身份令牌
+// @Tags 系统：部门管理 Dept Controller
 // @Accept application/json
 // @Produce application/json
 // @Param object body dto.UpdateDeptDto false "查询参数"
@@ -138,7 +138,7 @@ func UpdateDeptHandler(c *gin.Context) {
 	dept := new(dto.UpdateDeptDto)
 	if err := c.ShouldBindJSON(dept); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("UpdateDeptHandler SouBindJson failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("UpdateDeptHandler ShouldBindJson failed", zap.String("username", user.UserName), zap.Error(err))
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
 			app.ResponseError(c, app.CodeParamIsInvalid)
@@ -159,10 +159,10 @@ func UpdateDeptHandler(c *gin.Context) {
 	app.ResponseSuccess(c, nil)
 }
 
-// DeleteMenuHandle 删除部门
+// DeleteDept 删除部门
 // @Summary 删除部门
-// @Description Author：Cgl 2021/01/30 获得身份令牌
-// @Tags 系统：系统授权接口 Menu Controller
+// @Description Author：Lbl 2021/02/2 获得身份令牌
+// @Tags 系统：部门管理 Dept Controller
 // @Accept application/json
 // @Produce application/json
 // @Param object body []int false "查询参数"
@@ -180,13 +180,8 @@ func DeleteDeptHandle(c *gin.Context) {
 	var ids []int
 	if err := c.ShouldBind(&ids); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("DeleteDeptHandle failed", zap.String("username", user.UserName), zap.Error(err))
-		_, ok := err.(validator.ValidationErrors)
-		if !ok {
-			app.ResponseError(c, app.CodeParamIsInvalid)
-			return
-		}
-		app.ResponseError(c, app.CodeParamNotComplete)
+		zap.L().Error("DeleteDeptHandle params failed", zap.String("username", user.UserName), zap.Error(err))
+		app.ResponseError(c, app.CodeParamIsInvalid)
 		return
 	}
 	if err := d.DeleteDept(&ids); err != nil {
@@ -195,4 +190,98 @@ func DeleteDeptHandle(c *gin.Context) {
 		return
 	}
 	app.ResponseSuccess(c, nil)
+}
+
+// SuperiorDept 查询部门:根据id
+// @Summary 查询部门
+// @Description Author：Lbl 2021/02/3 获得身份令牌
+// @Tags 系统：部门管理 Dept Controller
+// @Accept application/json
+// @Produce application/json
+// @Param object body []int false "查询参数"
+// @Security ApiKeyAuth
+// @Success 200 {object} models._ResponseSelectDeptList
+// @Router /api/dept/superior [post]
+func SuperiorDeptHandler(c *gin.Context) {
+	// 获取缓存信息
+	user, err := api.GetCurrentUserInfo(c)
+	if err != nil {
+		zap.L().Error("SelectDeptHandler GetUserInfo failed", zap.Error(err))
+		app.ResponseError(c, app.CodeLoginExpire)
+		return
+	}
+
+	//	绑定校验参数
+	var ids []int
+	if err := c.ShouldBind(&ids); err != nil {
+		// 请求参数有误， 直接返回响应
+		zap.L().Error("SuperiorDeptHandler params failed", zap.String("username", user.UserName), zap.Error(err))
+		app.ResponseError(c, app.CodeParamIsInvalid)
+		return
+	}
+
+	// 参数正确执行相应业务
+	data, err := d.SuperiorDept(&ids)
+	if err != nil {
+		zap.L().Error("SuperiorDeptHandler Select failed", zap.String("username", user.UserName), zap.Error(err))
+		app.ResponseError(c, app.CodeSelectOperationFail)
+		return
+	}
+
+	// 3.返回数据
+	app.ResponseSuccess(c, data)
+}
+
+// JobDownload 导出部门数据
+// @Summary 导出部门数据
+// @Description Author：Lbl 2021/02/3
+// @Tags 系统：部门管理 Dept Controller
+// @Accept application/json
+// @Produce application/json
+// @Param object query dto.SelectDeptDto false "查询参数"
+// @Security ApiKeyAuth
+// @Success 200
+// @Router /api/dept/download [get]
+func DownloadDeptHandler(c *gin.Context) {
+	// 声明dto
+	dept := new(dto.SelectDeptDto)
+	// 获取缓存信息
+	user, err := api.GetCurrentUserInfo(c)
+	if err != nil {
+		zap.L().Error("DownloadDeptHandler GetUserMsg failed", zap.Error(err))
+		app.ResponseError(c, app.CodeLoginExpire)
+		return
+	}
+
+	// 获取参数 校验参数
+	if err := c.ShouldBindQuery(dept); err != nil {
+		//请求参数有误， 直接返回响应
+		zap.L().Error("DownloadDeptHandler params failed", zap.String("username", user.UserName), zap.Error(err))
+		_, ok := err.(validator.ValidationErrors)
+		if !ok {
+			app.ResponseError(c, app.CodeParamIsInvalid)
+			return
+		}
+		app.ResponseError(c, app.CodeParamTypeBindError)
+		return
+	}
+
+	// 排序规则
+	orderJson, err := utils.OrderJson(dept.Orders)
+	if err != nil {
+		zap.L().Error("DownloadDeptHandler orderString to orderJson failed", zap.String("username", user.UserName), zap.Error(err))
+		app.ResponseError(c, app.CodeParamIsInvalid)
+		return
+	}
+
+	// 参数正确执行相应业务
+	ioRead, err := d.DownloadDeptList(dept, orderJson)
+	if err != nil {
+		zap.L().Error("DownloadDeptHandler Select failed", zap.String("username", user.UserName), zap.Error(err))
+		app.ResponseError(c, app.CodeSelectOperationFail)
+		return
+	}
+
+	// 3.返回数据
+	utils.ResponseXls(c, ioRead, `部门数据`)
 }

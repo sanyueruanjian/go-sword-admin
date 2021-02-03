@@ -26,9 +26,11 @@ func deptRouter(v1 *gin.RouterGroup) {
 func deptAuthRouter(v1 *gin.RouterGroup) {
 	r := v1.Group("/dept")
 	{
+		r.GET("/download", apis.DownloadDeptHandler)
 		r.GET("/", apis.SelectDeptHandler)
 		r.POST("/", apis.InsertDeptHandler)
 		r.DELETE("/", apis.DeleteDeptHandle)
 		r.PUT("/", apis.UpdateDeptHandler)
+		r.POST("/superior", apis.SuperiorDeptHandler)
 	}
 }

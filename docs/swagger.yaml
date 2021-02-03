@@ -819,7 +819,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Author：Cgl 2021/01/30 获得身份令牌
+      description: Author：Lbl 2021/02/2 获得身份令牌
       parameters:
       - description: 查询参数
         in: body
@@ -837,11 +837,11 @@ paths:
       - ApiKeyAuth: []
       summary: 查询部门
       tags:
-      - 系统：系统授权接口 Menu Controller
+      - 系统：部门管理 Dept Controller
     post:
       consumes:
       - application/json
-      description: Author：Cgl 2021/01/30 获得身份令牌
+      description: Author：Lbl 2021/02/2 获得身份令牌
       parameters:
       - description: 查询参数
         in: body
@@ -859,7 +859,82 @@ paths:
       - ApiKeyAuth: []
       summary: 修改部门
       tags:
-      - 系统：系统授权接口 Menu Controller
+      - 系统：部门管理 Dept Controller
+  /api/dept/download:
+    get:
+      consumes:
+      - application/json
+      description: Author：Lbl 2021/02/3
+      parameters:
+      - description: 当前页
+        in: query
+        name: current
+        required: true
+        type: integer
+      - description: 状态：1启用（默认）、0禁用
+        in: query
+        name: enabled
+        type: boolean
+      - description: 过期时间
+        in: query
+        name: endTime
+        type: integer
+      - description: 模糊
+        in: query
+        name: name
+        type: string
+      - description: 排序规则
+        in: query
+        name: orders
+        required: true
+        type: string
+      - description: 上级部门（顶级部门为0，默认为0）
+        in: query
+        name: pid
+        type: integer
+      - description: 每页数据
+        in: query
+        name: size
+        required: true
+        type: integer
+      - description: 创建时间
+        in: query
+        name: startTime
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 导出部门数据
+      tags:
+      - 系统：部门管理 Dept Controller
+  /api/dept/superior:
+    post:
+      consumes:
+      - application/json
+      description: Author：Lbl 2021/02/3 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseSelectDeptList'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询部门
+      tags:
+      - 系统：部门管理 Dept Controller
   /api/file/uploadFile:
     post:
       consumes:

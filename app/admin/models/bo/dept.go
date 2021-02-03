@@ -19,3 +19,9 @@ type SelectDeptListBo struct {
 	Records []*RecordDept `json:"records"`
 	Paging  paging
 }
+
+type DownloadDeptList struct {
+	Name       string `json:"name"`    //部门名称
+	Enabled    string `json:"enabled"` //状态：1启用（默认）、0禁用
+	CreateTime string `json:"更新时间"`    //排序
+}
