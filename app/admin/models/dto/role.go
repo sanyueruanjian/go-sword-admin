@@ -35,21 +35,3 @@ type UpdateRoleDto struct {
 	Depts       string `form:"depts" binding:"required"`      //部门 (一般用为空)
 	Menus       string `form:"menus"`                         //菜单列表
 }
-
-//SelectAllRoleDto 查询所有角色
-type SelectAllRoleDto struct {
-	//	无参数
-}
-
-//DownloadRoleDto 导出角色数据
-type DownloadRoleDto struct {
-	Current int `form:"current"`
-	Size    int `form:"size"`
-	//TODO
-	//Orders `form:"orders"`
-}
-
-//SelectCurrentUserLevelDto 获取当前登录用户级别
-type SelectCurrentUserLevelDto struct {
-	//token
-}

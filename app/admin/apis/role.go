@@ -3,10 +3,14 @@ package apis
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+	"project/app/admin/models/bo"
+	"project/common/api"
 	"strconv"
 
 	"project/app/admin/models/dto"
 	"project/app/admin/service"
+	orm "project/common/global"
 	"project/utils"
 	"project/utils/app"
 )
@@ -65,7 +69,19 @@ func InsertRolesHandler(c *gin.Context) {
 		return
 	}
 	// 2.参数正确执行响应
-	err := r.InsertRole(insertrole)
+	user, err := api.GetCurrentUserInfo(c)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+	err = r.InsertRole(insertrole, user.UserId)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+
+	// 删除缓存
+	_, err = orm.Rdb.Do("DEL", "rolesAll").Result()
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
@@ -93,7 +109,19 @@ func UpdateRolesHandler(c *gin.Context) {
 		return
 	}
 	// 2.参数正确执行响应
-	err := r.UpdateRole(updaterole)
+	user, err := api.GetCurrentUserInfo(c)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+	err = r.UpdateRole(updaterole, user.UserId)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+
+	// 删除缓存
+	_, err = orm.Rdb.Do("DEL", "rolesAll").Result()
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
@@ -124,7 +152,19 @@ func DeleteRolesHandler(c *gin.Context) {
 	}
 
 	// 2.参数正确执行响应
-	err = r.DeleteRole(idsData)
+	user, err := api.GetCurrentUserInfo(c)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+	err = r.DeleteRole(idsData, user.UserId)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+
+	// 删除缓存
+	_, err = orm.Rdb.Do("DEL", "rolesAll").Result()
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
@@ -132,6 +172,7 @@ func DeleteRolesHandler(c *gin.Context) {
 
 	// 3.返回数据
 	app.ResponseSuccess(c, nil)
+	
 }
 
 // SelectRolesHandler 修改角色菜单
@@ -161,6 +202,13 @@ func MenuRolesHandler(c *gin.Context) {
 
 	// 2.参数正确执行响应
 	err = r.UpdateRoleMenu(id, menusData)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+
+	// 删除缓存
+	_, err = orm.Rdb.Do("DEL", "rolesAll").Result()
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
@@ -202,6 +250,36 @@ func SelectRoleHandler(c *gin.Context, id int) {
 // @Success 200 {object} models._ResponseLogin
 // @Router /api/roles/all [get]
 func SelectRolesAllHandler(c *gin.Context) {
+	val, err := orm.Rdb.Get("rolesAll").Result()
+	if val != "" && err == nil {
+		var roleData bo.SelectAllRoleBo
+		err := json.Unmarshal([]byte(val), &roleData)
+		if err == nil {
+			app.ResponseSuccess(c, roleData)
+			return
+		}
+	}
+
+	role, err := r.SelectRoleAll()
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+
+	// 3.加入缓存
+	roleByte, err := json.Marshal(role)
+	roleString := string(roleByte)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+	errRedis := orm.Rdb.Set("rolesAll", roleString, 0).Err()
+	if errRedis != nil {
+		zap.L().Error("redis error: ", zap.Error(errRedis))
+	}
+
+	// 4.返回数据
+	app.ResponseSuccess(c, role)
 }
 
 // SelectRolesHandler 导出角色数据
@@ -215,6 +293,37 @@ func SelectRolesAllHandler(c *gin.Context) {
 // @Success 200 {object} models._ResponseLogin
 // @Router /api/roles/download [get]
 func DownRolesHandler(c *gin.Context) {
+	// 1.获取参数 校验参数
+	var role dto.SelectRoleArrayDto
+	if err := c.ShouldBindQuery(&role); err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+	orderJsonData, err := utils.OrderJson(role.Orders)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+
+	// 2.参数正确执行响应
+	roleData, err := r.DownloadRoleInfoBo(role, orderJsonData)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+
+	// 3.返回文件数据
+	var res []interface{}
+	for _, role := range roleData {
+		res = append(res, &bo.DownloadRoleInfoBo{
+			Name:        role.Name,
+			Level:       role.Level,
+			Description: role.Description,
+			CreateTime:  role.CreateTime,
+		})
+	}
+	content := utils.ToExcel([]string{`角色名称`, `角色级别`, `描述`, `创建日期`}, res)
+	utils.ResponseXls(c, content, "角色数据")
 }
 
 // SelectRolesHandler 获取当前登录用户级别
@@ -228,4 +337,18 @@ func DownRolesHandler(c *gin.Context) {
 // @Success 200 {object} models._ResponseLogin
 // @Router /api/roles/level [get]
 func LevelRolesHandler(c *gin.Context) {
+	//user, err := api.GetCurrentUserInfo(c)
+	//if err != nil {
+	//	app.ResponseError(c, app.CodeParamNotComplete)
+	//	return
+	//}
+	//level, err := r.SelectRoleLevel(user.Role)
+	// TODO
+	level, err := r.SelectRoleLevel([]string{"超级管理员", "普通用户"})
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+	// 3.返回数据
+	app.ResponseSuccess(c, level)
 }

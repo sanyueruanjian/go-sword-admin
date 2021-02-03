@@ -3,6 +3,7 @@ module project
 go 1.14
 
 require (
+	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/alibaba/sentinel-golang v0.6.1
 	github.com/casbin/casbin/v2 v2.21.0
@@ -24,6 +25,7 @@ require (
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.8
 	github.com/tealeg/xlsx v1.0.5
+	github.com/vmihailenco/msgpack v4.0.4+incompatible
 	github.com/wenzhenxi/gorsa v0.0.0-20191231021121-58a13482fb09
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897
