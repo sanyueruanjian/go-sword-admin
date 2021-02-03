@@ -7,9 +7,10 @@
             "name": "marchsoft@golang",
             "url": "http://marchsoft.cn/"
         },
+        "license": {},
         "version": "0.1.0"
     },
-    "host": "127.0.0.1:8977",
+    "host": "127.0.0.1:8000",
     "paths": {
         "/api/auth/code": {
             "get": {
@@ -148,6 +149,250 @@
                             "$ref": "#/definitions/models._ResponseFile"
                         }
                     }
+                }
+            }
+        },
+        "/api/job": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：JiaKunLi 2021/02/1",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：岗位管理 job Controller"
+                ],
+                "summary": "查询岗位",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "当前页",
+                        "name": "current",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "结束时间",
+                        "name": "endTime",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "模糊查询",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序规则",
+                        "name": "orders",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "创建时间",
+                        "name": "startTime",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseGetJobList"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：JiaKunLi 2021/02/1",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：岗位管理 job Controller"
+                ],
+                "summary": "修改岗位",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateJob"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseInsertMenu"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：JiaKunLi 2021/02/1",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：岗位管理 job Controller"
+                ],
+                "summary": "新增岗位",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AddJob"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseInsertMenu"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：JiaKunLi 2021/02/1",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：岗位管理 job Controller"
+                ],
+                "summary": "删除岗位",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseInsertMenu"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/job/download": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：JiaKunLi 2021/02/1",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：岗位管理 job Controller"
+                ],
+                "summary": "导出岗位数据",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "当前页",
+                        "name": "current",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "结束时间",
+                        "name": "endTime",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "模糊查询",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序规则",
+                        "name": "orders",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "创建时间",
+                        "name": "startTime",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {}
                 }
             }
         },
@@ -292,6 +537,44 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models._ResponseDeleteMenu"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/menus/build": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Cgl 2021/02/01 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：系统授权接口 Menu Controller"
+                ],
+                "summary": "查询前端所需菜单",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.DeleteMenuDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseSelectForeNeedMenu"
                         }
                     }
                 }
@@ -635,8 +918,306 @@
         }
     },
     "definitions": {
+        "bo.DeptCommon": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "bo.GetJobList": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "description": "状态：1启用（默认）、0禁用",
+                    "type": "integer"
+                },
+                "job_sort": {
+                    "description": "排序",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "岗位名称",
+                    "type": "string"
+                }
+            }
+        },
+        "bo.Job": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "bo.Order": {
+            "type": "object",
+            "properties": {
+                "asc": {
+                    "type": "string"
+                },
+                "column": {
+                    "type": "string"
+                }
+            }
+        },
+        "bo.Role": {
+            "type": "object",
+            "properties": {
+                "dataScope": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "level": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "bo.SelectForeNeedMenuBo": {
+            "type": "object",
+            "properties": {
+                "alwaysShow": {
+                    "type": "boolean"
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.children"
+                    }
+                },
+                "component": {
+                    "type": "string"
+                },
+                "hidden": {
+                    "type": "boolean"
+                },
+                "meta": {
+                    "type": "object",
+                    "$ref": "#/definitions/bo.meta"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "redirect": {
+                    "type": "string"
+                }
+            }
+        },
+        "bo.UserInfoListBo": {
+            "type": "object",
+            "properties": {
+                "count_id": {
+                    "type": "integer"
+                },
+                "current": {
+                    "type": "integer"
+                },
+                "hitCount": {
+                    "type": "boolean"
+                },
+                "maxLimit": {
+                    "type": "integer"
+                },
+                "optimizeCountSql": {
+                    "type": "boolean"
+                },
+                "orders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.Order"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "records": {
+                    "description": "记录查询",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.recordUser"
+                    }
+                },
+                "searchCount": {
+                    "type": "boolean"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "bo.children": {
+            "type": "object",
+            "properties": {
+                "component": {
+                    "type": "string"
+                },
+                "hidden": {
+                    "type": "string"
+                },
+                "meta": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.meta"
+                    }
+                }
+            }
+        },
+        "bo.meta": {
+            "type": "object",
+            "properties": {
+                "icon": {
+                    "type": "string"
+                },
+                "noCache": {
+                    "type": "boolean"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "bo.recordUser": {
+            "type": "object",
+            "properties": {
+                "avatarName": {
+                    "type": "string"
+                },
+                "avatarPath": {
+                    "type": "string"
+                },
+                "createBy": {
+                    "type": "integer"
+                },
+                "createTime": {
+                    "type": "integer"
+                },
+                "dept": {
+                    "type": "object",
+                    "$ref": "#/definitions/bo.DeptCommon"
+                },
+                "deptId": {
+                    "type": "integer"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "gender": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "jobs": {
+                    "type": "object",
+                    "$ref": "#/definitions/bo.Job"
+                },
+                "nickName": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "pwdResetTime": {
+                    "type": "integer"
+                },
+                "role": {
+                    "type": "object",
+                    "$ref": "#/definitions/bo.Role"
+                },
+                "updateTime": {
+                    "type": "integer"
+                },
+                "updatedBy": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.AddJob": {
+            "type": "object",
+            "required": [
+                "enabled",
+                "jobSort",
+                "name"
+            ],
+            "properties": {
+                "enabled": {
+                    "description": "岗位状态",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "jobSort": {
+                    "description": "排序",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "岗位名称",
+                    "type": "string"
+                }
+            }
+        },
         "dto.DeleteMenuDto": {
             "type": "object"
+        },
+        "dto.GetJobList": {
+            "type": "object",
+            "required": [
+                "current",
+                "orders",
+                "size"
+            ],
+            "properties": {
+                "current": {
+                    "description": "当前页",
+                    "type": "integer"
+                },
+                "endTime": {
+                    "description": "结束时间",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "模糊查询",
+                    "type": "string"
+                },
+                "orders": {
+                    "description": "排序规则",
+                    "type": "string"
+                },
+                "size": {
+                    "description": "每页数据",
+                    "type": "integer"
+                },
+                "startTime": {
+                    "description": "创建时间",
+                    "type": "integer"
+                }
+            }
         },
         "dto.InsertMenuDto": {
             "type": "object",
@@ -733,6 +1314,32 @@
                 }
             }
         },
+        "dto.UpdateJob": {
+            "type": "object",
+            "required": [
+                "enabled",
+                "jobSort",
+                "name"
+            ],
+            "properties": {
+                "enabled": {
+                    "description": "岗位状态",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "jobSort": {
+                    "description": "排序",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "岗位名称",
+                    "type": "string"
+                }
+            }
+        },
         "dto.UserLoginDto": {
             "type": "object",
             "required": [
@@ -792,7 +1399,7 @@
                     "description": "业务响应状态码",
                     "type": "integer"
                 },
-                "data": {
+                "img": {
                     "description": "base64验证码",
                     "type": "string"
                 },
@@ -828,6 +1435,7 @@
                 },
                 "data": {
                     "description": "数据",
+                    "type": "object",
                     "$ref": "#/definitions/models.FileResponse"
                 },
                 "message": {
@@ -836,7 +1444,40 @@
                 }
             }
         },
+        "models._ResponseGetJobList": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务响应状态码",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.GetJobList"
+                    }
+                },
+                "message": {
+                    "description": "提示信息",
+                    "type": "string"
+                }
+            }
+        },
         "models._ResponseInsertMenu": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务响应状态码",
+                    "type": "integer"
+                },
+                "message": {
+                    "description": "提示信息",
+                    "type": "string"
+                }
+            }
+        },
+        "models._ResponseInsertUser": {
             "type": "object",
             "properties": {
                 "code": {
@@ -872,6 +1513,42 @@
                 }
             }
         },
+        "models._ResponseSelectForeNeedMenu": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务响应状态码",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "数据",
+                    "type": "object",
+                    "$ref": "#/definitions/bo.SelectForeNeedMenuBo"
+                },
+                "message": {
+                    "description": "提示信息",
+                    "type": "string"
+                }
+            }
+        },
+        "models._ResponseSelectUserInfoList": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务响应状态码",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "数据",
+                    "type": "object",
+                    "$ref": "#/definitions/bo.UserInfoListBo"
+                },
+                "message": {
+                    "description": "提示信息",
+                    "type": "string"
+                }
+            }
+        },
         "models._ResponseUpdateMenu": {
             "type": "object",
             "properties": {
@@ -884,6 +1561,13 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

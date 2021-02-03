@@ -5,10 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"go.uber.org/zap"
-
 	"project/app/admin/models/bo"
-
+	
+	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -70,11 +69,20 @@ func GetOrderRule(orderData []bo.Order) (orderRule string) {
 	if orderData == nil || len(orderData) == 0 {
 		return
 	}
-	for _, v := range orderData {
-		if v.Asc == "true" {
-			orderRule += v.Column + " asc"
-		} else {
-			orderRule += v.Column + " desc"
+	for index, v := range orderData {
+		switch index {
+		case len(orderData) - 1:
+			if v.Asc == "true" {
+				orderRule += v.Column + " asc"
+			} else {
+				orderRule += v.Column + " desc"
+			}
+		default:
+			if v.Asc == "true" {
+				orderRule += v.Column + " asc, "
+			} else {
+				orderRule += v.Column + " desc, "
+			}
 		}
 	}
 	return

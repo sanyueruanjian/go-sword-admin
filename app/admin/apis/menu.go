@@ -15,7 +15,7 @@ import (
 // InsertMenuHandler 新增菜单
 // @Summary 新增菜单
 // @Description Author：Cgl 2021/01/30 获得身份令牌
-// @Tags 系统：系统授权接口 Menu Controller
+// @Tags 系统：菜单管理 Menu Controller
 // @Accept application/json
 // @Produce application/json
 // @Param object body dto.InsertMenuDto false "查询参数"
@@ -57,7 +57,7 @@ func InsertMenuHandler(c *gin.Context) {
 // SelectMenuHandler 查询菜单
 // @Summary 查询菜单
 // @Description Author：Cgl 2021/01/30 获得身份令牌
-// @Tags 系统：系统授权接口 Menu Controller
+// @Tags 系统：菜单管理 Menu Controller
 // @Accept application/json
 // @Produce application/json
 // @Param object body dto.SelectMenuDto false "查询参数"
@@ -98,17 +98,17 @@ func SelectMenuHandler(c *gin.Context) {
 	app.ResponseSuccess(c, data)
 }
 
-// DeleteMenuHandle 删除菜单
+// DeleteMenuHandler 删除菜单
 // @Summary 删除菜单
 // @Description Author：Cgl 2021/01/30 获得身份令牌
-// @Tags 系统：系统授权接口 Menu Controller
+// @Tags 系统：菜单管理 Menu Controller
 // @Accept application/json
 // @Produce application/json
 // @Param object body dto.DeleteMenuDto false "查询参数"
 // @Security ApiKeyAuth
 // @Success 200 {object} models._ResponseDeleteMenu
 // @Router /api/menus [delete]
-func DeleteMenuHandle(c *gin.Context) {
+func DeleteMenuHandler(c *gin.Context) {
 	//获取上下文中信息
 	user, err := api.GetCurrentUserInfo(c)
 	if err != nil {
@@ -119,7 +119,7 @@ func DeleteMenuHandle(c *gin.Context) {
 	var ids []int
 	if err := c.ShouldBind(&ids); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("DeleteMenuHandle failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("DeleteMenuHandler failed", zap.String("username", user.UserName), zap.Error(err))
 		c.Error(err)
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
@@ -141,7 +141,7 @@ func DeleteMenuHandle(c *gin.Context) {
 // UpdateMenuHandler 更新菜单
 // @Summary 更新菜单
 // @Description Author：Cgl 2021/01/30 获得身份令牌
-// @Tags 系统：系统授权接口 Menu Controller
+// @Tags 系统：菜单管理 Menu Controller
 // @Accept application/json
 // @Produce application/json
 // @Param object body dto.DeleteMenuDto false "查询参数"
@@ -182,7 +182,7 @@ func UpdateMenuHandler(c *gin.Context) {
 // SelectForeNeedMenuHandler 查询前端所需菜单
 // @Summary 查询前端所需菜单
 // @Description Author：Cgl 2021/02/01 获得身份令牌
-// @Tags 系统：系统授权接口 Menu Controller
+// @Tags 系统：菜单管理 Menu Controller
 // @Accept application/json
 // @Produce application/json
 // @Param object body dto.DeleteMenuDto false "查询参数"
