@@ -16,7 +16,6 @@ func init() {
 func deptRouter(v1 *gin.RouterGroup) {
 	r := v1.Group("/dept")
 	{
-		r.GET("/download", apis.DownloadDeptHandler)
 		r.GET("ping", func(c *gin.Context) {
 			c.String(int(app.CodeSuccess), "ok")
 		})
@@ -27,6 +26,7 @@ func deptRouter(v1 *gin.RouterGroup) {
 func deptAuthRouter(v1 *gin.RouterGroup) {
 	r := v1.Group("/dept")
 	{
+		r.GET("/download", apis.DownloadDeptHandler)
 		r.GET("/", apis.SelectDeptHandler)
 		r.POST("/", apis.InsertDeptHandler)
 		r.DELETE("/", apis.DeleteDeptHandle)
