@@ -25,6 +25,7 @@ require (
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.8
 	github.com/tealeg/xlsx v1.0.5
+	github.com/vmihailenco/msgpack v4.0.4+incompatible
 	github.com/wenzhenxi/gorsa v0.0.0-20191231021121-58a13482fb09
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897

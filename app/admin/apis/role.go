@@ -2,13 +2,15 @@ package apis
 
 import (
 	"encoding/json"
-	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+	"project/app/admin/models/bo"
 	"project/common/api"
 	"strconv"
 
 	"project/app/admin/models/dto"
 	"project/app/admin/service"
+	orm "project/common/global"
 	"project/utils"
 	"project/utils/app"
 )
@@ -78,6 +80,13 @@ func InsertRolesHandler(c *gin.Context) {
 		return
 	}
 
+	// 删除缓存
+	_, err = orm.Rdb.Do("DEL", "rolesAll").Result()
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+
 	// 3.返回数据
 	app.ResponseSuccess(c, nil)
 }
@@ -106,6 +115,13 @@ func UpdateRolesHandler(c *gin.Context) {
 		return
 	}
 	err = r.UpdateRole(updaterole, user.UserId)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+
+	// 删除缓存
+	_, err = orm.Rdb.Do("DEL", "rolesAll").Result()
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
@@ -147,6 +163,13 @@ func DeleteRolesHandler(c *gin.Context) {
 		return
 	}
 
+	// 删除缓存
+	_, err = orm.Rdb.Do("DEL", "rolesAll").Result()
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+
 	// 3.返回数据
 	app.ResponseSuccess(c, nil)
 }
@@ -178,6 +201,13 @@ func MenuRolesHandler(c *gin.Context) {
 
 	// 2.参数正确执行响应
 	err = r.UpdateRoleMenu(id, menusData)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+
+	// 删除缓存
+	_, err = orm.Rdb.Do("DEL", "rolesAll").Result()
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
@@ -219,14 +249,35 @@ func SelectRoleHandler(c *gin.Context, id int) {
 // @Success 200 {object} models._ResponseLogin
 // @Router /api/roles/all [get]
 func SelectRolesAllHandler(c *gin.Context) {
-	// TODO 加缓存
+	val, err := orm.Rdb.Get("rolesAll").Result()
+	if val != "" && err == nil {
+		var roleData bo.SelectAllRoleBo
+		err := json.Unmarshal([]byte(val), &roleData)
+		if err == nil {
+			app.ResponseSuccess(c, roleData)
+			return
+		}
+	}
+
 	role, err := r.SelectRoleAll()
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
 
-	// 3.返回数据
+	// 3.加入缓存
+	roleByte, err := json.Marshal(role)
+	roleString := string(roleByte)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+	errRedis := orm.Rdb.Set("rolesAll", roleString, 0).Err()
+	if errRedis != nil {
+		zap.L().Error("redis error: ", zap.Error(errRedis))
+	}
+
+	// 4.返回数据
 	app.ResponseSuccess(c, role)
 }
 
@@ -261,24 +312,17 @@ func DownRolesHandler(c *gin.Context) {
 	}
 
 	// 3.返回文件数据
-	xlsx := excelize.NewFile()
-	c.Header("Content-Type", "application/octet-stream")
-	c.Header("Content-Disposition", "attachment; filename="+utils.GetCurrentTimeStr()+"角色数据.xlsx")
-	c.Header("Content-Transfer-Encoding", "binary")
-	//回写到web 流媒体 形成下载
-	xlsx.SetCellValue("Sheet1", "A1", "角色名称")
-	xlsx.SetCellValue("Sheet1", "B1", "角色级别")
-	xlsx.SetCellValue("Sheet1", "C1", "描述")
-	xlsx.SetCellValue("Sheet1", "D1", "创建日期")
-	j := 0
-	for i := 2; i < len(roleData); i++ {
-		xlsx.SetCellValue("Sheet1", "A"+strconv.Itoa(i), roleData[j].Name)
-		xlsx.SetCellValue("Sheet1", "B"+strconv.Itoa(i), roleData[j].Level)
-		xlsx.SetCellValue("Sheet1", "C"+strconv.Itoa(i), roleData[j].Description)
-		xlsx.SetCellValue("Sheet1", "D"+strconv.Itoa(i), roleData[j].CreateTime)
-		j++
+	var res []interface{}
+	for _, role := range roleData {
+		res = append(res, &bo.DownloadRoleInfoBo{
+			Name:        role.Name,
+			Level:       role.Level,
+			Description: role.Description,
+			CreateTime:  role.CreateTime,
+		})
 	}
-	_ = xlsx.Write(c.Writer)
+	content := utils.ToExcel([]string{`角色名称`, `角色级别`, `描述`, `创建日期`}, res)
+	utils.ResponseXls(c, content, "角色数据")
 }
 
 // SelectRolesHandler 获取当前登录用户级别
