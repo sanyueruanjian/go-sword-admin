@@ -308,7 +308,7 @@ func SelectUserInfoHandler(c *gin.Context) {
 // @Produce application/json
 // @Param object body dto.UpdateUserPassDto false "查询参数"
 // @Security ApiKeyAuth
-// @Success 200 {object} models._ResponseUpdatePassWord
+// @Success 200 {object} models._ResponseUpdateUserCenter
 // @Router /api/users/updatePass [post]
 func UpdatePassWordHandler(c *gin.Context) {
 	//获取上下文中信息
