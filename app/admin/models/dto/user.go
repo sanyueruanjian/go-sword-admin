@@ -70,11 +70,10 @@ type UpdateUserCenterDto struct {
 
 //DownloadUserInfoDto 导出用户数据
 type DownloadUserInfoDto struct {
-	Current int `form:"current" binding:"required"` //当前页
-	Size    int `form:"size" binding:"required"`    //展示数量
-	//TODO
-	//Orders  []string `json:"orders" binding:"required"`  //排序规则
-	Enabled bool `form:"enabled" binding:"required"` //是否激活
+	Current int    `form:"current"` //当前页
+	Size    int    `form:"size"`    //展示数量
+	Orders  string `form:"orders"`  //排序规则
+	Enabled bool   `form:"enabled"` //是否激活
 }
 
 //UpdateUserAvatarDto 修改用户头像
