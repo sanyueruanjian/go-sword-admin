@@ -211,7 +211,7 @@ func SelectForeNeedMenuHandler(c *gin.Context) {
 	app.ResponseSuccess(c, data)
 }
 
-// ReturnToAllMenusHandler 返回所有菜单
+// ReturnToAllMenusHandler  返回所有菜单
 // @Summary 查询出该级别下属菜单
 // @Description Author：Cgl 2021/02/04 获得身份令牌
 // @Tags 系统：菜单管理 Menu Controller
