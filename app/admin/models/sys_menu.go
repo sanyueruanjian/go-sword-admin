@@ -110,20 +110,20 @@ func (m *SysMenu) UpdateMenu(p *dto.UpdateMenuDto, userId int) (err error) {
 
 //查找前端所需菜单
 func (m *SysMenu) SelectForeNeedMenu(user *RedisUserInfo) (data []*bo.SelectForeNeedMenuBo, err error) {
-	////检查缓存有无,有的话从缓存中读取
-	var val []byte
-	if global.Rdb.Exists(ForeNeed).Val() == 1 {
-		val, err = global.Rdb.Get(ForeNeed).Bytes()
-		redisForeNeedMenu := new(RedisForeNeedMenu)
-		err = json.Unmarshal(val, redisForeNeedMenu)
-		if err != nil {
-			return nil, err
-		}
-		data = redisForeNeedMenu.SelectForeNeedMenuList
-		if data != nil {
-			return data, nil
-		}
-	}
+	//检查缓存有无,有的话从缓存中读取
+	//var val []byte
+	//if global.Rdb.Exists(ForeNeed).Val() == 1 {
+	//	val, err = global.Rdb.Get(ForeNeed).Bytes()
+	//	redisForeNeedMenu := new(RedisForeNeedMenu)
+	//	err = json.Unmarshal(val, redisForeNeedMenu)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//	data = redisForeNeedMenu.SelectForeNeedMenuList
+	//	if data != nil {
+	//		return data, nil
+	//	}
+	//}
 	//查找角色Id
 	parentIds := make([]int, 0)
 	err = global.Eloquent.Table("sys_roles_menus").Select("menu_id").Where("role_id=?", 1).Joins("left join sys_menu "+
@@ -168,6 +168,8 @@ func (m *SysMenu) SelectForeNeedMenu(user *RedisUserInfo) (data []*bo.SelectFore
 			child := &bo.Children{
 				Component: menu.Component,
 				Hidden:    utils.ByteIntoBool(menu.Hidden),
+				Name:      menu.Name,
+				Path:      menu.Path,
 				Meta: &bo.Meta{
 					Icon:    menu.Icon,
 					NoCache: !utils.ByteIntoBool(menu.Cache),
