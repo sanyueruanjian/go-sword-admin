@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
 
 	"project/app/admin/models/bo"
@@ -11,6 +12,8 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
+
+const CtxUserInfoList string = "UserInfoList"
 
 // User
 type User struct {
@@ -71,6 +74,10 @@ type SysUser struct {
 	UpdateBy     int    `json:"update_by"`      //
 }
 
+type RedisUserInfoList struct {
+	Users *bo.UserInfoListBo
+}
+
 //redis 缓存model
 type RedisUserInfo struct {
 	UserId   int      `json:"user_id"`
@@ -84,10 +91,10 @@ func (SysUser) TableName() string {
 }
 
 var (
-	ErrorUserNotExist    = errors.New("用户不存在")
-	ErrorInvalidPassword = errors.New("用户名或密码错误")
-	ErrorServerBusy      = errors.New("服务器繁忙")
-	ErrorUserIsNotEnabled      = errors.New("用户未激活")
+	ErrorUserNotExist     = errors.New("用户不存在")
+	ErrorInvalidPassword  = errors.New("用户名或密码错误")
+	ErrorServerBusy       = errors.New("服务器繁忙")
+	ErrorUserIsNotEnabled = errors.New("用户未激活")
 )
 
 // Login 查询用户是否存在，并验证密码
@@ -119,8 +126,8 @@ func (u *SysUser) Login() (*bo.RecordUser, error) {
 	r.NickName = u.NickName
 	r.Phone = u.Phone
 	r.Username = u.Username
-	r.Gender  = utils.ByteIntoBool(u.Gender)
-	r.Enabled  = utils.ByteIntoBool(u.Enabled)
+	r.Gender = utils.ByteIntoBool(u.Gender)
+	r.Enabled = utils.ByteIntoBool(u.Enabled)
 	r.Id = u.ID
 	r.DeptId = u.DeptId
 	r.PwdResetTime = u.PwdResetTime
@@ -165,10 +172,31 @@ func (u *SysUser) InsertUser(jobs []int, roles []int) (err error) {
 		}
 	}
 	//提交事务
+	if err := global.Rdb.Del(CtxUserInfoList).Err(); err != nil {
+		return err
+	}
 	return tx.Commit().Error
 }
 
 func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.UserInfoListBo, err error) {
+	////读取缓存
+	var val []byte
+	if global.Rdb.Exists(CtxUserInfoList).Val() == 1 {
+		val, err = global.Rdb.Get(CtxUserInfoList).Bytes()
+		if err != nil {
+			return nil, err
+		}
+		userInfoList := new(RedisUserInfoList)
+		err = json.Unmarshal(val, userInfoList)
+		if err != nil {
+			return nil, err
+		}
+		data = userInfoList.Users
+		if data != nil {
+			return data, nil
+		}
+	}
+
 	//排序条件
 	var orderJson []bo.Order
 	orderJson, err = utils.OrderJson(p.Orders)
@@ -207,7 +235,7 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.Us
 		}
 		//查询部门
 		err = global.Eloquent.Table("sys_dept").Joins("left join sys_user "+
-			"on sys_user.dept_id = sys_dept.id").Where("sys_user.id=?", userHalf.Id).Scan(dept).Error
+			"on sys_user.dept_id = sys_dept.id").Where("sys_user.id=? AND sys_dept.is_deleted=?", userHalf.Id, []byte{0}).Scan(dept).Error
 		if err != nil {
 			zap.L().Debug("查询部门", zap.Error(err))
 			return nil, err
@@ -239,7 +267,15 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.Us
 		user.Gender = utils.ByteIntoBool(genderEnabled.Gender)
 		users = append(users, user)
 	}
-	data = &bo.UserInfoListBo{Records: users}
+	data = &bo.UserInfoListBo{Records: users} //添加缓存
+	var userInfoList []byte
+	redisUserInfoList := new(RedisUserInfoList)
+	redisUserInfoList.Users = data
+	userInfoList, err = json.Marshal(redisUserInfoList)
+	err = global.Rdb.Set(CtxUserInfoList, userInfoList, 0).Err()
+	if err != nil {
+		return nil, err
+	}
 	return data, nil
 
 }
@@ -251,7 +287,6 @@ func SelectUserRole(userId int) (role []*bo.Role, err error) {
 		Joins("left join sys_user on sys_user.id = sys_users_roles.user_id").
 		Where("sys_role.is_deleted=? and sys_user.id=?", []byte{0}, userId).
 		Find(&role).Error
-
 	if err == gorm.ErrRecordNotFound {
 		zap.L().Error("用户无角色", zap.Error(err))
 		return nil, ErrorUserNotExist
@@ -299,7 +334,7 @@ func SelectUserDeptIdByRoleId(roleId []int) (deptIds []int, err error) {
 }
 
 // SelectUserMenuPermission 查询菜单权限
-func SelectUserMenuPermission(roles []*bo.Role)(Roles []string, err error) {
+func SelectUserMenuPermission(roles []*bo.Role) (Roles []string, err error) {
 	var rolesId []int
 	for _, role := range roles {
 		rolesId = append(rolesId, role.ID)
@@ -311,7 +346,14 @@ func SelectUserMenuPermission(roles []*bo.Role)(Roles []string, err error) {
 }
 
 func (u *SysUser) DeleteUser(ids *[]int) (err error) {
-	return global.Eloquent.Table("sys_user").Where("id IN (?)", *ids).Updates(map[string]interface{}{"is_deleted": []byte{1}}).Error
+	err = global.Eloquent.Table("sys_user").Where("id IN (?)", *ids).Updates(map[string]interface{}{"is_deleted": []byte{1}}).Error
+	if err != nil {
+		return err
+	}
+	if err := global.Rdb.Del(CtxUserInfoList).Err(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (u *SysUser) UpdateUser(p *dto.UpdateUserDto, optionId int) (err error) {
@@ -376,17 +418,26 @@ func (u *SysUser) UpdateUser(p *dto.UpdateUserDto, optionId int) (err error) {
 		}
 	}
 	//提交事务
+	if err := global.Rdb.Del(CtxUserInfoList).Err(); err != nil {
+		return err
+	}
 	return tx.Commit().Error
 }
 
 func (u *SysUser) UpdateUserCenter(p *dto.UpdateUserCenterDto, optionId int) (err error) {
-	return global.Eloquent.Table("sys_user").Where("id=?", p.Id).Updates(map[string]interface{}{
+	err = global.Eloquent.Table("sys_user").Where("id=?", p.Id).Updates(map[string]interface{}{
 		"gender":    utils.BoolIntoByte(p.Gender),
 		"phone":     p.Phone,
 		"nick_name": p.NickName,
 		"update_by": optionId,
 	}).Error
-
+	if err != nil {
+		return err
+	}
+	if err := global.Rdb.Del(CtxUserInfoList).Err(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (u *SysUser) SelectUserInfo(p *RedisUserInfo) (data *bo.UserCenterInfoBo, err error) {
@@ -475,9 +526,16 @@ func (u *SysUser) UpdatePassWord(p *dto.UpdateUserPassDto, optionId int) (err er
 }
 
 func (u *SysUser) UpdateAvatar(path string, userId int) (err error) {
-	return global.Eloquent.Table("sys_user").Where("id=?", userId).Updates(map[string]interface{}{
+	err = global.Eloquent.Table("sys_user").Where("id=?", userId).Updates(map[string]interface{}{
 		"avatar_path": path,
 	}).Error
+	if err != nil {
+		return err
+	}
+	if err := global.Rdb.Del(CtxUserInfoList).Err(); err != nil {
+		return err
+	}
+	return nil
 }
 
 // UserDownload 导出用户数据
