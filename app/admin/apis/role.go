@@ -172,7 +172,6 @@ func DeleteRolesHandler(c *gin.Context) {
 
 	// 3.返回数据
 	app.ResponseSuccess(c, nil)
-	
 }
 
 // SelectRolesHandler 修改角色菜单
