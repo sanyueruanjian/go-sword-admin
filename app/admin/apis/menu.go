@@ -130,7 +130,7 @@ func DeleteMenuHandler(c *gin.Context) {
 		return
 	}
 	menu := new(service.Menu)
-	if err := menu.DeleteMenu(&ids); err != nil {
+	if err := menu.DeleteMenu(ids); err != nil {
 		zap.L().Error("DeleteMenu failed", zap.Error(err))
 		app.ResponseError(c, app.CodeDeleteOperationFail)
 		return
@@ -190,31 +190,17 @@ func UpdateMenuHandler(c *gin.Context) {
 // @Success 200 {object} models._ResponseSelectForeNeedMenu
 // @Router /api/menus/build [get]
 func SelectForeNeedMenuHandler(c *gin.Context) {
-	// 1.获取参数 校验参数
-	p := new(dto.SelectMenuDto)
 	//获取上下文中信息
 	user, err := api.GetCurrentUserInfo(c)
 	if err != nil {
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
 		return
 	}
-	if err := c.ShouldBindQuery(p); err != nil {
-		// 请求参数有误， 直接返回响应
-		zap.L().Error("SelectForeNeedMenuHandler failed", zap.String("username", user.UserName), zap.Error(err))
-		c.Error(err)
-		_, ok := err.(validator.ValidationErrors)
-		if !ok {
-			app.ResponseError(c, app.CodeParamIsInvalid)
-			return
-		}
-		app.ResponseError(c, app.CodeParamNotComplete)
-		return
-	}
 	//业务逻辑处理
 	//TODO
 	m := new(service.Menu)
 	var data []*bo.SelectForeNeedMenuBo
-	data, err = m.SelectForeNeedMenu()
+	data, err = m.SelectForeNeedMenu(user)
 	if err != nil {
 		zap.L().Error("select menu failed", zap.Error(err))
 		app.ResponseError(c, app.CodeSelectOperationFail)

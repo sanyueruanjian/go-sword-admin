@@ -72,7 +72,7 @@ func (m *Menu) SelectMenu(p *dto.SelectMenuDto) (data []*bo.SelectMenuBo, err er
 	return data, nil
 }
 
-func (m *Menu) DeleteMenu(ids *[]int) (err error) {
+func (m *Menu) DeleteMenu(ids []int) (err error) {
 	menu := new(models.SysMenu)
 	return menu.DeleteMenu(ids)
 }
@@ -82,18 +82,7 @@ func (m *Menu) UpdateMenu(p *dto.UpdateMenuDto, userId int) (err error) {
 	return menu.UpdateMenu(p, userId)
 }
 
-//TODO
-func (m *Menu) SelectForeNeedMenu() (data []*bo.SelectForeNeedMenuBo, err error) {
-	//var Menus []*models.SysMenu
-	//menu := new(models.SysMenu)
-	//Menus, err = menu.SelectForeNeedMenu()
-	//for _, v := range Menus {
-	//	tmp := &bo.SelectForeNeedMenuBo{}
-	//	data = append(data, tmp)
-	//}
-	//
-	//if err != nil {
-	//	return nil, err
-	//}
-	return data, nil
+func (m *Menu) SelectForeNeedMenu(user *models.RedisUserInfo) (data []*bo.SelectForeNeedMenuBo, err error) {
+	menu := new(models.SysMenu)
+	return menu.SelectForeNeedMenu(user)
 }
