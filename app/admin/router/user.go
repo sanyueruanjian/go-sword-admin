@@ -29,7 +29,7 @@ func userAuthRouter(v1 *gin.RouterGroup) {
 			c.String(int(app.CodeSuccess), "ok")
 		})
 		r.POST("/", apis.InsertUserHandler)
-		r.GET("/", apis.SelectUserInfoListHandler)
+		r.GET("", apis.SelectUserInfoListHandler)
 		r.PUT("/", apis.UpdateUserHandler)
 		r.PUT("/center", apis.UpdateUserCenterHandler)
 		r.DELETE("/", apis.DeleteUserHandler)
