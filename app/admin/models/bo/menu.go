@@ -25,16 +25,16 @@ type SelectMenuBo struct {
 	HasChildren string `json:"hasChildren"`
 }
 
-type meta struct {
+type Meta struct {
 	Icon    string `json:"icon"`
 	NoCache bool   `json:"noCache"`
 	Title   string `json:"title"`
 }
 
-type children struct {
-	Component string  `json:"component"`
-	Hidden    string  `json:"hidden"`
-	Meta      []*meta `json:"meta"`
+type Children struct {
+	Component string `json:"component"`
+	Hidden    bool   `json:"hidden"`
+	Meta      *Meta  `json:"meta"`
 }
 
 type SelectForeNeedMenuBo struct {
@@ -44,6 +44,6 @@ type SelectForeNeedMenuBo struct {
 	Name       string      `json:"name"`
 	Path       string      `json:"path"`
 	Redirect   string      `json:"redirect"`
-	Meta       *meta       `json:"meta"`
-	Children   []*children `json:"children"`
+	Meta       *Meta       `json:"meta"`
+	Children   []*Children `json:"children"`
 }
