@@ -1,27 +1,115 @@
 package service
 
 import (
+	"encoding/json"
 	"io"
+	"strconv"
+
 	"project/app/admin/models"
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
+	"project/common/global"
 	"project/pkg/jwt"
 	"project/utils"
+
+	"go.uber.org/zap"
 )
 
 type User struct {
 }
 
 // Login 返回json web token
-func (u *User) Login(p *dto.UserLoginDto) (token string, err error) {
+func (u *User) Login(p *dto.UserLoginDto) (loginData *bo.LoginData, err error) {
 	user := new(models.SysUser)
 	user.Username = p.Username
 
 	user.Password = p.Password
-	if err = user.Login(); err != nil {
-		return "", err
+	r, err := user.Login()
+	if err != nil {
+		return nil, err
 	}
-	return jwt.GenToken(user.ID, user.Username)
+
+	//var dept *bo.DeptCommon
+	if r.Jobs, err = models.SelectUserJob(r.Id); err != nil {
+		return nil, err
+	}
+	if r.Role, err = models.SelectUserRole(r.Id); err != nil {
+		return nil, err
+	}
+	if r.Dept, err = models.SelectUserDept(r.Id); err != nil {
+		return nil, err
+	}
+	loginUser := new(bo.LoginUser)
+	loginUser.User = r
+	// 获取菜单权限
+	if utils.ByteIntoInt(user.IsAdmin) == 1 {
+		loginUser.Roles = append(loginUser.Roles, `admin`)
+	} else {
+		if loginUser.Roles, err = models.SelectUserMenuPermission(r.Role); err != nil {
+			return nil, err
+		}
+	}
+
+	// 获取部门权限
+	var dataScopesRoleIds []int
+	var allScopes []byte
+	for _, role := range r.Role {
+		switch role.DataScope {
+		case `全部`:
+			allScopes = append(allScopes, 0)
+			loginUser.DataScopes = []int{}
+			break
+		case `本级`:
+			loginUser.DataScopes = append(loginUser.DataScopes, user.DeptId)
+		default:
+			dataScopesRoleIds = append(dataScopesRoleIds, role.ID)
+		}
+	}
+
+	if len(allScopes) == 0 {
+		deptIds, err := models.SelectUserDeptIdByRoleId(dataScopesRoleIds)
+		if err != nil {
+			return nil, err
+		}
+		loginUser.DataScopes = append(loginUser.DataScopes, deptIds...)
+	}
+
+	token, err := jwt.GenToken(user.ID, user.Username)
+	if err != nil {
+		return nil, err
+	}
+	loginData = new(bo.LoginData)
+	loginData.Token = "Bearer " + token
+	loginData.User = loginUser
+
+	err = u.RedisUserMessage(r)
+	return
+}
+
+func (u *User) RedisUserMessage(r *bo.RecordUser) (err error) {
+	//构造角色名字集合
+	roleNames := make([]string, 0)
+	for _, v := range r.Role {
+		roleNames = append(roleNames, v.Name)
+	}
+	//初始化缓存模型
+	var userInfo []byte
+	userInfo, err = json.Marshal(models.RedisUserInfo{
+		UserId:   r.Id,
+		UserName: r.Username,
+		DeptId:   r.DeptId,
+		Role:     roleNames,
+	})
+	if err != nil {
+		zap.L().Error("RedisUserInfo Marshal failed", zap.Error(err))
+		return
+	}
+	//添加缓存
+	if err := global.Rdb.Set(strconv.Itoa(r.Id), userInfo, 0).Err(); err != nil {
+		zap.L().Error("用户缓存错误", zap.Error(err))
+		return err
+	}
+	return
 }
 
 func (u *User) InsertUser(p *dto.InsertUserDto, userID int) (err error) {

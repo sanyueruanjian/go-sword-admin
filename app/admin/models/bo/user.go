@@ -6,9 +6,9 @@ type RecordUserHalf struct {
 	DeptId       int    `json:"deptId"`
 	CreateBy     int    `json:"createBy"`
 	UpdateBy     int    `json:"updatedBy"`
-	UpdateTime   int    `json:"updateTime"`
 	PwdResetTime int64  `json:"pwdResetTime"`
 	CreateTime   int64  `json:"createTime"`
+	UpdateTime   int64  `json:"updateTime"`
 	AvatarName   string `json:"avatarName"`
 	AvatarPath   string `json:"avatarPath"`
 	Email        string `json:"email"`
@@ -26,7 +26,18 @@ type RoleDeptJobBool struct {
 	Dept    *DeptCommon `json:"dept"`
 }
 
-//返回用户详细列表
+//返回用户登录详细列表
+type LoginData struct {
+	Token string     `json:"token"`
+	User  *LoginUser `json:"user"`
+}
+
+type LoginUser struct {
+	DataScopes []int    `json:"dataScopes"`
+	Roles      []string    `json:"roles"`
+	User       *RecordUser `json:"user"`
+}
+
 type RecordUser struct {
 	*RecordUserHalf
 	*RoleDeptJobBool

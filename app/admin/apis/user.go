@@ -47,7 +47,7 @@ func LoginHandler(c *gin.Context) {
 
 	// 2.业务逻辑处理
 	//TODO 方便postman测试 (模拟前端数据)
-	p.Password, _ = utils.RsaPubEncode(p.Password)
+	//p.Password, _ = utils.RsaPubEncode(p.Password)
 	value, err := utils.RsaPriDecode(p.Password)
 	if err != nil {
 		zap.L().Error("ras decode fail", zap.Error(err))
@@ -56,19 +56,22 @@ func LoginHandler(c *gin.Context) {
 	}
 	p.Password = value
 	u := new(service.User)
-	token, err := u.Login(p)
+	data, err := u.Login(p)
 	if err != nil {
 		c.Error(err)
+		zap.L().Error("get login user info message failed", zap.String("username", p.Username), zap.Error(err))
 		if errors.Is(err, models.ErrorInvalidPassword) || errors.Is(err, models.ErrorUserNotExist) {
 			app.ResponseError(c, app.CodeLoginFailResCode)
 			return
+		} else if errors.Is(err, models.ErrorUserIsNotEnabled) {
+			app.ResponseError(c, app.CodeUserIsNotEnabled)
 		}
 		app.ResponseError(c, app.CodeSeverError)
 		return
 	}
 
 	// 3.返回响应
-	app.ResponseSuccess(c, token)
+	app.ResponseSuccess(c, data)
 }
 
 // InsertUserHandler 新增用户

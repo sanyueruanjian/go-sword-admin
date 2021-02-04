@@ -13,7 +13,7 @@ type Job struct {
 }
 
 // JobListDownload 下载岗位列表业务逻辑
-func (e Job) JobListDownload(p *dto.GetJobList) (content io.ReadSeeker, err error) {
+func (e *Job) JobListDownload(p *dto.GetJobList) (content io.ReadSeeker, err error) {
 	var res []interface{}
 	job := new(models.SysJob)
 	jobList, err := job.JobListDownload(p)
@@ -34,7 +34,7 @@ func (e Job) JobListDownload(p *dto.GetJobList) (content io.ReadSeeker, err erro
 }
 
 // GetJobList 查询岗位列表业务逻辑
-func (e Job) GetJobList(p *dto.GetJobList) (res []*bo.GetJobList, err error) {
+func (e *Job) GetJobList(p *dto.GetJobList) (res []*bo.GetJobList, err error) {
 	job := new(models.SysJob)
 	jobList, err := job.GetJobList(p)
 	if err != nil {
@@ -53,7 +53,7 @@ func (e Job) GetJobList(p *dto.GetJobList) (res []*bo.GetJobList, err error) {
 }
 
 // DelJobById 删除岗位业务逻辑
-func (e Job) DelJobById(userId int, ids []int) (err error) {
+func (e *Job) DelJobById(userId int, ids []int) (err error) {
 	job := new(models.SysJob)
 	err = job.DelJobById(userId, ids)
 	return

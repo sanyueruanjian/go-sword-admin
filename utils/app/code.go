@@ -54,6 +54,8 @@ const (
 	CodeNoUserPhone
 	// 请求参数不能为空
 	CodeParamsNotNull
+	// 用户未激活
+	CodeUserIsNotEnabled
 
 	/*
 	   1051-1070 短信业务相关
@@ -142,6 +144,7 @@ var codeMsgMap = map[ResCode]string{
 	CodeRegisterFail:     "注册失败，手机号已经存在",
 	CodeNoUserPhone:      "认证失败，手机号不存在",
 	CodeParamsNotNull:    "请求参数不能为空",
+	CodeUserIsNotEnabled: "用户未激活",
 
 	CodeSMSNotSend:    "短信发送失败",
 	CodeSMSCodeExpire: "短信验证码失效",
