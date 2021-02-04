@@ -5,6 +5,7 @@ import (
 	"project/app/admin/models/dto"
 	"project/app/admin/service"
 	"project/common/api"
+	"project/utils"
 	"project/utils/app"
 
 	"github.com/gin-gonic/gin"
@@ -208,4 +209,87 @@ func SelectForeNeedMenuHandler(c *gin.Context) {
 	}
 	//返回响应
 	app.ResponseSuccess(c, data)
+}
+
+// ReturnToAllMenusHandler 返回所有菜单
+// @Summary 查询出该级别下属菜单
+// @Description Author：Cgl 2021/02/04 获得身份令牌
+// @Tags 系统：菜单管理 Menu Controller
+// @Accept application/json
+// @Produce application/json
+// @Param object body pid false "查询参数"
+// @Security ApiKeyAuth
+// @Success 200 {object} models._ReturnToAllMenusBo
+// @Router /api/menus/lazy [get]
+func ReturnToAllMenusHandler(c *gin.Context) {
+	var pidInt int
+	pid := c.Query("pid")
+	pidInt, err := utils.StringToInt(pid)
+	if err != nil {
+		zap.L().Error("string转int出错", zap.Error(err))
+		app.ResponseSuccess(c, app.CodeParamTypeBindError)
+		return
+	}
+	// 业务逻辑处理
+	// TODO
+	m := new(service.Menu)
+	var data []*bo.ReturnToAllMenusBo
+	data, err = m.ReturnToAllMenus(pidInt)
+	if err != nil {
+		zap.L().Error("ReturnToAllMenus failed", zap.Error(err))
+		app.ResponseError(c, app.CodeSelectOperationFail)
+		return
+	}
+	// 返回响应
+	app.ResponseSuccess(c, data)
+}
+
+// DownMenusHandler 导出菜单数据
+// @Summary 导出菜单数据
+// @Description Author：Cgl 2021/02/04 获得身份令牌
+// @Tags 系统：菜单管理 Menu Controller
+// @Accept application/json
+// @Produce application/json
+// @Param object body dto.DownloadMenuDto false "查询参数"
+// @Security ApiKeyAuth
+// @Success 200 {object} models._ResponseLogin
+// @Router /api/menus/download [get]
+func DownMenusHandler(c *gin.Context) {
+
+	// 1. 获取参数，检验参数
+	menu := new(dto.DownloadMenuDto)
+	if err := c.ShouldBind(&menu); err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+	orderJsonData, err := utils.OrderJson(menu.Orders)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+
+	// 2. 参数正确执行响应
+	m := service.Menu{}
+	menuData, err := m.DownloadMenuInfoBo(menu, orderJsonData)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+
+	// 3. 返回文件数据
+	var res []interface{}
+	for _, menu := range menuData {
+		res = append(res, &bo.DownloadMenuInfoBo{
+			Title:      menu.Title,
+			Type:       menu.Type,
+			Permission: menu.Permission,
+			IFrame:     menu.IFrame,
+			Hidden:     menu.Hidden,
+			Cache:      menu.Cache,
+			CreateTime: menu.CreateTime,
+		})
+	}
+	content := utils.ToExcel([]string{`菜单标题`, `菜单类型`, `权限标识`, `外链菜单`, `菜单可见`, `是否缓存`, `创建时间`}, res)
+	utils.ResponseXls(c, content, "菜单数据")
+
 }

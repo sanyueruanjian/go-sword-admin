@@ -118,3 +118,10 @@ type _ResponseDept struct {
 	Code    app.ResCode `json:"code"`    // 业务响应状态码
 	Message string      `json:"message"` // 提示信息
 }
+
+// _DownMenusHandler 返回全部菜单
+type _ResponseMenuData struct {
+	Code    app.ResCode              `json:"code"`    // 业务响应状态码
+	Message string                   `json:"message"` // 提示信息
+	Data    []*bo.ReturnToAllMenusBo `json:"data"`    // 数据
+}
