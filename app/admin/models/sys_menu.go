@@ -158,10 +158,10 @@ func (m *SysMenu) SelectForeNeedMenu(user *RedisUserInfo) (data []*bo.SelectFore
 			return
 		}
 		result.AlwaysShow = false
-		result.Redirect = "noredict"
+		result.Redirect = "index"
 		if len(childMenus) != 0 {
 			result.AlwaysShow = true
-			result.Redirect = "index"
+			result.Redirect = "noredirect"
 		}
 		//查询下一级
 		for _, menu := range childMenus {
