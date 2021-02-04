@@ -23,7 +23,7 @@ func Setup(cfg *config.Application) *gin.Engine {
 	}
 
 	r := gin.New()
-	r.Use(middleware.Cors(), middleware.GinLogger(), middleware.GinRecovery(true), middleware.Sentinel(200))
+	r.Use(middleware.Cors(), middleware.GinLogger(), middleware.Sentinel(200))
 	r.Static(cfg.StaticFileUrl, cfg.StaticPath)
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "ok")
