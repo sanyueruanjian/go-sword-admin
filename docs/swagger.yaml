@@ -1140,25 +1140,27 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Author：Cgl 2021/01/30 获得身份令牌
+      description: Author：Lbl 2021/02/2 获得身份令牌
       parameters:
       - description: 查询参数
         in: body
         name: object
         schema:
-          $ref: '#/definitions/dto.DeleteMenuDto'
+          items:
+            type: integer
+          type: array
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models._ResponseDeleteMenu'
+            $ref: '#/definitions/models._ResponseDept'
       security:
       - ApiKeyAuth: []
-      summary: 删除菜单
+      summary: 删除部门
       tags:
-      - 系统：菜单管理 Menu Controller
+      - 系统：部门管理 Dept Controller
     get:
       consumes:
       - application/json

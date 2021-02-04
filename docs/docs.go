@@ -746,7 +746,7 @@ var doc = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Author：Cgl 2021/01/30 获得身份令牌",
+                "description": "Author：Lbl 2021/02/2 获得身份令牌",
                 "consumes": [
                     "application/json"
                 ],
@@ -754,16 +754,19 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "系统：菜单管理 Menu Controller"
+                    "系统：部门管理 Dept Controller"
                 ],
-                "summary": "删除菜单",
+                "summary": "删除部门",
                 "parameters": [
                     {
                         "description": "查询参数",
                         "name": "object",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/dto.DeleteMenuDto"
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
                         }
                     }
                 ],
@@ -771,7 +774,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models._ResponseDeleteMenu"
+                            "$ref": "#/definitions/models._ResponseDept"
                         }
                     }
                 }
