@@ -2,7 +2,6 @@ package apis
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"project/app/admin/models/bo"
@@ -193,7 +192,7 @@ func MenuRolesHandler(c *gin.Context) {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
-	fmt.Println(roleMenus)
+
 	// 2.参数正确执行响应
 	err = r.UpdateRoleMenu(roleMenus.ID, roleMenus.Menus)
 	if err != nil {
@@ -249,7 +248,6 @@ func SelectRolesAllHandler(c *gin.Context) {
 		var roleData []bo.RecordRole
 		err := json.Unmarshal([]byte(val), &roleData)
 		if err == nil {
-			fmt.Println(roleData)
 			app.ResponseSuccess(c, roleData)
 			return
 		}
