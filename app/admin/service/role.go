@@ -48,17 +48,32 @@ func (e Role) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (roleD
 			}
 			recordRole.Depts = deptList
 			recordRole.Menus = menuList
+			if recordRole.Depts == nil {
+				recordRole.Depts = make([]bo.Dept, 0)
+			}
+			if recordRole.Menus == nil {
+				recordRole.Menus = make([]bo.Menu, 0)
+			}
 			roleData.Records = append(roleData.Records, recordRole)
 		}
 	}
-	roleData.Paging.Current = p.Current
-	roleData.Paging.Page = p.Current
-	roleData.Paging.SearchCount = true
-	roleData.Paging.Size = p.Size
-	roleData.Paging.Total = p.Current
-	roleData.Paging.HitCount = false
-	roleData.Paging.OptimizeCountSql = true
-	roleData.Paging.Orders = orderData
+	roleData.Current = p.Current
+	roleData.Page = p.Current
+	roleData.SearchCount = true
+	roleData.Size = p.Size
+	roleData.Total = p.Current
+	roleData.HitCount = false
+	roleData.OptimizeCountSql = true
+	for _, value := range orderData {
+		var roleOrder bo.RoleOrder
+		if value.Asc == "true" {
+			roleOrder.Asc = true
+		} else {
+			roleOrder.Asc = false
+		}
+		roleOrder.Column = value.Column
+		roleData.Orders = append(roleData.Orders, roleOrder)
+	}
 	return
 }
 
@@ -105,6 +120,7 @@ func getDeptsMenus(sysDept []models.SysDept, sysMenu []models.SysMenu) (deptList
 		menu.Permission = value.Permission
 		menu.Title = value.Title
 		menu.UpdateTime = value.UpdateTime
+		menu.Label = menu.Title
 		if value.Cache[0] == 1 {
 			menu.Cache = true
 		} else {

@@ -63,7 +63,22 @@ type Menu struct {
 //SelectRoleArrayBo 多条件查询 角色列表
 type SelectRoleArrayBo struct {
 	Records []RecordRole `json:"records"`
-	Paging  paging
+	//Paging  paging
+	Current          int         `json:"current"`
+	CountID          int         `json:"countId"`
+	MaxLimit         int         `json:"maxLimit"`
+	Page             int         `json:"pages"`
+	SearchCount      bool        `json:"searchCount"`
+	Size             int         `json:"size"`
+	Total            int         `json:"total"`
+	HitCount         bool        `json:"hitCount"`
+	OptimizeCountSql bool        `json:"optimizeCountSql"`
+	Orders           []RoleOrder `json:"orders"`
+}
+
+type RoleOrder struct {
+	Column string `json:"column"`
+	Asc    bool   `json:"asc"`
 }
 
 //SelectRoleBo 查询单个角色

@@ -64,10 +64,13 @@ func SelectRolesHandler(c *gin.Context) {
 func InsertRolesHandler(c *gin.Context) {
 	// 1.获取参数 校验参数
 	var insertrole dto.InsertRoleDto
-	if err := c.ShouldBind(&insertrole); err != nil {
-		app.ResponseError(c, app.CodeParamNotComplete)
-		return
-	}
+	err := c.ShouldBind(&insertrole)
+	//if err := c.ShouldBind(&insertrole); err != nil {
+	//	fmt.Println(1111)
+	//	fmt.Println(err)
+	//	app.ResponseError(c, app.CodeParamNotComplete)
+	//	return
+	//}
 	// 2.参数正确执行响应
 	user, err := api.GetCurrentUserInfo(c)
 	if err != nil {
@@ -104,10 +107,13 @@ func InsertRolesHandler(c *gin.Context) {
 func UpdateRolesHandler(c *gin.Context) {
 	// 1.获取参数 校验参数
 	var updaterole dto.UpdateRoleDto
-	if err := c.ShouldBind(&updaterole); err != nil {
-		app.ResponseError(c, app.CodeParamNotComplete)
-		return
-	}
+	err := c.ShouldBind(&updaterole)
+	// TODO
+	//if err := c.ShouldBind(&updaterole); err != nil {
+	//	app.ResponseError(c, app.CodeParamNotComplete)
+	//	return
+	//}
+
 	// 2.参数正确执行响应
 	user, err := api.GetCurrentUserInfo(c)
 	if err != nil {
@@ -143,10 +149,8 @@ func UpdateRolesHandler(c *gin.Context) {
 // @Router /api/roles [delete]
 func DeleteRolesHandler(c *gin.Context) {
 	// 1.获取参数 校验参数
-	ids := []byte(c.PostForm("ids"))
-	idsData := []int{}
-	err := json.Unmarshal(ids, &idsData)
-	if err != nil {
+	var ids []int
+	if err := c.ShouldBindJSON(&ids); err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
@@ -157,7 +161,7 @@ func DeleteRolesHandler(c *gin.Context) {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
-	err = r.DeleteRole(idsData, user.UserId)
+	err = r.DeleteRole(ids, user.UserId)
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
@@ -336,14 +340,12 @@ func DownRolesHandler(c *gin.Context) {
 // @Success 200 {object} models._ResponseLogin
 // @Router /api/roles/level [get]
 func LevelRolesHandler(c *gin.Context) {
-	//user, err := api.GetCurrentUserInfo(c)
-	//if err != nil {
-	//	app.ResponseError(c, app.CodeParamNotComplete)
-	//	return
-	//}
-	//level, err := r.SelectRoleLevel(user.Role)
-	// TODO
-	level, err := r.SelectRoleLevel([]string{"超级管理员", "普通用户"})
+	user, err := api.GetCurrentUserInfo(c)
+	if err != nil {
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+	level, err := r.SelectRoleLevel(user.Role)
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return

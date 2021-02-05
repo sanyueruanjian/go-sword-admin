@@ -46,7 +46,7 @@ func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sy
 	// 查询
 	if p.Blurry != "" && p.StartTime == "" {
 		// 查询Blurry
-		err = orm.Eloquent.Where("name like ? or description like ?",
+		err = orm.Eloquent.Where("name like ? or description like ? and is_deleted=0",
 			"%"+p.Blurry+"%", "%"+p.Blurry+"%").
 			Limit(p.Size).Offset((p.Current - 1) * p.Size).Order(order).Find(&sysRole).Error
 		return
@@ -63,7 +63,7 @@ func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sy
 			err = err1
 			return
 		}
-		err = orm.Eloquent.Where("create_time >= ? and update_time <= ?", startTime, endTime).
+		err = orm.Eloquent.Where("create_time >= ? and create_time <= ? and is_deleted=0", startTime, endTime).
 			Limit(p.Size).Offset((p.Current - 1) * p.Size).Order(order).Find(&sysRole).Error
 		return
 	}
@@ -79,12 +79,12 @@ func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sy
 			err = err1
 			return
 		}
-		err = orm.Eloquent.Where("name like ? or description like ? and create_time >= ? and update_time <= ?",
+		err = orm.Eloquent.Where("name like ? or description like ? and create_time >= ? and create_time <= ?  and is_deleted=0",
 			"%"+p.Blurry+"%", "%"+p.Blurry+"%", startTime, endTime).
 			Limit(p.Size).Offset((p.Current - 1) * p.Size).Order(order).Find(&sysRole).Error
 		return
 	}
-	if err = orm.Eloquent.Limit(p.Size).Offset((p.Current - 1) * p.Size).Order(order).Find(&sysRole).Error; err != nil {
+	if err = orm.Eloquent.Where("is_deleted=0").Limit(p.Size).Offset((p.Current - 1) * p.Size).Order(order).Find(&sysRole).Error; err != nil {
 		return
 	}
 	return
