@@ -34,20 +34,40 @@ func (e *Job) JobListDownload(p *dto.GetJobList) (content io.ReadSeeker, err err
 }
 
 // GetJobList 查询岗位列表业务逻辑
-func (e *Job) GetJobList(p *dto.GetJobList) (res []*bo.GetJobList, err error) {
+func (e *Job) GetJobList(p *dto.GetJobList) (res *bo.GetJob, err error) {
 	job := new(models.SysJob)
-	jobList, err := job.GetJobList(p)
+
+	orderJson, err := utils.OrderJson(p.Orders)
+	if err != nil {
+		return
+	}
+	orderRule := utils.GetOrderRule(orderJson)
+	jobList, count, err := job.GetJobList(p, orderRule)
 	if err != nil {
 		return
 	}
 
+	var getJobList []*bo.GetJobList
 	for _, job := range jobList {
-		res = append(res, &bo.GetJobList{
-			Name:    job.Name,
-			Enabled: utils.ByteIntoInt(job.Enabled),
-			JobSort: job.JobSort,
+		getJobList = append(getJobList, &bo.GetJobList{
+			Id:         job.ID,
+			JobSort:    job.JobSort,
+			CreateBy:   job.CreateBy,
+			UpdateBy:   job.UpdateBy,
+			CreateTime: job.CreateTime,
+			UpdateTime: job.UpdateTime,
+			Enabled:    utils.ByteIntoInt(job.Enabled),
+			Name:       job.Name,
 		})
 	}
+
+	res = new(bo.GetJob)
+	res.Size = p.Size
+	res.Current = p.Current
+	res.Orders = orderJson
+	res.Records = getJobList
+	res.Total = int(count)
+	res.Pages = utils.PagesCount(res.Total, p.Size)
 
 	return
 }
@@ -76,7 +96,7 @@ func (e *Job) Update(userId int, p *dto.UpdateJob) (err error) {
 	job := new(models.SysJob)
 	job.JobSort = p.JobSort
 	job.Name = p.Name
-	job.Enabled = utils.BoolIntoByte(p.Enabled)
+	job.Enabled = []byte{p.Enabled}
 	job.UpdateBy = userId
 	err = job.UpdateJob(p.ID)
 	return

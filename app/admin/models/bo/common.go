@@ -2,8 +2,8 @@ package bo
 
 //order 排序规则
 type Order struct {
-	Column string
-	Asc    string
+	Column string `json:"column"`
+	Asc    string `json:"asc"`
 }
 
 type MenuPermission struct {

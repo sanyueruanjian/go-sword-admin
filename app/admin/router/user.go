@@ -39,6 +39,7 @@ func userAuthRouter(v1 *gin.RouterGroup) {
 	}
 	r1 := v1.Group("/auth")
 	{
+		r1.DELETE("logout", apis.LogoutHandler)
 		r1.GET("/info", apis.SelectUserInfoHandler)
 	}
 }
