@@ -17,7 +17,7 @@ type InsertRoleDto struct {
 	Name        string `form:"name" binding:"required"`      //姓名
 	DataScope   string `form:"dataScope" binding:"required"` //数据权限
 	Description string `form:"description" default:""`       //描述
-	Depts       string `form:"depts"`                        //部门
+	Depts       []int  `form:"depts"`                        //部门
 }
 
 //UpdateRoleDto 修改角色
@@ -29,9 +29,15 @@ type UpdateRoleDto struct {
 	Name        string `form:"name" binding:"required"`       //姓名
 	DataScope   string `form:"dataScope" binding:"required"`  //数据权限
 	Description string `form:"description" default:""`        //描述
-	UpdateTime  string `form:"updateTime" binding:"required"` //更新时间
-	CreateTime  string `form:"createTime" binding:"required"` //创建时间
+	UpdateTime  int64  `form:"updateTime" binding:"required"` //更新时间
+	CreateTime  int64  `form:"createTime" binding:"required"` //创建时间
 	Protection  string `form:"protection"`                    //
-	Depts       string `form:"depts" binding:"required"`      //部门 (一般用为空)
-	Menus       string `form:"menus"`                         //菜单列表
+	Depts       []int  `form:"depts" binding:"required"`      //部门 (一般用为空)
+	Menus       []int  `form:"menus"`                         //菜单列表
+}
+
+// 角色菜单分配
+type RoleMenus struct {
+	ID    int   `form:"id"`
+	Menus []int `form:"menus"`
 }

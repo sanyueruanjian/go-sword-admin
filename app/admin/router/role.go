@@ -7,9 +7,10 @@ import (
 )
 
 func init() {
-	routerNoCheckRole = append(routerNoCheckRole, roleAuthRouter)
-	// TODO 认证
-	//routerCheckRole = append(routerCheckRole, roleAuthRouter)
+	// 无需认证接口
+	//routerNoCheckRole = append(routerNoCheckRole, roleAuthRouter)
+	// 认证
+	routerCheckRole = append(routerCheckRole, roleAuthRouter)
 }
 
 func roleAuthRouter(v1 *gin.RouterGroup) {

@@ -1,7 +1,6 @@
 package service
 
 import (
-	"encoding/json"
 	"project/app/admin/models"
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
@@ -48,17 +47,32 @@ func (e Role) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (roleD
 			}
 			recordRole.Depts = deptList
 			recordRole.Menus = menuList
+			if recordRole.Depts == nil {
+				recordRole.Depts = make([]bo.Dept, 0)
+			}
+			if recordRole.Menus == nil {
+				recordRole.Menus = make([]bo.Menu, 0)
+			}
 			roleData.Records = append(roleData.Records, recordRole)
 		}
 	}
-	roleData.Paging.Current = p.Current
-	roleData.Paging.Page = p.Current
-	roleData.Paging.SearchCount = true
-	roleData.Paging.Size = p.Size
-	roleData.Paging.Total = p.Current
-	roleData.Paging.HitCount = false
-	roleData.Paging.OptimizeCountSql = true
-	roleData.Paging.Orders = orderData
+	roleData.Current = p.Current
+	roleData.Page = utils.PagesCount(int(role.RoleAllNum()), p.Size)
+	roleData.SearchCount = true
+	roleData.Size = p.Size
+	roleData.Total = int(role.RoleAllNum())
+	roleData.HitCount = false
+	roleData.OptimizeCountSql = true
+	for _, value := range orderData {
+		var roleOrder bo.RoleOrder
+		if value.Asc == "true" {
+			roleOrder.Asc = true
+		} else {
+			roleOrder.Asc = false
+		}
+		roleOrder.Column = value.Column
+		roleData.Orders = append(roleData.Orders, roleOrder)
+	}
 	return
 }
 
@@ -105,6 +119,7 @@ func getDeptsMenus(sysDept []models.SysDept, sysMenu []models.SysMenu) (deptList
 		menu.Permission = value.Permission
 		menu.Title = value.Title
 		menu.UpdateTime = value.UpdateTime
+		menu.Label = menu.Title
 		if value.Cache[0] == 1 {
 			menu.Cache = true
 		} else {
@@ -134,10 +149,7 @@ func (e Role) InsertRole(p dto.InsertRoleDto, userId int) (err error) {
 	role.Description = p.Description
 	role.CreateBy = userId
 	role.UpdateBy = userId
-	depts := []byte(p.Depts)
-	deptsData := []int{}
-	err = json.Unmarshal(depts, &deptsData)
-	if err = role.InsertRole(deptsData); err != nil {
+	if err = role.InsertRole(p.Depts); err != nil {
 		return
 	}
 	return
@@ -154,29 +166,14 @@ func (e Role) UpdateRole(p dto.UpdateRoleDto, userId int) (err error) {
 	role.DataScope = p.DataScope
 	role.Description = p.Description
 	role.UpdateBy = userId
-	//  参数格式化
-	updateTime, err := strconv.ParseInt(p.UpdateTime, 10, 64)
-	if err != nil {
-		return
-	}
-	role.UpdateTime = updateTime
+	role.UpdateTime = p.UpdateTime
 	if p.Protection == "true" {
 		role.IsProtection = append(role.IsProtection, 1)
 	} else {
 		role.IsProtection = append(role.IsProtection, 0)
 	}
 	role.IsDeleted = append(role.IsDeleted, 0)
-	depts := []byte(p.Depts)
-	deptsData := []int{}
-	if err = json.Unmarshal(depts, &deptsData); err != nil {
-		return
-	}
-	menus := []byte(p.Menus)
-	menusData := []int{}
-	if err = json.Unmarshal(menus, &menusData); err != nil {
-		return
-	}
-	if err = role.UpdateRole(deptsData, menusData); err != nil {
+	if err = role.UpdateRole(p.Depts, p.Menus); err != nil {
 		return
 	}
 	return
@@ -239,7 +236,7 @@ func (e Role) SelectRoleOne(id int) (roleData bo.SelectRoleBo, err error) {
 }
 
 // 获取所有角色
-func (e Role) SelectRoleAll() (roleAll bo.SelectAllRoleBo, err error) {
+func (e Role) SelectRoleAll() (roleAll []bo.RecordRole, err error) {
 	role := new(models.SysRole)
 	roleAll, err = role.SelectRoleAll()
 	return
