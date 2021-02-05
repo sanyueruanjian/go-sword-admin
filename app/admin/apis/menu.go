@@ -1,6 +1,8 @@
 package apis
 
 import (
+	"strconv"
+
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
 	"project/app/admin/service"
@@ -293,4 +295,87 @@ func DownMenusHandler(c *gin.Context) {
 	content := utils.ToExcel([]string{`菜单标题`, `菜单类型`, `权限标识`, `外链菜单`, `菜单可见`, `是否缓存`, `创建时间`}, res)
 	utils.ResponseXls(c, content, "菜单数据")
 
+}
+
+// SuperiorMenuHandler 查询菜单:根据ID获取同级与上级数据
+// @Summary 查询菜单:根据ID获取同级与上级数据
+// @Description Author：Lzc 2021/01/30 获得身份令牌
+// @Tags 系统：系统授权接口 Menu Controller
+// @Accept application/json
+// @Produce application/json
+// @Param object body dto.DataMenuDto false "查询参数"
+// @Security ApiKeyAuth
+// @Success 200 {object} models._ResponseSelectMeauDataInfoList
+// @Router /api/menus/superior [post]
+func SuperiorMenuHandler(c *gin.Context) {
+	// 1.获取参数 校验参数
+	p := new(dto.DataMenuDto)
+	//获取上下文中信息
+	user, err := api.GetCurrentUserInfo(c)
+	if err != nil {
+		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
+		return
+	}
+	if err := c.ShouldBindJSON(p); err != nil {
+		// 请求参数有误， 直接返回响应
+		zap.L().Error("InsertMenuHandler failed", zap.String("username", user.UserName), zap.Error(err))
+		c.Error(err)
+		_, ok := err.(validator.ValidationErrors)
+		if !ok {
+			app.ResponseError(c, app.CodeParamIsInvalid)
+			return
+		}
+		app.ResponseError(c, app.CodeParamNotComplete)
+		return
+	}
+	//业务逻辑处理
+	m := new(service.Menu)
+	var data []*bo.SelectSuperMenuBo
+	data, err = m.SuperiorMenu(p)
+	if err != nil {
+		zap.L().Error("Superdata menu failed", zap.Error(err))
+		app.ResponseError(c, app.CodeSelectOperationFail)
+		return
+	}
+	//返回响应
+	app.ResponseSuccess(c, data)
+}
+
+// SelectMenuHandler 返回所有子节点ID
+// @Summary 返回所有子节点ID
+// @Description Author：Lzc 2021/01/30 获得身份令牌
+// @Tags 系统：系统授权接口 Menu Controller
+// @Accept application/json
+// @Produce application/json
+// @Param object body dto.SelectChildIdDto false "查询参数"
+// @Security ApiKeyAuth
+// @Success 200 {object} models._ResponseSelectMeauDataInfoList
+// @Router /api/child [get]
+func ChildMenuHandler(c *gin.Context) {
+	// 1.获取参数 校验参数
+	p := c.Query("id")
+	//获取上下文中信息
+	user, err := api.GetCurrentUserInfo(c)
+	if err != nil {
+		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
+		return
+	}
+	atoi, err := strconv.Atoi(p)
+	if err != nil || atoi <= 0 {
+		// 请求参数有误， 直接返回响应
+		zap.L().Error("ChildMenuHandler failed", zap.String("username", user.UserName), zap.Error(err))
+		app.ResponseError(c, app.CodeParamIsInvalid)
+		return
+	}
+	var data []int
+	//业务逻辑处理
+	m := new(service.Menu)
+	data, err = m.ChildMenu(atoi)
+	if err != nil {
+		zap.L().Error("GEt ChildMenuHandler failed", zap.Error(err))
+		app.ResponseError(c, app.CodeSelectOperationFail)
+		return
+	}
+	//返回响应
+	app.ResponseSuccess(c, data)
 }

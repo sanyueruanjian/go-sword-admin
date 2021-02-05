@@ -84,3 +84,28 @@ type DownloadMenuInfoBo struct {
 	Cache      string `json:"cache"`
 	CreateTime string `json:"create_time"`
 }
+
+type SelectSuperMenuBo struct {
+	CreateBy    int                  `json:"createBy"`
+	UpdatedBy   int                  `json:"updatedBy"`
+	SubCount    int                  `json:"subCount"`
+	MenuSort    int                  `json:"menuSort"`
+	ID          int                  `json:"id"`
+	Pid         int                  `json:"pid"`
+	Type        int                  `json:"type"`
+	Cache       bool                 `json:"cache"`
+	Hidden      bool                 `json:"hidden"`
+	Leaf        bool                 `json:"leaf"`
+	Iframe      bool                 `json:"iframe"`
+	CreateTime  int64                `json:"createTime"`
+	UpdateTime  int64                `json:"updateTime"`
+	Label       string               `json:"label"`
+	Children    []*SelectSuperMenuBo `json:"children"`
+	Icon        string               `json:"icon"`
+	Component   string               `json:"component"`
+	Name        string               `json:"name"`
+	Path        string               `json:"path"`
+	Permission  string               `json:"permission"`
+	Title       string               `json:"title"`
+	HasChildren bool                 `json:"hasChildren"`
+}
