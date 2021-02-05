@@ -361,7 +361,7 @@ func ChildMenuHandler(c *gin.Context) {
 		return
 	}
 	atoi, err := strconv.Atoi(p)
-	if err != nil || atoi <= 0 {
+	if err != nil || atoi < 0 {
 		// 请求参数有误， 直接返回响应
 		zap.L().Error("ChildMenuHandler failed", zap.String("username", user.UserName), zap.Error(err))
 		app.ResponseError(c, app.CodeParamIsInvalid)
