@@ -6,11 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"project/app/admin/models/bo"
-	"project/common/api"
-	"strconv"
-
 	"project/app/admin/models/dto"
 	"project/app/admin/service"
+	"project/common/api"
 	orm "project/common/global"
 	"project/utils"
 	"project/utils/app"
@@ -189,21 +187,15 @@ func DeleteRolesHandler(c *gin.Context) {
 // @Router /api/roles/menu [put]
 func MenuRolesHandler(c *gin.Context) {
 	// 1.获取参数 校验参数
-	id, err := strconv.Atoi(c.PostForm("id"))
+	var roleMenus dto.RoleMenus
+	err := c.ShouldBind(&roleMenus)
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
-	menus := []byte(c.PostForm("menus"))
-	menusData := []int{}
-	err = json.Unmarshal(menus, &menusData)
-	if err != nil {
-		app.ResponseError(c, app.CodeParamNotComplete)
-		return
-	}
-
+	fmt.Println(roleMenus)
 	// 2.参数正确执行响应
-	err = r.UpdateRoleMenu(id, menusData)
+	err = r.UpdateRoleMenu(roleMenus.ID, roleMenus.Menus)
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return

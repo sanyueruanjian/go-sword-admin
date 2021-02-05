@@ -35,3 +35,9 @@ type UpdateRoleDto struct {
 	Depts       []int  `form:"depts" binding:"required"`      //部门 (一般用为空)
 	Menus       []int  `form:"menus"`                         //菜单列表
 }
+
+// 角色菜单分配
+type RoleMenus struct {
+	ID    int   `form:"id"`
+	Menus []int `form:"menus"`
+}
