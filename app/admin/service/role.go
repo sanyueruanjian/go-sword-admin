@@ -236,7 +236,7 @@ func (e Role) SelectRoleOne(id int) (roleData bo.SelectRoleBo, err error) {
 }
 
 // 获取所有角色
-func (e Role) SelectRoleAll() (roleAll bo.SelectAllRoleBo, err error) {
+func (e Role) SelectRoleAll() (roleAll []bo.RecordRole, err error) {
 	role := new(models.SysRole)
 	roleAll, err = role.SelectRoleAll()
 	return

@@ -191,7 +191,7 @@ func (e SysRole) SelectRoleOne() (role SysRole, err error) {
 }
 
 // 查询所有角色
-func (e SysRole) SelectRoleAll() (roleAll bo.SelectAllRoleBo, err error) {
+func (e SysRole) SelectRoleAll() (roleAll []bo.RecordRole, err error) {
 	var sysRoleAll []SysRole
 	if err = orm.Eloquent.Find(&sysRoleAll).Error; err != nil {
 		return
@@ -254,7 +254,7 @@ func (e SysRole) SelectRoleAll() (roleAll bo.SelectAllRoleBo, err error) {
 		} else {
 			roleDate.Protection = false
 		}
-		roleAll.Records = append(roleAll.Records, roleDate)
+		roleAll = append(roleAll, roleDate)
 	}
 	return
 }

@@ -88,7 +88,7 @@ type SelectRoleBo struct {
 
 //SelectAllRoleBo 查询所有角色
 type SelectAllRoleBo struct {
-	Records []RecordRole
+	RecordRole
 }
 
 //导出角色数据
