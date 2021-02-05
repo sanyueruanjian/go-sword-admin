@@ -196,3 +196,40 @@ func (m *SysMenu) SelectForeNeedMenu(user *RedisUserInfo) (data []*bo.SelectFore
 	}
 	return results, nil
 }
+
+func (m *SysMenu) ReturnToAllMenus(pid int) (data []*SysMenu, err error) {
+	err = global.Eloquent.
+		Table("sys_menu").
+		Where("is_deleted=? AND pid = ?", []byte{0}, pid).
+		Find(&data).
+		Error
+	return data, nil
+}
+
+// 多条件查询
+func (m *SysMenu) DownloadMenu(p dto.DownloadMenuDto, orderData []bo.Order) (sysMenu []SysMenu, err error) {
+	var order string
+	for key, value := range orderData {
+		order += value.Column + " "
+		if value.Asc == "true" {
+			if key == len(orderData)-1 {
+				order += "asc "
+			} else {
+				order += "asc, "
+			}
+		} else {
+			if key == len(orderData)-1 {
+				order += "desc "
+			} else {
+				order += "desc, "
+			}
+		}
+	}
+	// 查询pid
+	if err := global.Eloquent.
+		Where("pid = ? or is_deleted = ?", m.Pid, []byte{0}).Order(order).
+		Find(&sysMenu).Error; err != nil {
+		return nil, err
+	}
+	return sysMenu, nil
+}
