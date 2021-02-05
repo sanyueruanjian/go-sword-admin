@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	mycasbin "project/pkg/casbin"
 	"project/utils"
 
 	"project/common/database/mysql"
@@ -22,7 +23,11 @@ import (
 // @contact.name marchsoft@golang
 // @contact.url http://marchsoft.cn/
 
-// @host 127.0.0.1:8977
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+
+// @host 127.0.0.1:8000
 // @BasePath
 func main() {
 	var configName string
@@ -54,6 +59,10 @@ func main() {
 	defer redis.Close()
 	zap.L().Debug(utils.Green("redis init success..."))
 
+	//初始化casbin
+	if err := mycasbin.Setup(); err != nil {
+		zap.L().Error("casbin failed set up", zap.Error(err))
+	}
 	// 5. 注册路由
 	run.Run()
 

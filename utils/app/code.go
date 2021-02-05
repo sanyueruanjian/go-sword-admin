@@ -54,6 +54,10 @@ const (
 	CodeNoUserPhone
 	// 请求参数不能为空
 	CodeParamsNotNull
+	// 用户未激活
+	CodeUserIsNotEnabled
+	// 用户名字已存在
+	CodeUserNameExist
 
 	/*
 	   1051-1070 短信业务相关
@@ -121,13 +125,13 @@ const (
 )
 
 var codeMsgMap = map[ResCode]string{
-	CodeSuccess:        "success",
-	CodeSeverError:     "服务器繁忙请重试",
-	CodeBadRequest:     "请求失败",
-	CodeDataNotFount:   "未找到资源",
-	CodeLoginExpire:    "请登录后重试",
-	CodeIdentityNotRow: "权限不足",
-
+	CodeSuccess:             "success",
+	CodeSeverError:          "服务器繁忙请重试",
+	CodeBadRequest:          "请求失败",
+	CodeDataNotFount:        "未找到资源",
+	CodeLoginExpire:         "请登录后重试",
+	CodeIdentityNotRow:      "权限不足",
+	CodeUserNameExist:       "用户名字已存在",
 	CodeOperationFail:       "操作失败",
 	CodeSelectOperationFail: "查询操作失败！",
 	CodeUpdateOperationFail: "更新操作失败！",
@@ -142,6 +146,7 @@ var codeMsgMap = map[ResCode]string{
 	CodeRegisterFail:     "注册失败，手机号已经存在",
 	CodeNoUserPhone:      "认证失败，手机号不存在",
 	CodeParamsNotNull:    "请求参数不能为空",
+	CodeUserIsNotEnabled: "用户未激活",
 
 	CodeSMSNotSend:    "短信发送失败",
 	CodeSMSCodeExpire: "短信验证码失效",

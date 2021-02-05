@@ -5,3 +5,8 @@ type SysUsersRoles struct {
 	UserId int `json:"user_id"`               //用户ID
 	RoleId int `json:"role_id"`               //角色ID
 }
+
+//表名
+func (SysUsersRoles) TableName() string {
+	return "sys_users_roles"
+}

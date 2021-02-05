@@ -7,7 +7,7 @@ settings:
     # 服务名称
     name: testApp
     # 端口号
-    port: 8977 # 服务端口号
+    port: 8000 # 服务端口号
     # 静态文件路由
     staticfileurl: /api/file/download/
     # 静态文件目录

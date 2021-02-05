@@ -1,4 +1,546 @@
 definitions:
+  bo.DeptCommon:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  bo.GetJobList:
+    properties:
+      enabled:
+        description: 状态：1启用（默认）、0禁用
+        type: integer
+      job_sort:
+        description: 排序
+        type: integer
+      name:
+        description: 岗位名称
+        type: string
+    type: object
+  bo.Job:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  bo.Order:
+    properties:
+      asc:
+        type: string
+      column:
+        type: string
+    type: object
+  bo.RecordDept:
+    properties:
+      createBy:
+        type: integer
+      createTime:
+        type: integer
+      deptSort:
+        type: integer
+      enabled:
+        type: boolean
+      hasChildren:
+        type: boolean
+      id:
+        type: integer
+      label:
+        type: string
+      leaf:
+        type: boolean
+      name:
+        type: string
+      pid:
+        type: integer
+      updateBy:
+        type: integer
+      updateTime:
+        type: integer
+    type: object
+  bo.RecordUser:
+    properties:
+      avatarName:
+        type: string
+      avatarPath:
+        type: string
+      createBy:
+        type: integer
+      createTime:
+        type: integer
+      dept:
+        $ref: '#/definitions/bo.DeptCommon'
+        type: object
+      deptId:
+        type: integer
+      email:
+        type: string
+      enabled:
+        type: boolean
+      gender:
+        type: boolean
+      id:
+        type: integer
+      jobs:
+        items:
+          $ref: '#/definitions/bo.Job'
+        type: array
+      nickName:
+        type: string
+      phone:
+        type: string
+      pwdResetTime:
+        type: integer
+      role:
+        items:
+          $ref: '#/definitions/bo.Role'
+        type: array
+      updateTime:
+        type: integer
+      updatedBy:
+        type: integer
+      username:
+        type: string
+    type: object
+  bo.Role:
+    properties:
+      dataScope:
+        type: string
+      id:
+        type: integer
+      level:
+        type: integer
+      name:
+        type: string
+    type: object
+  bo.SelectForeNeedMenuBo:
+    properties:
+      alwaysShow:
+        type: boolean
+      children:
+        items:
+          $ref: '#/definitions/bo.children'
+        type: array
+      component:
+        type: string
+      hidden:
+        type: boolean
+      meta:
+        $ref: '#/definitions/bo.meta'
+        type: object
+      name:
+        type: string
+      path:
+        type: string
+      redirect:
+        type: string
+    type: object
+  bo.UserInfoListBo:
+    properties:
+      count_id:
+        type: integer
+      current:
+        type: integer
+      hitCount:
+        type: boolean
+      maxLimit:
+        type: integer
+      optimizeCountSql:
+        type: boolean
+      orders:
+        items:
+          $ref: '#/definitions/bo.Order'
+        type: array
+      page:
+        type: integer
+      records:
+        description: 记录查询
+        items:
+          $ref: '#/definitions/bo.RecordUser'
+        type: array
+      searchCount:
+        type: boolean
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  bo.children:
+    properties:
+      component:
+        type: string
+      hidden:
+        type: string
+      meta:
+        items:
+          $ref: '#/definitions/bo.meta'
+        type: array
+    type: object
+  bo.meta:
+    properties:
+      icon:
+        type: string
+      noCache:
+        type: boolean
+      title:
+        type: string
+    type: object
+  dto.AddJob:
+    properties:
+      enabled:
+        description: 岗位状态
+        type: boolean
+      id:
+        description: ID
+        type: integer
+      jobSort:
+        description: 排序
+        type: integer
+      name:
+        description: 岗位名称
+        type: string
+    required:
+    - enabled
+    - jobSort
+    - name
+    type: object
+  dto.DeleteMenuDto:
+    type: object
+  dto.DeleteUserDto:
+    type: object
+  dto.DownloadUserInfoDto:
+    properties:
+      current:
+        description: 当前页
+        type: integer
+      enabled:
+        description: 是否激活
+        type: boolean
+      orders:
+        description: 排序规则
+        type: string
+      size:
+        description: 展示数量
+        type: integer
+    type: object
+  dto.GetJobList:
+    properties:
+      current:
+        description: 当前页
+        type: integer
+      endTime:
+        description: 结束时间
+        type: integer
+      name:
+        description: 模糊查询
+        type: string
+      orders:
+        description: 排序规则
+        type: string
+      size:
+        description: 每页数据
+        type: integer
+      startTime:
+        description: 创建时间
+        type: integer
+    required:
+    - current
+    - orders
+    - size
+    type: object
+  dto.InsertDeptDto:
+    properties:
+      deptSort:
+        description: 部门排序
+        type: integer
+      enabled:
+        description: 等级
+        type: string
+      isTop:
+        description: 是否为顶级部门
+        type: string
+      name:
+        description: 部门名称
+        type: string
+      pid:
+        description: 上级部门id
+        type: integer
+      subCount:
+        description: 子部门个数
+        type: integer
+    required:
+    - deptSort
+    - enabled
+    - name
+    - pid
+    - subCount
+    type: object
+  dto.InsertMenuDto:
+    properties:
+      cache:
+        type: boolean
+      component:
+        type: string
+      hidden:
+        type: boolean
+      icon:
+        type: string
+      id:
+        type: integer
+      iframe:
+        type: boolean
+      menuSort:
+        type: integer
+      name:
+        type: string
+      path:
+        type: string
+      permission:
+        type: string
+      pid:
+        type: integer
+      roles:
+        items:
+          type: integer
+        type: array
+      title:
+        type: string
+      type:
+        type: integer
+    required:
+    - component
+    - icon
+    - id
+    - menuSort
+    - name
+    - path
+    - permission
+    - pid
+    - roles
+    - title
+    - type
+    type: object
+  dto.SelectDeptDto:
+    properties:
+      current:
+        description: 当前页
+        type: integer
+      enabled:
+        description: 状态：1启用（默认）、0禁用
+        type: boolean
+      endTime:
+        description: 过期时间
+        type: integer
+      name:
+        description: 模糊
+        type: string
+      orders:
+        description: 排序规则
+        type: string
+      pid:
+        description: 上级部门（顶级部门为0，默认为0）
+        type: integer
+      size:
+        description: 每页数据
+        type: integer
+      startTime:
+        description: 创建时间
+        type: integer
+    required:
+    - current
+    - orders
+    - size
+    type: object
+  dto.SelectMenuDto:
+    properties:
+      blurry:
+        type: string
+      current:
+        type: integer
+      endTime:
+        type: integer
+      orders:
+        type: string
+      pid:
+        description: 父id
+        type: integer
+      size:
+        type: integer
+      statTime:
+        type: integer
+    required:
+    - current
+    - orders
+    - size
+    type: object
+  dto.SelectUserInfoArrayDto:
+    properties:
+      blurry:
+        description: 模糊
+        type: string
+      current:
+        description: current 当前页
+        type: integer
+      depID:
+        description: 本门id
+        type: integer
+      enabled:
+        description: 是否激活
+        type: boolean
+      orders:
+        description: 排序规则与字段
+        type: string
+      size:
+        description: 当前页最大数据量
+        type: integer
+    type: object
+  dto.UpdateDeptDto:
+    properties:
+      creatTime:
+        type: integer
+      createBy:
+        type: integer
+      deptSort:
+        description: 部门排序
+        type: integer
+      enabled:
+        description: 等级
+        type: string
+      hasChildren:
+        description: 是否有子节点
+        type: boolean
+      id:
+        description: 部门id
+        type: integer
+      isTop:
+        description: 是否为根节点
+        type: string
+      label:
+        description: 原名称
+        type: string
+      leaf:
+        description: 是否为子节点
+        type: boolean
+      name:
+        description: 部门名称
+        type: string
+      pid:
+        description: 上级部门id
+        type: integer
+      subCount:
+        description: 子部门个数
+        type: integer
+      updateBy:
+        type: integer
+      updateTime:
+        type: integer
+    required:
+    - deptSort
+    - enabled
+    - id
+    - name
+    - pid
+    - subCount
+    type: object
+  dto.UpdateJob:
+    properties:
+      enabled:
+        description: 岗位状态
+        type: boolean
+      id:
+        description: ID
+        type: integer
+      jobSort:
+        description: 排序
+        type: integer
+      name:
+        description: 岗位名称
+        type: string
+    required:
+    - enabled
+    - jobSort
+    - name
+    type: object
+  dto.UpdateUserCenterDto:
+    properties:
+      gender:
+        description: 性别
+        type: boolean
+      id:
+        description: id
+        type: integer
+      nickName:
+        description: 昵称
+        type: string
+      phone:
+        description: 手机号
+        type: string
+    required:
+    - id
+    - nickName
+    - phone
+    type: object
+  dto.UpdateUserDto:
+    properties:
+      avatarName:
+        description: 头像名字
+        type: string
+      avatarPath:
+        description: 头像地址
+        type: string
+      deptid:
+        description: 部门
+        type: integer
+      email:
+        description: 邮箱 (目前不传)
+        type: string
+      enabled:
+        description: 是否激活
+        type: string
+      gender:
+        description: 性别
+        type: string
+      id:
+        description: 用户id
+        type: integer
+      jobs:
+        description: 职位
+        items:
+          type: integer
+        type: array
+      nickName:
+        description: 昵称
+        type: string
+      phone:
+        description: 手机号
+        type: string
+      roles:
+        description: 角色
+        items:
+          type: integer
+        type: array
+      username:
+        description: 用户名
+        type: string
+    required:
+    - deptid
+    - id
+    - nickName
+    - phone
+    - username
+    type: object
+  dto.UpdateUserPassDto:
+    properties:
+      newPass:
+        description: 新密码
+        type: string
+      oldPass:
+        description: 旧密码
+        type: string
+    required:
+    - newPass
+    type: object
   dto.UserLoginDto:
     properties:
       code:
@@ -24,7 +566,7 @@ definitions:
       code:
         description: 业务响应状态码
         type: integer
-      data:
+      img:
         description: base64验证码
         type: string
       message:
@@ -34,15 +576,74 @@ definitions:
         description: 验证码id
         type: string
     type: object
+  models._ResponseDeleteMenu:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseDeleteUser:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseDept:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      message:
+        description: 提示信息
+        type: string
+    type: object
   models._ResponseFile:
     properties:
       code:
         description: 业务响应状态码
         type: integer
       data:
-        $ref: '#/definitions/public.FileResponse'
+        $ref: '#/definitions/models.FileResponse'
         description: 数据
         type: object
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseGetJobList:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      data:
+        description: 数据
+        items:
+          $ref: '#/definitions/bo.GetJobList'
+        type: array
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseInsertMenu:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseInsertUser:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
       message:
         description: 提示信息
         type: string
@@ -63,7 +664,73 @@ definitions:
         description: 提示信息
         type: string
     type: object
-  public.FileResponse:
+  models._ResponseSelectDeptList:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      data:
+        $ref: '#/definitions/bo.RecordDept'
+        description: 数据
+        type: object
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseSelectForeNeedMenu:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      data:
+        $ref: '#/definitions/bo.SelectForeNeedMenuBo'
+        description: 数据
+        type: object
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseSelectUserInfoList:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      data:
+        $ref: '#/definitions/bo.UserInfoListBo'
+        description: 数据
+        type: object
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseUpdateMenu:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseUpdateUser:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseUpdateUserCenter:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models.FileResponse:
     properties:
       full_path:
         description: 文件完整地址
@@ -81,7 +748,7 @@ definitions:
         description: 文件类型
         type: string
     type: object
-host: 127.0.0.1:8977
+host: 127.0.0.1:8000
 info:
   contact:
     name: marchsoft@golang
@@ -108,6 +775,23 @@ paths:
       summary: 获取图片验证码
       tags:
       - 系统：系统授权接口 Authorization Controller
+  /api/auth/info:
+    get:
+      consumes:
+      - application/json
+      description: Author：Cgl 2021/02/01 获得身份令牌
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseSelectUserInfoList'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询用户详细
+      tags:
+      - 系统：用户管理 User Controller
   /api/auth/login:
     post:
       consumes:
@@ -131,6 +815,126 @@ paths:
       summary: 登录授权接口
       tags:
       - 系统：系统授权接口 Authorization Controller
+  /api/dept:
+    get:
+      consumes:
+      - application/json
+      description: Author：Lbl 2021/02/2 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.SelectDeptDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseSelectDeptList'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询部门
+      tags:
+      - 系统：部门管理 Dept Controller
+    post:
+      consumes:
+      - application/json
+      description: Author：Lbl 2021/02/2 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UpdateDeptDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseDept'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改部门
+      tags:
+      - 系统：部门管理 Dept Controller
+  /api/dept/download:
+    get:
+      consumes:
+      - application/json
+      description: Author：Lbl 2021/02/3
+      parameters:
+      - description: 当前页
+        in: query
+        name: current
+        required: true
+        type: integer
+      - description: 状态：1启用（默认）、0禁用
+        in: query
+        name: enabled
+        type: boolean
+      - description: 过期时间
+        in: query
+        name: endTime
+        type: integer
+      - description: 模糊
+        in: query
+        name: name
+        type: string
+      - description: 排序规则
+        in: query
+        name: orders
+        required: true
+        type: string
+      - description: 上级部门（顶级部门为0，默认为0）
+        in: query
+        name: pid
+        type: integer
+      - description: 每页数据
+        in: query
+        name: size
+        required: true
+        type: integer
+      - description: 创建时间
+        in: query
+        name: startTime
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 导出部门数据
+      tags:
+      - 系统：部门管理 Dept Controller
+  /api/dept/superior:
+    post:
+      consumes:
+      - application/json
+      description: Author：Lbl 2021/02/3 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseSelectDeptList'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询部门
+      tags:
+      - 系统：部门管理 Dept Controller
   /api/file/uploadFile:
     post:
       consumes:
@@ -177,4 +981,671 @@ paths:
       summary: 文件上传（图片）
       tags:
       - 文件：文件管理 File Controller
+  /api/job:
+    delete:
+      consumes:
+      - application/json
+      description: Author：JiaKunLi 2021/02/1
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseInsertMenu'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除岗位
+      tags:
+      - 系统：岗位管理 job Controller
+    get:
+      consumes:
+      - application/json
+      description: Author：JiaKunLi 2021/02/1
+      parameters:
+      - description: 当前页
+        in: query
+        name: current
+        required: true
+        type: integer
+      - description: 结束时间
+        in: query
+        name: endTime
+        type: integer
+      - description: 模糊查询
+        in: query
+        name: name
+        type: string
+      - description: 排序规则
+        in: query
+        name: orders
+        required: true
+        type: string
+      - description: 每页数据
+        in: query
+        name: size
+        required: true
+        type: integer
+      - description: 创建时间
+        in: query
+        name: startTime
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseGetJobList'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询岗位
+      tags:
+      - 系统：岗位管理 job Controller
+    post:
+      consumes:
+      - application/json
+      description: Author：JiaKunLi 2021/02/1
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.AddJob'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseInsertMenu'
+      security:
+      - ApiKeyAuth: []
+      summary: 新增岗位
+      tags:
+      - 系统：岗位管理 job Controller
+    put:
+      consumes:
+      - application/json
+      description: Author：JiaKunLi 2021/02/1
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UpdateJob'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseInsertMenu'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改岗位
+      tags:
+      - 系统：岗位管理 job Controller
+  /api/job/download:
+    get:
+      consumes:
+      - application/json
+      description: Author：JiaKunLi 2021/02/1
+      parameters:
+      - description: 当前页
+        in: query
+        name: current
+        required: true
+        type: integer
+      - description: 结束时间
+        in: query
+        name: endTime
+        type: integer
+      - description: 模糊查询
+        in: query
+        name: name
+        type: string
+      - description: 排序规则
+        in: query
+        name: orders
+        required: true
+        type: string
+      - description: 每页数据
+        in: query
+        name: size
+        required: true
+        type: integer
+      - description: 创建时间
+        in: query
+        name: startTime
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 导出岗位数据
+      tags:
+      - 系统：岗位管理 job Controller
+  /api/menus:
+    delete:
+      consumes:
+      - application/json
+      description: Author：Lbl 2021/02/2 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseDept'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除部门
+      tags:
+      - 系统：部门管理 Dept Controller
+    get:
+      consumes:
+      - application/json
+      description: Author：Cgl 2021/01/30 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.SelectMenuDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseInsertMenu'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询菜单
+      tags:
+      - 系统：菜单管理 Menu Controller
+    post:
+      consumes:
+      - application/json
+      description: Author：Cgl 2021/01/30 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.InsertMenuDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseInsertMenu'
+      security:
+      - ApiKeyAuth: []
+      summary: 新增菜单
+      tags:
+      - 系统：菜单管理 Menu Controller
+    put:
+      consumes:
+      - application/json
+      description: Author：Cgl 2021/01/30 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.DeleteMenuDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseUpdateMenu'
+      security:
+      - ApiKeyAuth: []
+      summary: 更新菜单
+      tags:
+      - 系统：菜单管理 Menu Controller
+  /api/menus/build:
+    get:
+      consumes:
+      - application/json
+      description: Author：Cgl 2021/02/01 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.DeleteMenuDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseSelectForeNeedMenu'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询前端所需菜单
+      tags:
+      - 系统：菜单管理 Menu Controller
+  /api/roles:
+    delete:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除角色
+      tags:
+      - 系统：系统授权接口 Role Controller
+    get:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 多条件查询角色
+      tags:
+      - 系统：系统授权接口 Role Controller
+    post:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 新增角色
+      tags:
+      - 系统：系统授权接口 Role Controller
+    put:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改角色
+      tags:
+      - 系统：系统授权接口 Role Controller
+  /api/roles/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取单个角色
+      tags:
+      - 系统：系统授权接口 Role Controller
+  /api/roles/all:
+    get:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 返回全部角色
+      tags:
+      - 系统：系统授权接口 Role Controller
+  /api/roles/download:
+    get:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 导出角色数据
+      tags:
+      - 系统：系统授权接口 Role Controller
+  /api/roles/level:
+    get:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取当前登录用户级别
+      tags:
+      - 系统：系统授权接口 Role Controller
+  /api/roles/menu:
+    put:
+      consumes:
+      - application/json
+      description: Author：Ymq 2021/01/29 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改角色菜单
+      tags:
+      - 系统：系统授权接口 Role Controller
+  /api/user/download:
+    get:
+      consumes:
+      - application/json
+      description: Author：JiaKunLi 2021/02/1
+      parameters:
+      - description: 当前页
+        in: query
+        name: current
+        type: integer
+      - description: 是否激活
+        in: query
+        name: enabled
+        type: boolean
+      - description: 排序规则
+        in: query
+        name: orders
+        type: string
+      - description: 展示数量
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 导出用户数据
+      tags:
+      - 系统：用户管理 User Controller
+  /api/users:
+    delete:
+      consumes:
+      - application/json
+      description: Author：Cgl 2021/02/02 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.DeleteUserDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseDeleteUser'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除用户
+      tags:
+      - 系统：用户管理 User Controller
+    get:
+      consumes:
+      - application/json
+      description: Author：Cgl 2021/02/01 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.SelectUserInfoArrayDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseSelectUserInfoList'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询用户详细
+      tags:
+      - 系统：用户管理 User Controller
+    post:
+      consumes:
+      - application/json
+      description: Author：Cgl 2021/02/01 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.InsertMenuDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseInsertUser'
+      security:
+      - ApiKeyAuth: []
+      summary: 新增用户
+      tags:
+      - 系统：用户管理 User Controller
+    put:
+      consumes:
+      - application/json
+      description: Author：Cgl 2021/02/02 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UpdateUserCenterDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseUpdateUser'
+      security:
+      - ApiKeyAuth: []
+      summary: 更新用户 个人中心
+      tags:
+      - 系统：用户管理 User Controller
+  /api/users/center:
+    put:
+      consumes:
+      - application/json
+      description: Author：Cgl 2021/02/02 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UpdateUserDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseUpdateUserCenter'
+      security:
+      - ApiKeyAuth: []
+      summary: 更新用户
+      tags:
+      - 系统：用户管理 User Controller
+  /api/users/updateAvatar:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Author：Cgl 2021/02/02
+      parameters:
+      - description: file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseFile'
+      security:
+      - ApiKeyAuth: []
+      summary: 更换头像（图片）
+      tags:
+      - 系统：用户管理 User Controller
+  /api/users/updatePass:
+    post:
+      consumes:
+      - application/json
+      description: Author：Cgl 2021/02/02 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UpdateUserPassDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseUpdateUserCenter'
+      security:
+      - ApiKeyAuth: []
+      summary: 更新用户
+      tags:
+      - 系统：用户管理 User Controller
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
