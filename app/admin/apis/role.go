@@ -254,9 +254,10 @@ func SelectRoleHandler(c *gin.Context, id int) {
 func SelectRolesAllHandler(c *gin.Context) {
 	val, err := orm.Rdb.Get("rolesAll").Result()
 	if val != "" && err == nil {
-		var roleData bo.SelectAllRoleBo
+		var roleData []bo.RecordRole
 		err := json.Unmarshal([]byte(val), &roleData)
 		if err == nil {
+			fmt.Println(roleData)
 			app.ResponseSuccess(c, roleData)
 			return
 		}

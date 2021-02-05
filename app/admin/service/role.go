@@ -57,10 +57,10 @@ func (e Role) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (roleD
 		}
 	}
 	roleData.Current = p.Current
-	roleData.Page = p.Current
+	roleData.Page = utils.PagesCount(int(role.RoleAllNum()), p.Size)
 	roleData.SearchCount = true
 	roleData.Size = p.Size
-	roleData.Total = p.Current
+	roleData.Total = int(role.RoleAllNum())
 	roleData.HitCount = false
 	roleData.OptimizeCountSql = true
 	for _, value := range orderData {

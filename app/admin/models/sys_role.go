@@ -23,6 +23,13 @@ type SysRole struct {
 	IsDeleted    []byte `json:"is_deleted"`                             //软删除（默认值为0，1为删除）
 }
 
+func (e SysRole) RoleAllNum() (num int64) {
+	if err := orm.Eloquent.Table("sys_role").Where("is_deleted=0").Count(&num).Error; err != nil {
+		return
+	}
+	return
+}
+
 // 多条件查询角色
 func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sysRole []SysRole, err error) {
 	var order string
