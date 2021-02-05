@@ -1,7 +1,6 @@
 package service
 
 import (
-	"encoding/json"
 	"project/app/admin/models"
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
@@ -150,10 +149,7 @@ func (e Role) InsertRole(p dto.InsertRoleDto, userId int) (err error) {
 	role.Description = p.Description
 	role.CreateBy = userId
 	role.UpdateBy = userId
-	depts := []byte(p.Depts)
-	deptsData := []int{}
-	err = json.Unmarshal(depts, &deptsData)
-	if err = role.InsertRole(deptsData); err != nil {
+	if err = role.InsertRole(p.Depts); err != nil {
 		return
 	}
 	return
@@ -170,29 +166,14 @@ func (e Role) UpdateRole(p dto.UpdateRoleDto, userId int) (err error) {
 	role.DataScope = p.DataScope
 	role.Description = p.Description
 	role.UpdateBy = userId
-	//  参数格式化
-	updateTime, err := strconv.ParseInt(p.UpdateTime, 10, 64)
-	if err != nil {
-		return
-	}
-	role.UpdateTime = updateTime
+	role.UpdateTime = p.UpdateTime
 	if p.Protection == "true" {
 		role.IsProtection = append(role.IsProtection, 1)
 	} else {
 		role.IsProtection = append(role.IsProtection, 0)
 	}
 	role.IsDeleted = append(role.IsDeleted, 0)
-	depts := []byte(p.Depts)
-	deptsData := []int{}
-	if err = json.Unmarshal(depts, &deptsData); err != nil {
-		return
-	}
-	menus := []byte(p.Menus)
-	menusData := []int{}
-	if err = json.Unmarshal(menus, &menusData); err != nil {
-		return
-	}
-	if err = role.UpdateRole(deptsData, menusData); err != nil {
+	if err = role.UpdateRole(p.Depts, p.Menus); err != nil {
 		return
 	}
 	return

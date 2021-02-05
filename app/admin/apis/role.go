@@ -65,12 +65,7 @@ func InsertRolesHandler(c *gin.Context) {
 	// 1.获取参数 校验参数
 	var insertrole dto.InsertRoleDto
 	err := c.ShouldBind(&insertrole)
-	//if err := c.ShouldBind(&insertrole); err != nil {
-	//	fmt.Println(1111)
-	//	fmt.Println(err)
-	//	app.ResponseError(c, app.CodeParamNotComplete)
-	//	return
-	//}
+
 	// 2.参数正确执行响应
 	user, err := api.GetCurrentUserInfo(c)
 	if err != nil {
@@ -79,6 +74,10 @@ func InsertRolesHandler(c *gin.Context) {
 	}
 	err = r.InsertRole(insertrole, user.UserId)
 	if err != nil {
+		if err.Error()[0:10] == "Error 1062" {
+			app.ResponseError(c, app.CodeUserNameExist)
+			return
+		}
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
@@ -106,13 +105,8 @@ func InsertRolesHandler(c *gin.Context) {
 // @Router /api/roles [put]
 func UpdateRolesHandler(c *gin.Context) {
 	// 1.获取参数 校验参数
-	var updaterole dto.UpdateRoleDto
-	err := c.ShouldBind(&updaterole)
-	// TODO
-	//if err := c.ShouldBind(&updaterole); err != nil {
-	//	app.ResponseError(c, app.CodeParamNotComplete)
-	//	return
-	//}
+	var updateRole dto.UpdateRoleDto
+	err := c.ShouldBind(&updateRole)
 
 	// 2.参数正确执行响应
 	user, err := api.GetCurrentUserInfo(c)
@@ -120,8 +114,12 @@ func UpdateRolesHandler(c *gin.Context) {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
-	err = r.UpdateRole(updaterole, user.UserId)
+	err = r.UpdateRole(updateRole, user.UserId)
 	if err != nil {
+		if err.Error()[0:10] == "Error 1062" {
+			app.ResponseError(c, app.CodeUserNameExist)
+			return
+		}
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
