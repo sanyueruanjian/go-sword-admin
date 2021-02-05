@@ -73,3 +73,10 @@ type _ResponseSelectUserInfoList struct {
 	Message string             `json:"message"` // 提示信息
 	Data    *bo.UserInfoListBo `json:"data"`    // 数据
 }
+
+//_ResponseChildInfoList
+type _ResponseSelectMeauDataInfoList struct {
+	Code    app.ResCode `json:"code"`    // 业务响应状态码
+	Message string      `json:"message"` // 提示信息
+	Data    []int       `json:"data"`    // 数据
+}

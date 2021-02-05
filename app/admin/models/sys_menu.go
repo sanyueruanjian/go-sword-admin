@@ -26,6 +26,11 @@ type SysMenu struct {
 	UpdateBy   int    `json:"update_by"`  //
 }
 
+type ChildMeau struct {
+	Id  int `json:"id"`
+	Pid int `json:"pid"`
+}
+
 func (m *SysMenu) InsertMenu() error {
 	err := global.Eloquent.Create(&m).Error
 	if err != nil {
@@ -84,4 +89,51 @@ func (m *SysMenu) SelectForeNeedMenu() (err error) {
 	//global.Eloquent.Find
 	//寻找子集
 	return nil
+}
+
+func (m *SysMenu) SuperiorMenu(p *dto.DataMenuDto) (data, child []*SysMenu, id int, err error) {
+	var dataMeau []*SysMenu
+	var children []*SysMenu
+	var superID int
+	//根据id查出本行信息pid
+	if err := global.Eloquent.Table("sys_menu").Where("is_deleted=? AND id=?", []byte{0}, p.Ids[0]).
+		First(&dataMeau).Error; err != nil {
+		return nil, nil, 0, err
+	}
+	//根据本行的pid查询出所有信息
+	if err := global.Eloquent.Table("sys_menu").Where("is_deleted=? AND pid=?", []byte{0}, dataMeau[0].Pid).
+		Find(&dataMeau).Error; err != nil {
+		return nil, nil, 0, err
+	}
+	//判断pid是否为0，如果为0，则此不用查上级，直接返回数据
+	if dataMeau[0].Pid == 0 {
+		return dataMeau, nil, 0, nil
+	} else {
+		//如果不为零，则此级为children.根据pid查询上级
+		if err := global.Eloquent.Table("sys_menu").Where("is_deleted=? AND id=?", []byte{0}, dataMeau[0].Pid).
+			First(&children).Error; err != nil {
+			return nil, nil, 0, err
+		}
+		superID = children[0].ID
+		if err := global.Eloquent.Table("sys_menu").Where("is_deleted=? AND pid=? ", []byte{0}, children[0].Pid).
+			Find(&children).Error; err != nil {
+			return nil, nil, 0, err
+		}
+		return children, dataMeau, superID, err
+	}
+}
+
+func (m *SysMenu) ChildMenu(p int) (data []int, err error) {
+	data = append(data, p)
+	var childMeau []*ChildMeau
+	for i := 0; i < len(data); i++ {
+		if err := global.Eloquent.Table("sys_menu").Where("is_deleted=? AND pid=?", []byte{0}, data[i]).
+			Find(&childMeau).Error; err != nil {
+			return nil, err
+		}
+		for _, j := range childMeau {
+			data = append(data, j.Id)
+		}
+	}
+	return data, nil
 }
