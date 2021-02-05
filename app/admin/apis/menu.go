@@ -65,7 +65,7 @@ func InsertMenuHandler(c *gin.Context) {
 // @Produce application/json
 // @Param object body dto.SelectMenuDto false "查询参数"
 // @Security ApiKeyAuth
-// @Success 200 {object} models._ResponseInsertMenu
+// @Success 200 {object} models._ResponseSelectMenu
 // @Router /api/menus [get]
 func SelectMenuHandler(c *gin.Context) {
 	// 1.获取参数 校验参数

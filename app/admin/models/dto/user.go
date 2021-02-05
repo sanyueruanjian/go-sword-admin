@@ -12,12 +12,14 @@ type UserLoginDto struct {
 
 //SelectUserInfoArrayDto 查询用户详细列表
 type SelectUserInfoArrayDto struct {
-	Current int    `form:"current"` //current 当前页
-	Size    int    `form:"size"`    // 当前页最大数据量
-	DepID   int    `form:"depid"`   //本门id
-	Orders  string `form:"orders"`  //排序规则与字段
-	Blurry  string `form:"blurry"`  //模糊
-	Enabled bool   `form:"enabled"` //是否激活
+	Current   int    `form:"current"` //current 当前页
+	Size      int    `form:"size"`    // 当前页最大数据量
+	DepID     int    `form:"depid"`   //本门id
+	Orders    string `form:"orders"`  //排序规则与字段
+	Blurry    string `form:"blurry"`  //模糊
+	Enabled   bool   `form:"enabled"` //是否激活
+	StartTime int64  `form:"startTime"`
+	EndTime   int64  `form:"endTime"`
 }
 
 //SelectUserInfoDto 查询"单个"用户详细 个人中心信息使用
@@ -64,7 +66,7 @@ type DeleteUserDto struct {
 type UpdateUserCenterDto struct {
 	NickName string `json:"nickName" binding:"required"` //昵称
 	Phone    string `json:"phone" binding:"required"`    //手机号
-	Gender   bool   `json:"gender"`                      //性别
+	Gender   string `json:"gender"`                      //性别
 	Id       int    `json:"id" binding:"required"`       //id
 }
 

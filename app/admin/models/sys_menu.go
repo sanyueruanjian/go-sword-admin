@@ -6,6 +6,11 @@ import (
 	"project/app/admin/models/dto"
 	"project/common/global"
 	"project/utils"
+	"project/utils/config"
+	"strconv"
+	"time"
+
+	"gorm.io/gorm"
 )
 
 const ForeNeed string = "ForeNeedMenu"
@@ -60,19 +65,70 @@ func (m *SysMenu) SelectMenu(p *dto.SelectMenuDto) (data []*SysMenu, err error) 
 	orderRule := utils.GetOrderRule(orderJson)
 	//模糊条件
 	blurry := "%" + p.Blurry + "%"
-	//时间条件
-	if p.EndTime != 0 && p.StatTime != 0 {
-		if err := global.Eloquent.Table("sys_menu").Where("is_deleted=? AND create_time > ? AND create_time < ? AND title like ?", []byte{0}, p.StatTime, p.EndTime, blurry).
-			Limit(p.Size).Offset(p.Current - 1*p.Size).Order(orderRule).Find(&data).Error; err != nil {
-			return nil, err
-		}
-	} else {
-		if err := global.Eloquent.Table("sys_menu").Where("is_deleted=? AND title like ?", []byte{0}, blurry).
-			Limit(p.Size).Offset(p.Current - 1*p.Size).Order(orderRule).Find(&data).Error; err != nil {
-			return nil, err
-		}
+	//查询缓存
+	//menuIdInRedis := global.Rdb.Keys("menu::id:*").Val()
+	//if len(menuIdInRedis) != 0 {
+	//	for _, v := range menuIdInRedis {
+	//		menuByte, err := global.Rdb.Get(v).Bytes()
+	//		if err != nil {
+	//			break
+	//		}
+	//		menu := new(SysMenu)
+	//		err = json.Unmarshal(menuByte, menu)
+	//		if err != nil {
+	//			break
+	//		}
+	//		if menu.IsDeleted[0] == 0 && menu.Pid == p.Pid {
+	//			data = append(data, menu)
+	//		}
+	//		if data != nil {
+	//			return data, nil
+	//		}
+	//	}
+	//}
+	var total int64
+	//查询所有菜单
+	allMenu := make([]*SysMenu, 0)
+	table := global.Eloquent.Table("sys_menu").Where("is_deleted=?", []byte{0})
+	table = table.Where("pid=? AND title LIKE ?", p.Pid, blurry)
+	err = table.Find(&allMenu).Error
+	if err != nil {
+		return nil, err
 	}
+	//做菜单缓存
+	for _, v := range allMenu {
+		menuKey := "menu::id:" + strconv.Itoa(v.ID)
+		menuRedis, err := json.Marshal(v)
+		if err != nil {
+			return nil, err
+		}
+		global.Rdb.Set(menuKey, menuRedis, time.Duration(config.JwtConfig.Timeout)*time.Second)
+	}
+	if p.EndTime != 0 && p.StartTime != 0 {
+		table = table.Where("create_time > ? AND create_time < ?", p.StartTime, p.EndTime)
+	}
+	table = table.Limit(p.Size).Offset(p.Current - 1*p.Size).Count(&total)
+	if orderRule != "" {
+		table = table.Order(orderRule)
+	}
+	err = table.Find(&data).Error
 	return data, err
+}
+
+// SelectHasChild 查询是否有孩子
+func (m *SysMenu) SelectHasChild(id int) (count bool, err error) {
+	var ids []int
+	err = global.Eloquent.Table("sys_menu").Select("id").Where("pid=?", id).Find(&ids).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return false, nil
+		}
+		return false, err
+	}
+	if len(ids) == 0 {
+		return false, nil
+	}
+	return true, nil
 }
 
 //删除菜单

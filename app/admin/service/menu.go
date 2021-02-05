@@ -12,6 +12,10 @@ type Menu struct {
 }
 
 func (m *Menu) InsertMenu(p *dto.InsertMenuDto, userID int) error {
+	typeInt, err := utils.StringToInt(p.Type)
+	if err != nil {
+		return err
+	}
 	menu := &models.SysMenu{
 		Cache:      utils.BoolIntoByte(p.Cache),
 		Hidden:     utils.BoolIntoByte(p.Hidden),
@@ -19,7 +23,7 @@ func (m *Menu) InsertMenu(p *dto.InsertMenuDto, userID int) error {
 		MenuSort:   p.MenuSort,
 		Icon:       p.Icon,
 		Pid:        p.Pid,
-		Type:       p.Type,
+		Type:       typeInt,
 		Component:  p.Component,
 		Name:       p.Name,
 		Path:       p.Path,
@@ -54,16 +58,16 @@ func (m *Menu) SelectMenu(p *dto.SelectMenuDto) (data []*bo.SelectMenuBo, err er
 			CreateTime: utils.UnixTimeToString(v.CreateTime),
 			UpdateTime: utils.UnixTimeToString(v.UpdateTime),
 			Label:      "",
-			//TODO
-			Children:    "",
-			Icon:        v.Icon,
-			Component:   v.Component,
-			Name:        v.Name,
-			Path:        v.Path,
-			Permission:  v.Permission,
-			Title:       v.Title,
-			HasChildren: "",
+			Children:   nil,
+			Icon:       v.Icon,
+			Component:  v.Component,
+			Name:       v.Name,
+			Path:       v.Path,
+			Permission: v.Permission,
+			Title:      v.Title,
 		}
+		hasChild, _ := menu.SelectHasChild(tmp.ID)
+		tmp.HasChildren = hasChild
 		data = append(data, tmp)
 	}
 

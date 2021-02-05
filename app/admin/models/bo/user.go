@@ -33,7 +33,7 @@ type LoginData struct {
 }
 
 type LoginUser struct {
-	DataScopes []int    `json:"dataScopes"`
+	DataScopes []int       `json:"dataScopes"`
 	Roles      []string    `json:"roles"`
 	User       *RecordUser `json:"user"`
 }
@@ -45,8 +45,17 @@ type RecordUser struct {
 
 //返回用户详细列表
 type UserInfoListBo struct {
-	*paging               //分页器相关
-	Records []*RecordUser `json:"records"` //记录查询
+	Current          int           `json:"current"`
+	CountID          int           `json:"count_id"`
+	MaxLimit         int           `json:"maxLimit"`
+	Pages            int           `json:"pages"`
+	SearchCount      bool          `json:"searchCount"`
+	Size             int           `json:"size"`
+	Total            int           `json:"total"`
+	HitCount         bool          `json:"hitCount"`
+	OptimizeCountSql bool          `json:"optimizeCountSql"`
+	Orders           []Order       `json:"orders"`
+	Records          []*RecordUser `json:"records"` //记录查询
 }
 
 type authority struct {
