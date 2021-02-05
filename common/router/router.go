@@ -1,13 +1,14 @@
 package router
 
 import (
-
 	"net/http"
 	"project/utils/config"
 
 	admin "project/app/admin/router"
 	"project/common/middleware"
 	"project/utils"
+
+	//_ "project/docs"
 
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
@@ -29,7 +30,6 @@ func Setup(cfg *config.Application) *gin.Engine {
 	})
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
 
 	// 注册业务路由
 	admin.InitAdminRouter(r)

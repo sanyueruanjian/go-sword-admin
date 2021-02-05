@@ -1,7 +1,13 @@
 package utils
 
 import (
+	"encoding/json"
 	"strconv"
+	"time"
+
+	"go.uber.org/zap"
+
+	"project/app/admin/models/bo"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -52,4 +58,44 @@ func HasError(err error, msg string, code ...int) {
 		}
 		panic("CustomError#" + strconv.Itoa(statusCode) + "#" + msg)
 	}
+}
+
+func OrderJson(orders string) (orderData []bo.Order, err error) {
+	err = json.Unmarshal([]byte(orders), &orderData)
+	return
+}
+
+func GetOrderRule(orderData []bo.Order) (orderRule string) {
+	orderRule = ""
+	if orderData == nil || len(orderData) == 0 {
+		return
+	}
+	for _, v := range orderData {
+		if v.Asc == "true" {
+			orderRule += v.Column + " asc"
+		} else {
+			orderRule += v.Column + " desc"
+		}
+	}
+	return
+}
+
+func TimeToString(time time.Time) string {
+	var timeLayoutStr = "2006-01-02 15:04:05"
+	return time.Format(timeLayoutStr)
+}
+
+func UnixTimeToString(t int64) string {
+	tTime := time.Unix(t/1000, 0)
+	return TimeToString(tTime)
+}
+
+func StringToTime(t string) time.Time {
+	var timeLayoutStr = "2006-01-02 15:04:05"
+	tm, err := time.Parse(timeLayoutStr, t)
+	if err != nil {
+		zap.L().Error("StringToTime failed", zap.Error(err))
+		return time.Time{}
+	}
+	return tm
 }

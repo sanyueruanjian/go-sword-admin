@@ -1,24 +1,24 @@
 package bo
 
 type recordUser struct {
-	Id           int    `json:"id"`
-	DeptId       int    `json:"deptId"`
-	PwdResetTime int    `json:"pwdResetTime"`
-	CreateBy     int    `json:"createBy"`
-	CreateTime   int    `json:"createTime"`
-	UpdatedBy    int    `json:"updatedBy"`
-	UpdateTime   int    `json:"updateTime"`
-	AvatarName   string `json:"avatarName"`
-	AvatarPath   string `json:"avatarPath"`
-	Email        string `json:"email"`
-	NickName     string `json:"nickName"`
-	Phone        string `json:"phone"`
-	Username     string `json:"username"`
-	Enabled      bool   `json:"enabled"`
-	Gender       bool   `json:"gender"`
-	Jobs         *job   `json:"jobs"`
-	Dept         *dept  `json:"dept"`
-	Role         *role  `json:"role"`
+	Id           int         `json:"id"`
+	DeptId       int         `json:"deptId"`
+	PwdResetTime int         `json:"pwdResetTime"`
+	CreateBy     int         `json:"createBy"`
+	CreateTime   int         `json:"createTime"`
+	UpdatedBy    int         `json:"updatedBy"`
+	UpdateTime   int         `json:"updateTime"`
+	AvatarName   string      `json:"avatarName"`
+	AvatarPath   string      `json:"avatarPath"`
+	Email        string      `json:"email"`
+	NickName     string      `json:"nickName"`
+	Phone        string      `json:"phone"`
+	Username     string      `json:"username"`
+	Enabled      bool        `json:"enabled"`
+	Gender       bool        `json:"gender"`
+	Jobs         *Job        `json:"jobs"`
+	Dept         *DeptCommon `json:"dept"`
+	Role         *Role       `json:"role"`
 }
 
 type authority struct {
