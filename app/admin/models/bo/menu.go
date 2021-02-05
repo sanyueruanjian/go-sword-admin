@@ -49,3 +49,38 @@ type SelectForeNeedMenuBo struct {
 	Meta       *Meta       `json:"meta"`
 	Children   []*Children `json:"children"`
 }
+
+type ReturnToAllMenusBo struct {
+	Cache       bool        `json:"cache"`
+	Children    interface{} `json:"children"`
+	Component   string      `json:"component"`
+	CreateBy    int         `json:"createBy"`
+	CreateTime  int64       `json:"createTime"`
+	HasChildren bool        `json:"hasChildren"`
+	Hidden      bool        `json:"hidden"`
+	Icon        string      `json:"icon"`
+	ID          int         `json:"id"`
+	Iframe      bool        `json:"iframe"`
+	Label       string      `json:"label"`
+	Leaf        bool        `json:"leaf"`
+	MenuSort    int         `json:"menuSort"`
+	Name        string      `json:"name"`
+	Path        string      `json:"path"`
+	Permission  string      `json:"permission"`
+	Pid         int         `json:"pid"`
+	SubCount    int         `json:"subCount"`
+	Title       string      `json:"title"`
+	Type        int         `json:"type"`
+	UpdatedBy   int         `json:"updatedBy"`
+	UpdateTime  int64       `json:"updateTime"`
+}
+
+type DownloadMenuInfoBo struct {
+	Title      string `json:"title"`
+	Type       string `json:"type"`
+	Permission string `json:"permission"`
+	IFrame     string `json:"i_frame"`
+	Hidden     string `json:"hidden"`
+	Cache      string `json:"cache"`
+	CreateTime string `json:"create_time"`
+}
