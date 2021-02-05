@@ -42,21 +42,15 @@ func (e *SysJob) JobListDownload(p *dto.GetJobList) (jobList []*SysJob, err erro
 }
 
 // GetJobList 查询岗位列表数据持久层
-func (e *SysJob) GetJobList(p *dto.GetJobList) (jobList []*SysJob, err error) {
-	orderJson, err := utils.OrderJson(p.Orders)
-	if err != nil {
-		return
-	}
-	orderRule := utils.GetOrderRule(orderJson)
-
+func (e *SysJob) GetJobList(p *dto.GetJobList, orderRule string) (jobList []*SysJob, count int64, err error) {
 	name := "%" + p.Name + "%"
 
 	table := orm.Eloquent.Table(e.TableName()).Where("is_deleted=? AND name like ?", []byte{0}, name)
 	if p.EndTime != 0 && p.StartTime != 0 {
-		err = table.Where("create_time > ? AND create_time < ?", p.StartTime, p.EndTime).
-			Limit(p.Size).Offset(p.Current - 1*p.Size).Order(orderRule).Find(&jobList).Error
+		err = table.Where("create_time > ? AND create_time < ?", p.StartTime, p.EndTime).Count(&count).
+			Offset(p.Current - 1*p.Size).Limit(p.Size).Order(orderRule).Find(&jobList).Error
 	} else {
-		err = table.Offset((p.Current - 1) * p.Size).Limit(p.Size).Order(orderRule).Find(&jobList).Error
+		err = table.Count(&count).Offset((p.Current - 1) * p.Size).Limit(p.Size).Order(orderRule).Find(&jobList).Error
 	}
 	return
 }
@@ -76,5 +70,5 @@ func (e *SysJob) AddJob () (err error) {
 
 // UpdateJob 更新岗位数据持久层
 func (e *SysJob) UpdateJob (id int) (err error) {
-	return orm.Eloquent.Table(e.TableName()).Where("id=? ADN is_deleted = ?", id, []byte{0}).Updates(e).Error
+	return orm.Eloquent.Table(e.TableName()).Where("id=? AND is_deleted=?", id, []byte{0}).Updates(e).Error
 }

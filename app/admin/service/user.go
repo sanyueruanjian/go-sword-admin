@@ -12,6 +12,7 @@ import (
 	"project/pkg/jwt"
 	"project/utils"
 
+	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
 
@@ -19,7 +20,7 @@ type User struct {
 }
 
 // Login 返回json web token
-func (u *User) Login(p *dto.UserLoginDto) (loginData *bo.LoginData, err error) {
+func (u *User) Login(c *gin.Context, p *dto.UserLoginDto) (loginData *bo.LoginData, err error) {
 	user := new(models.SysUser)
 	user.Username = p.Username
 
@@ -52,11 +53,11 @@ func (u *User) Login(p *dto.UserLoginDto) (loginData *bo.LoginData, err error) {
 
 	// 获取部门权限
 	var dataScopesRoleIds []int
-	var allScopes []byte
+	var allScopes bool
 	for _, role := range r.Role {
 		switch role.DataScope {
 		case `全部`:
-			allScopes = append(allScopes, 0)
+			allScopes = true
 			loginUser.DataScopes = []int{}
 			break
 		case `本级`:
@@ -66,7 +67,7 @@ func (u *User) Login(p *dto.UserLoginDto) (loginData *bo.LoginData, err error) {
 		}
 	}
 
-	if len(allScopes) == 0 {
+	if !allScopes {
 		deptIds, err := models.SelectUserDeptIdByRoleId(dataScopesRoleIds)
 		if err != nil {
 			return nil, err
@@ -82,11 +83,11 @@ func (u *User) Login(p *dto.UserLoginDto) (loginData *bo.LoginData, err error) {
 	loginData.Token = "Bearer " + token
 	loginData.User = loginUser
 
-	err = u.RedisUserMessage(r)
+	err = u.RedisUserMessage(c, r)
 	return
 }
 
-func (u *User) RedisUserMessage(r *bo.RecordUser) (err error) {
+func (u *User) RedisUserMessage(c *gin.Context, r *bo.RecordUser) (err error) {
 	//构造角色名字集合
 	roleNames := make([]string, 0)
 	for _, v := range r.Role {
@@ -100,6 +101,14 @@ func (u *User) RedisUserMessage(r *bo.RecordUser) (err error) {
 		DeptId:   r.DeptId,
 		Role:     roleNames,
 	})
+	//json.Marshal(models.OnlineUser{
+	//	LoginTime: utils.NowUnix(),
+	//	Browser:   c.,
+	//	Dept:      "",
+	//	Ip:        "",
+	//	Nickname:  "",
+	//	Username:  "",
+	//})
 	if err != nil {
 		zap.L().Error("RedisUserInfo Marshal failed", zap.Error(err))
 		return

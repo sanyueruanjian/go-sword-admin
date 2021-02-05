@@ -86,6 +86,16 @@ type RedisUserInfo struct {
 	DeptId   int      `json:"dept_id"` //部门id
 }
 
+// OnlineUser 用户线上数据
+type OnlineUser struct {
+	LoginTime int64    `json:"loginTime"`
+	Browser   string `json:"browser"`
+	Dept      string `json:"dept"`
+	Ip        string `json:"ip"`
+	Nickname  string `json:"nickname"`
+	Username  string `json:"username"`
+}
+
 func (SysUser) TableName() string {
 	return "sys_user"
 }

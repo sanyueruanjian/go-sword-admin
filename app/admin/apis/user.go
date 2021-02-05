@@ -56,7 +56,7 @@ func LoginHandler(c *gin.Context) {
 	}
 	p.Password = value
 	u := new(service.User)
-	data, err := u.Login(p)
+	data, err := u.Login(c, p)
 	if err != nil {
 		c.Error(err)
 		zap.L().Error("get login user info message failed", zap.String("username", p.Username), zap.Error(err))
@@ -72,6 +72,20 @@ func LoginHandler(c *gin.Context) {
 
 	// 3.返回响应
 	app.ResponseSuccess(c, data)
+}
+
+// LogoutHandler 用户注销接口
+// @Summary 用户注销接口
+// @Description Author：JiaKunLi 2021/01/26 获得身份令牌
+// @Tags 系统：系统授权接口 Authorization Controller
+// @Accept application/json
+// @Produce application/json
+// @Param object body dto.UserLoginDto false "查询参数"
+// @Security ApiKeyAuth
+// @Success 200 {object} models._ResponseLogin
+// @Router /api/auth/logout [delete]
+func LogoutHandler(c *gin.Context) {
+	app.ResponseSuccess(c, nil)
 }
 
 // InsertUserHandler 新增用户
