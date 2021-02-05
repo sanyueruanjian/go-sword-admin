@@ -22,6 +22,7 @@ var doc = `{
             "name": "marchsoft@golang",
             "url": "http://marchsoft.cn/"
         },
+        "license": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -50,6 +51,34 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models._ResponseCode"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/info": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Cgl 2021/02/01 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：用户管理 User Controller"
+                ],
+                "summary": "查询用户详细",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseSelectUserInfoList"
                         }
                     }
                 }
@@ -88,6 +117,197 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models._ResponseLogin"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/dept": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Lbl 2021/02/2 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：部门管理 Dept Controller"
+                ],
+                "summary": "查询部门",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SelectDeptDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseSelectDeptList"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Lbl 2021/02/2 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：部门管理 Dept Controller"
+                ],
+                "summary": "修改部门",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateDeptDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseDept"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/dept/download": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Lbl 2021/02/3",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：部门管理 Dept Controller"
+                ],
+                "summary": "导出部门数据",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "当前页",
+                        "name": "current",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "状态：1启用（默认）、0禁用",
+                        "name": "enabled",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "过期时间",
+                        "name": "endTime",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "模糊",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序规则",
+                        "name": "orders",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "上级部门（顶级部门为0，默认为0）",
+                        "name": "pid",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "创建时间",
+                        "name": "startTime",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/api/dept/superior": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Lbl 2021/02/3 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：部门管理 Dept Controller"
+                ],
+                "summary": "查询部门",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseSelectDeptList"
                         }
                     }
                 }
@@ -167,6 +387,250 @@ var doc = `{
                 }
             }
         },
+        "/api/job": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：JiaKunLi 2021/02/1",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：岗位管理 job Controller"
+                ],
+                "summary": "查询岗位",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "当前页",
+                        "name": "current",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "结束时间",
+                        "name": "endTime",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "模糊查询",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序规则",
+                        "name": "orders",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "创建时间",
+                        "name": "startTime",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseGetJobList"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：JiaKunLi 2021/02/1",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：岗位管理 job Controller"
+                ],
+                "summary": "修改岗位",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateJob"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseInsertMenu"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：JiaKunLi 2021/02/1",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：岗位管理 job Controller"
+                ],
+                "summary": "新增岗位",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AddJob"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseInsertMenu"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：JiaKunLi 2021/02/1",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：岗位管理 job Controller"
+                ],
+                "summary": "删除岗位",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseInsertMenu"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/job/download": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：JiaKunLi 2021/02/1",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：岗位管理 job Controller"
+                ],
+                "summary": "导出岗位数据",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "当前页",
+                        "name": "current",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "结束时间",
+                        "name": "endTime",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "模糊查询",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序规则",
+                        "name": "orders",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "创建时间",
+                        "name": "startTime",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
         "/api/menus": {
             "get": {
                 "security": [
@@ -182,7 +646,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "系统：系统授权接口 Menu Controller"
+                    "系统：菜单管理 Menu Controller"
                 ],
                 "summary": "查询菜单",
                 "parameters": [
@@ -218,7 +682,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "系统：系统授权接口 Menu Controller"
+                    "系统：菜单管理 Menu Controller"
                 ],
                 "summary": "更新菜单",
                 "parameters": [
@@ -254,7 +718,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "系统：系统授权接口 Menu Controller"
+                    "系统：菜单管理 Menu Controller"
                 ],
                 "summary": "新增菜单",
                 "parameters": [
@@ -282,7 +746,7 @@ var doc = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Author：Cgl 2021/01/30 获得身份令牌",
+                "description": "Author：Lbl 2021/02/2 获得身份令牌",
                 "consumes": [
                     "application/json"
                 ],
@@ -290,9 +754,50 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "系统：系统授权接口 Menu Controller"
+                    "系统：部门管理 Dept Controller"
                 ],
-                "summary": "删除菜单",
+                "summary": "删除部门",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseDept"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/menus/build": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Cgl 2021/02/01 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：菜单管理 Menu Controller"
+                ],
+                "summary": "查询前端所需菜单",
                 "parameters": [
                     {
                         "description": "查询参数",
@@ -307,7 +812,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models._ResponseDeleteMenu"
+                            "$ref": "#/definitions/models._ResponseSelectForeNeedMenu"
                         }
                     }
                 }
@@ -648,11 +1153,722 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/api/user/download": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：JiaKunLi 2021/02/1",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：用户管理 User Controller"
+                ],
+                "summary": "导出用户数据",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "当前页",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否激活",
+                        "name": "enabled",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序规则",
+                        "name": "orders",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "展示数量",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/api/users": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Cgl 2021/02/01 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：用户管理 User Controller"
+                ],
+                "summary": "查询用户详细",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SelectUserInfoArrayDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseSelectUserInfoList"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Cgl 2021/02/02 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：用户管理 User Controller"
+                ],
+                "summary": "更新用户 个人中心",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateUserCenterDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseUpdateUser"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Cgl 2021/02/01 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：用户管理 User Controller"
+                ],
+                "summary": "新增用户",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.InsertMenuDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseInsertUser"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Cgl 2021/02/02 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：用户管理 User Controller"
+                ],
+                "summary": "删除用户",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.DeleteUserDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseDeleteUser"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/center": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Cgl 2021/02/02 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：用户管理 User Controller"
+                ],
+                "summary": "更新用户",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateUserDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseUpdateUserCenter"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/updateAvatar": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Cgl 2021/02/02",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：用户管理 User Controller"
+                ],
+                "summary": "更换头像（图片）",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseFile"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/updatePass": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Cgl 2021/02/02 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：用户管理 User Controller"
+                ],
+                "summary": "更新用户",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateUserPassDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseUpdateUserCenter"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "bo.DeptCommon": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "bo.GetJobList": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "description": "状态：1启用（默认）、0禁用",
+                    "type": "integer"
+                },
+                "job_sort": {
+                    "description": "排序",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "岗位名称",
+                    "type": "string"
+                }
+            }
+        },
+        "bo.Job": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "bo.Order": {
+            "type": "object",
+            "properties": {
+                "asc": {
+                    "type": "string"
+                },
+                "column": {
+                    "type": "string"
+                }
+            }
+        },
+        "bo.RecordDept": {
+            "type": "object",
+            "properties": {
+                "createBy": {
+                    "type": "integer"
+                },
+                "createTime": {
+                    "type": "integer"
+                },
+                "deptSort": {
+                    "type": "integer"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "hasChildren": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "leaf": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pid": {
+                    "type": "integer"
+                },
+                "updateBy": {
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "type": "integer"
+                }
+            }
+        },
+        "bo.RecordUser": {
+            "type": "object",
+            "properties": {
+                "avatarName": {
+                    "type": "string"
+                },
+                "avatarPath": {
+                    "type": "string"
+                },
+                "createBy": {
+                    "type": "integer"
+                },
+                "createTime": {
+                    "type": "integer"
+                },
+                "dept": {
+                    "type": "object",
+                    "$ref": "#/definitions/bo.DeptCommon"
+                },
+                "deptId": {
+                    "type": "integer"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "gender": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "jobs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.Job"
+                    }
+                },
+                "nickName": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "pwdResetTime": {
+                    "type": "integer"
+                },
+                "role": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.Role"
+                    }
+                },
+                "updateTime": {
+                    "type": "integer"
+                },
+                "updatedBy": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "bo.Role": {
+            "type": "object",
+            "properties": {
+                "dataScope": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "level": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "bo.SelectForeNeedMenuBo": {
+            "type": "object",
+            "properties": {
+                "alwaysShow": {
+                    "type": "boolean"
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.children"
+                    }
+                },
+                "component": {
+                    "type": "string"
+                },
+                "hidden": {
+                    "type": "boolean"
+                },
+                "meta": {
+                    "type": "object",
+                    "$ref": "#/definitions/bo.meta"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "redirect": {
+                    "type": "string"
+                }
+            }
+        },
+        "bo.UserInfoListBo": {
+            "type": "object",
+            "properties": {
+                "count_id": {
+                    "type": "integer"
+                },
+                "current": {
+                    "type": "integer"
+                },
+                "hitCount": {
+                    "type": "boolean"
+                },
+                "maxLimit": {
+                    "type": "integer"
+                },
+                "optimizeCountSql": {
+                    "type": "boolean"
+                },
+                "orders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.Order"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "records": {
+                    "description": "记录查询",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.RecordUser"
+                    }
+                },
+                "searchCount": {
+                    "type": "boolean"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "bo.children": {
+            "type": "object",
+            "properties": {
+                "component": {
+                    "type": "string"
+                },
+                "hidden": {
+                    "type": "string"
+                },
+                "meta": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.meta"
+                    }
+                }
+            }
+        },
+        "bo.meta": {
+            "type": "object",
+            "properties": {
+                "icon": {
+                    "type": "string"
+                },
+                "noCache": {
+                    "type": "boolean"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.AddJob": {
+            "type": "object",
+            "required": [
+                "enabled",
+                "jobSort",
+                "name"
+            ],
+            "properties": {
+                "enabled": {
+                    "description": "岗位状态",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "jobSort": {
+                    "description": "排序",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "岗位名称",
+                    "type": "string"
+                }
+            }
+        },
         "dto.DeleteMenuDto": {
             "type": "object"
+        },
+        "dto.DeleteUserDto": {
+            "type": "object"
+        },
+        "dto.DownloadUserInfoDto": {
+            "type": "object",
+            "properties": {
+                "current": {
+                    "description": "当前页",
+                    "type": "integer"
+                },
+                "enabled": {
+                    "description": "是否激活",
+                    "type": "boolean"
+                },
+                "orders": {
+                    "description": "排序规则",
+                    "type": "string"
+                },
+                "size": {
+                    "description": "展示数量",
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.GetJobList": {
+            "type": "object",
+            "required": [
+                "current",
+                "orders",
+                "size"
+            ],
+            "properties": {
+                "current": {
+                    "description": "当前页",
+                    "type": "integer"
+                },
+                "endTime": {
+                    "description": "结束时间",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "模糊查询",
+                    "type": "string"
+                },
+                "orders": {
+                    "description": "排序规则",
+                    "type": "string"
+                },
+                "size": {
+                    "description": "每页数据",
+                    "type": "integer"
+                },
+                "startTime": {
+                    "description": "创建时间",
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.InsertDeptDto": {
+            "type": "object",
+            "required": [
+                "deptSort",
+                "enabled",
+                "name",
+                "pid",
+                "subCount"
+            ],
+            "properties": {
+                "deptSort": {
+                    "description": "部门排序",
+                    "type": "integer"
+                },
+                "enabled": {
+                    "description": "等级",
+                    "type": "string"
+                },
+                "isTop": {
+                    "description": "是否为顶级部门",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "部门名称",
+                    "type": "string"
+                },
+                "pid": {
+                    "description": "上级部门id",
+                    "type": "integer"
+                },
+                "subCount": {
+                    "description": "子部门个数",
+                    "type": "integer"
+                }
+            }
         },
         "dto.InsertMenuDto": {
             "type": "object",
@@ -717,6 +1933,48 @@ var doc = `{
                 }
             }
         },
+        "dto.SelectDeptDto": {
+            "type": "object",
+            "required": [
+                "current",
+                "orders",
+                "size"
+            ],
+            "properties": {
+                "current": {
+                    "description": "当前页",
+                    "type": "integer"
+                },
+                "enabled": {
+                    "description": "状态：1启用（默认）、0禁用",
+                    "type": "boolean"
+                },
+                "endTime": {
+                    "description": "过期时间",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "模糊",
+                    "type": "string"
+                },
+                "orders": {
+                    "description": "排序规则",
+                    "type": "string"
+                },
+                "pid": {
+                    "description": "上级部门（顶级部门为0，默认为0）",
+                    "type": "integer"
+                },
+                "size": {
+                    "description": "每页数据",
+                    "type": "integer"
+                },
+                "startTime": {
+                    "description": "创建时间",
+                    "type": "integer"
+                }
+            }
+        },
         "dto.SelectMenuDto": {
             "type": "object",
             "required": [
@@ -746,6 +2004,234 @@ var doc = `{
                 },
                 "statTime": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.SelectUserInfoArrayDto": {
+            "type": "object",
+            "properties": {
+                "blurry": {
+                    "description": "模糊",
+                    "type": "string"
+                },
+                "current": {
+                    "description": "current 当前页",
+                    "type": "integer"
+                },
+                "depID": {
+                    "description": "本门id",
+                    "type": "integer"
+                },
+                "enabled": {
+                    "description": "是否激活",
+                    "type": "boolean"
+                },
+                "orders": {
+                    "description": "排序规则与字段",
+                    "type": "string"
+                },
+                "size": {
+                    "description": "当前页最大数据量",
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.UpdateDeptDto": {
+            "type": "object",
+            "required": [
+                "deptSort",
+                "enabled",
+                "id",
+                "name",
+                "pid",
+                "subCount"
+            ],
+            "properties": {
+                "creatTime": {
+                    "type": "integer"
+                },
+                "createBy": {
+                    "type": "integer"
+                },
+                "deptSort": {
+                    "description": "部门排序",
+                    "type": "integer"
+                },
+                "enabled": {
+                    "description": "等级",
+                    "type": "string"
+                },
+                "hasChildren": {
+                    "description": "是否有子节点",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "部门id",
+                    "type": "integer"
+                },
+                "isTop": {
+                    "description": "是否为根节点",
+                    "type": "string"
+                },
+                "label": {
+                    "description": "原名称",
+                    "type": "string"
+                },
+                "leaf": {
+                    "description": "是否为子节点",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "部门名称",
+                    "type": "string"
+                },
+                "pid": {
+                    "description": "上级部门id",
+                    "type": "integer"
+                },
+                "subCount": {
+                    "description": "子部门个数",
+                    "type": "integer"
+                },
+                "updateBy": {
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.UpdateJob": {
+            "type": "object",
+            "required": [
+                "enabled",
+                "jobSort",
+                "name"
+            ],
+            "properties": {
+                "enabled": {
+                    "description": "岗位状态",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "jobSort": {
+                    "description": "排序",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "岗位名称",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateUserCenterDto": {
+            "type": "object",
+            "required": [
+                "id",
+                "nickName",
+                "phone"
+            ],
+            "properties": {
+                "gender": {
+                    "description": "性别",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "id",
+                    "type": "integer"
+                },
+                "nickName": {
+                    "description": "昵称",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateUserDto": {
+            "type": "object",
+            "required": [
+                "deptid",
+                "id",
+                "nickName",
+                "phone",
+                "username"
+            ],
+            "properties": {
+                "avatarName": {
+                    "description": "头像名字",
+                    "type": "string"
+                },
+                "avatarPath": {
+                    "description": "头像地址",
+                    "type": "string"
+                },
+                "deptid": {
+                    "description": "部门",
+                    "type": "integer"
+                },
+                "email": {
+                    "description": "邮箱 (目前不传)",
+                    "type": "string"
+                },
+                "enabled": {
+                    "description": "是否激活",
+                    "type": "string"
+                },
+                "gender": {
+                    "description": "性别",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "用户id",
+                    "type": "integer"
+                },
+                "jobs": {
+                    "description": "职位",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "nickName": {
+                    "description": "昵称",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "roles": {
+                    "description": "角色",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateUserPassDto": {
+            "type": "object",
+            "required": [
+                "newPass"
+            ],
+            "properties": {
+                "newPass": {
+                    "description": "新密码",
+                    "type": "string"
+                },
+                "oldPass": {
+                    "description": "旧密码",
+                    "type": "string"
                 }
             }
         },
@@ -808,7 +2294,7 @@ var doc = `{
                     "description": "业务响应状态码",
                     "type": "integer"
                 },
-                "data": {
+                "img": {
                     "description": "base64验证码",
                     "type": "string"
                 },
@@ -835,6 +2321,32 @@ var doc = `{
                 }
             }
         },
+        "models._ResponseDeleteUser": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务响应状态码",
+                    "type": "integer"
+                },
+                "message": {
+                    "description": "提示信息",
+                    "type": "string"
+                }
+            }
+        },
+        "models._ResponseDept": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务响应状态码",
+                    "type": "integer"
+                },
+                "message": {
+                    "description": "提示信息",
+                    "type": "string"
+                }
+            }
+        },
         "models._ResponseFile": {
             "type": "object",
             "properties": {
@@ -844,6 +2356,7 @@ var doc = `{
                 },
                 "data": {
                     "description": "数据",
+                    "type": "object",
                     "$ref": "#/definitions/models.FileResponse"
                 },
                 "message": {
@@ -852,7 +2365,40 @@ var doc = `{
                 }
             }
         },
+        "models._ResponseGetJobList": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务响应状态码",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.GetJobList"
+                    }
+                },
+                "message": {
+                    "description": "提示信息",
+                    "type": "string"
+                }
+            }
+        },
         "models._ResponseInsertMenu": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务响应状态码",
+                    "type": "integer"
+                },
+                "message": {
+                    "description": "提示信息",
+                    "type": "string"
+                }
+            }
+        },
+        "models._ResponseInsertUser": {
             "type": "object",
             "properties": {
                 "code": {
@@ -888,6 +2434,60 @@ var doc = `{
                 }
             }
         },
+        "models._ResponseSelectDeptList": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务响应状态码",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "数据",
+                    "type": "object",
+                    "$ref": "#/definitions/bo.RecordDept"
+                },
+                "message": {
+                    "description": "提示信息",
+                    "type": "string"
+                }
+            }
+        },
+        "models._ResponseSelectForeNeedMenu": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务响应状态码",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "数据",
+                    "type": "object",
+                    "$ref": "#/definitions/bo.SelectForeNeedMenuBo"
+                },
+                "message": {
+                    "description": "提示信息",
+                    "type": "string"
+                }
+            }
+        },
+        "models._ResponseSelectUserInfoList": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务响应状态码",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "数据",
+                    "type": "object",
+                    "$ref": "#/definitions/bo.UserInfoListBo"
+                },
+                "message": {
+                    "description": "提示信息",
+                    "type": "string"
+                }
+            }
+        },
         "models._ResponseUpdateMenu": {
             "type": "object",
             "properties": {
@@ -900,6 +2500,39 @@ var doc = `{
                     "type": "string"
                 }
             }
+        },
+        "models._ResponseUpdateUser": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务响应状态码",
+                    "type": "integer"
+                },
+                "message": {
+                    "description": "提示信息",
+                    "type": "string"
+                }
+            }
+        },
+        "models._ResponseUpdateUserCenter": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务响应状态码",
+                    "type": "integer"
+                },
+                "message": {
+                    "description": "提示信息",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
@@ -916,7 +2549,7 @@ type swaggerInfo struct {
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
 	Version:     "0.1.0",
-	Host:        "127.0.0.1:8977",
+	Host:        "127.0.0.1:8000",
 	BasePath:    "",
 	Schemes:     []string{},
 	Title:       "go-sword项目接口文档",

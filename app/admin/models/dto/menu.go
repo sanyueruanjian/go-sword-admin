@@ -73,11 +73,10 @@ type SelectChildIdDto struct {
 
 //DownloadMenuDto 导出菜单数据
 type DownloadMenuDto struct {
-	Current int `form:"current" binding:"required"`
-	Size    int `form:"size" binding:"required"`
-	Pid     int `form:"pid" binding:"required"` //父id
-	//TODO
-	Orders string `form:"orders" binding:"required"`
+	Current int    `form:"current" binding:"required"`
+	Size    int    `form:"size" binding:"required"`
+	Pid     int    `form:"pid" binding:"required"` //父id
+	Orders  string `form:"orders" binding:"required"`
 }
 
 //SelectAllMenuDto 返回全部菜单

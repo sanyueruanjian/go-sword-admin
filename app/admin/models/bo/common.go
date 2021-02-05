@@ -6,6 +6,10 @@ type Order struct {
 	Asc    string
 }
 
+type MenuPermission struct {
+	Permission string `json:"permission"`
+}
+
 type DeptCommon struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
