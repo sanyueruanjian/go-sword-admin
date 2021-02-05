@@ -31,5 +31,6 @@ func menuAuthRouter(v1 *gin.RouterGroup) {
 		r.POST("/", apis.InsertMenuHandler)
 		r.DELETE("/", apis.DeleteMenuHandle)
 		r.PUT("/", apis.UpdateMenuHandler)
+
 	}
 }
