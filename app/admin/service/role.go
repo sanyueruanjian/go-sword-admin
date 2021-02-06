@@ -176,6 +176,17 @@ func (e Role) UpdateRole(p dto.UpdateRoleDto, userId int) (err error) {
 	if err = role.UpdateRole(p.Depts, p.Menus); err != nil {
 		return
 	}
+
+	// 删除缓存
+	if err = models.DeleteRoleCache(role.ID); err != nil {
+		return
+	}
+	if err = models.DeleteRoleAll(); err != nil {
+		return
+	}
+	// 更新单个role缓存
+	// TODO
+
 	return
 }
 
@@ -199,7 +210,7 @@ func (e Role) UpdateRoleMenu(id int, p []int) (err error) {
 }
 
 // 获取单个角色
-func (e Role) SelectRoleOne(id int) (roleData bo.SelectRoleBo, err error) {
+func (e Role) SelectRoleOne(id int) (roleData bo.RecordRole, err error) {
 	role := new(models.SysRole)
 	role.ID = id
 	roleOne, err := role.SelectRoleOne()
@@ -237,11 +248,18 @@ func (e Role) SelectRoleOne(id int) (roleData bo.SelectRoleBo, err error) {
 
 // 获取所有角色
 func (e Role) SelectRoleAll() (roleAll []bo.RecordRole, err error) {
-	// 1. 查询缓存 有数据拼装返回 无数据查询数据库加入缓存
-	// TODO
+	// 1.查找redis缓存
+	roleAll, err = models.SelectRoleAllCache()
+	if err == nil && len(roleAll) > 0 {
+		return
+	}
 
+	// 2. 查找mysql数据
 	role := new(models.SysRole)
 	roleAll, err = role.SelectRoleAll()
+
+	// 3.加入Redis缓存 all
+	err = models.InsertRoleAll(roleAll)
 	return
 }
 

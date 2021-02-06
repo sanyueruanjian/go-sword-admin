@@ -169,6 +169,17 @@ func (e SysRole) UpdateRole(deptsData []int, menusData []int) (err error) {
 func (e SysRole) DeleteRole(p []int) (err error) {
 	for _, values := range p {
 		err = orm.Eloquent.Table("sys_role").Where("id = ?", values).Updates(SysRole{UpdateBy: e.ID, IsDeleted: []byte{1}}).Error
+		if err != nil {
+			return
+		}
+		// 删除缓存
+		if err = DeleteRoleCache(values); err != nil {
+			return
+		}
+	}
+	// 删除RoleAll缓存
+	if err = DeleteRoleAll(); err != nil {
+		return
 	}
 	return
 }
@@ -204,15 +215,6 @@ func (e SysRole) SelectRoleAll() (roleAll []bo.RecordRole, err error) {
 	if err = orm.Eloquent.Find(&sysRoleAll).Error; err != nil {
 		return
 	}
-	// 全部角色存入缓存
-	// TODO
-	err = RoleAllCache(sysRoleAll)
-	if err != nil {
-		//fmt.Println("角色缓存添加失败！")
-		//fmt.Println(err)
-		return
-	}
-
 	for _, roleID := range sysRoleAll {
 		var menuIDAll []SysRolesMenus
 		// 格式化角色数据
@@ -275,6 +277,12 @@ func (e SysRole) SelectRoleAll() (roleAll []bo.RecordRole, err error) {
 			roleDate.Protection = false
 		}
 		roleAll = append(roleAll, roleDate)
+	}
+
+	// 全部角色存入缓存
+	err = InsertRoleAllCache(roleAll)
+	if err != nil {
+		return
 	}
 	return
 }
