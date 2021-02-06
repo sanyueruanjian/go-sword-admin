@@ -35,6 +35,16 @@ func SetMenuCache(allMenu map[string][]byte) error {
 	return nil
 }
 
+//查询所有菜单bo缓存
+func SetMenuListCache(v []byte, k string) error {
+	return global.Rdb.Set(k, v, time.Duration(config.JwtConfig.Timeout)*time.Second).Err()
+}
+
+//查询所有菜单bo缓存
+func GetMenuListCache(k string) ([]byte, error) {
+	return global.Rdb.Get(k).Bytes()
+}
+
 //根据id查询缓存
 func GetMenuByIdCache(id int) (menu []byte, err error) {
 	strId := strconv.Itoa(id)
