@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -108,6 +109,11 @@ func StringToTime(t string) time.Time {
 	return tm
 }
 
-func PagesCount(count int, size int) int{
+func PagesCount(count int, size int) int {
 	return (count-1)/size + 1
+}
+
+func BlurryCache(blurry string, sourceStr string) bool {
+	matched, _ := regexp.MatchString(blurry, sourceStr)
+	return matched
 }
