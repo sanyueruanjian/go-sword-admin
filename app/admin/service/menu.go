@@ -66,8 +66,7 @@ func (m *Menu) SelectMenu(p *dto.SelectMenuDto) (data []*bo.SelectMenuBo, err er
 			Permission: v.Permission,
 			Title:      v.Title,
 		}
-		hasChild, _ := menu.SelectHasChild(tmp.ID)
-		tmp.HasChildren = hasChild
+		tmp.HasChildren = v.SubCount != 0
 		data = append(data, tmp)
 	}
 
@@ -110,7 +109,7 @@ func (m *Menu) ReturnToAllMenus(pid int) (data []*bo.ReturnToAllMenusBo, err err
 			HasChildren: false,
 			Hidden:      utils.ByteIntoBool(v.Hidden),
 			Icon:        v.Icon,
-			ID:          0,
+			ID:          v.ID,
 			Iframe:      utils.ByteIntoBool(v.IFrame),
 			Label:       v.Title,
 			Leaf:        true,

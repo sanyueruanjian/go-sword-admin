@@ -159,7 +159,7 @@ func SelectUserInfoListHandler(c *gin.Context) {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
-	//业务逻辑处理
+	//menu业务逻辑处理
 	m := new(service.User)
 	var data *bo.UserInfoListBo
 	data, err = m.SelectUserInfoList(p)

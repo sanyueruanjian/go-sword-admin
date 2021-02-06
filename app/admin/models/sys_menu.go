@@ -3,38 +3,39 @@ package models
 import (
 	"encoding/json"
 	"project/app/admin/models/bo"
+	"project/app/admin/models/cache"
 	"project/app/admin/models/dto"
 	"project/common/global"
 	"project/utils"
-	"project/utils/config"
 	"strconv"
-	"time"
 
-	"gorm.io/gorm"
+	"go.uber.org/zap"
 )
 
-const ForeNeed string = "ForeNeedMenu"
+const ForeNeed string = "menu::user:"
 
 type SysMenu struct {
 	*BaseModel
-	Pid        int    `json:"pid"`        //上级菜单ID
 	SubCount   int    `json:"sub_count"`  //子菜单数目
+	Pid        int    `json:"pid"`        //上级菜单ID
 	Type       int    `json:"type"`       //菜单类型
+	MenuSort   int    `json:"menu_sort"`  //排序
+	CreateBy   int    `json:"create_by"`  //
+	UpdateBy   int    `json:"update_by"`  //
+	Address    string `json:"address"`    //请求地址
+	Action     string `json:"action"`     //请求方式
+	Icon       string `json:"icon"`       //图标
+	Path       string `json:"path"`       //链接地址
 	Title      string `json:"title"`      //菜单标题
 	Name       string `json:"name"`       //组件名称
 	Component  string `json:"component"`  //组件
-	MenuSort   int    `json:"menu_sort"`  //排序
-	Icon       string `json:"icon"`       //图标
-	Path       string `json:"path"`       //链接地址
+	Permission string `json:"permission"` //权限
 	IFrame     []byte `json:"i_frame"`    //是否外链
 	Cache      []byte `json:"cache"`      //缓存
 	Hidden     []byte `json:"hidden"`     //隐藏
-	Permission string `json:"permission"` //权限
-	CreateBy   int    `json:"create_by"`  //
-	UpdateBy   int    `json:"update_by"`  //
 }
 
-type ChildMeau struct {
+type ChildMenu struct {
 	Id  int `json:"id"`
 	Pid int `json:"pid"`
 }
@@ -48,14 +49,30 @@ func (m *SysMenu) TableName() string {
 }
 
 func (m *SysMenu) InsertMenu() error {
-	err := global.Eloquent.Create(&m).Error
+	tx := global.Eloquent.Begin()
+	err := tx.Create(&m).Error
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
-	if err := global.Rdb.Del(ForeNeed).Err(); err != nil {
+	//清除缓存
+	var keys []string
+	keys, err = global.Rdb.Keys("menu::user:*").Result()
+	if err != nil {
+		tx.Rollback()
 		return err
 	}
-	return nil
+	err = cache.DeleteAllMenuIdCache()
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	err = cache.DeleteAllUserMenuCache(keys)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
 }
 
 func (m *SysMenu) SelectMenu(p *dto.SelectMenuDto) (data []*SysMenu, err error) {
@@ -65,27 +82,29 @@ func (m *SysMenu) SelectMenu(p *dto.SelectMenuDto) (data []*SysMenu, err error) 
 	orderRule := utils.GetOrderRule(orderJson)
 	//模糊条件
 	blurry := "%" + p.Blurry + "%"
-	//查询缓存
-	//menuIdInRedis := global.Rdb.Keys("menu::id:*").Val()
-	//if len(menuIdInRedis) != 0 {
-	//	for _, v := range menuIdInRedis {
-	//		menuByte, err := global.Rdb.Get(v).Bytes()
-	//		if err != nil {
-	//			break
-	//		}
-	//		menu := new(SysMenu)
-	//		err = json.Unmarshal(menuByte, menu)
-	//		if err != nil {
-	//			break
-	//		}
-	//		if menu.IsDeleted[0] == 0 && menu.Pid == p.Pid {
-	//			data = append(data, menu)
-	//		}
-	//		if data != nil {
-	//			return data, nil
-	//		}
-	//	}
-	//}
+	////查询缓存
+	menuIdInRedis := cache.GetAllMenuIdCacheKeys()
+	if len(menuIdInRedis) != 0 {
+		dataByte, err := cache.GetAllMenuCache(menuIdInRedis)
+		if err != nil {
+			zap.L().Error("GetAllMenuCache failed", zap.Error(err))
+		}
+		for _, menuByte := range dataByte {
+			menu := new(SysMenu)
+			err = json.Unmarshal(menuByte, menu)
+			if err != nil {
+				break
+			}
+			blurryTitle := utils.BlurryCache(p.Blurry, menu.Title)
+			if menu.Pid == p.Pid && menu.IsDeleted[0] == 0 && blurryTitle {
+				data = append(data, menu)
+			}
+		}
+		if data != nil {
+			return data, nil
+		}
+	}
+
 	var total int64
 	//查询所有菜单
 	allMenu := make([]*SysMenu, 0)
@@ -95,15 +114,6 @@ func (m *SysMenu) SelectMenu(p *dto.SelectMenuDto) (data []*SysMenu, err error) 
 	if err != nil {
 		return nil, err
 	}
-	//做菜单缓存
-	for _, v := range allMenu {
-		menuKey := "menu::id:" + strconv.Itoa(v.ID)
-		menuRedis, err := json.Marshal(v)
-		if err != nil {
-			return nil, err
-		}
-		global.Rdb.Set(menuKey, menuRedis, time.Duration(config.JwtConfig.Timeout)*time.Second)
-	}
 	if p.EndTime != 0 && p.StartTime != 0 {
 		table = table.Where("create_time > ? AND create_time < ?", p.StartTime, p.EndTime)
 	}
@@ -112,23 +122,24 @@ func (m *SysMenu) SelectMenu(p *dto.SelectMenuDto) (data []*SysMenu, err error) 
 		table = table.Order(orderRule)
 	}
 	err = table.Find(&data).Error
-	return data, err
-}
 
-// SelectHasChild 查询是否有孩子
-func (m *SysMenu) SelectHasChild(id int) (count bool, err error) {
-	var ids []int
-	err = global.Eloquent.Table("sys_menu").Select("id").Where("pid=?", id).Find(&ids).Error
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return false, nil
+	//做菜单缓存
+	allMenuByte := make(map[string][]byte, 0)
+	for _, menu := range allMenu {
+		menuKey := "menu::id:" + strconv.Itoa(menu.ID)
+		menuRedis, err := json.Marshal(menu)
+		if err != nil {
+			break
 		}
-		return false, err
+		allMenuByte[menuKey] = menuRedis
 	}
-	if len(ids) == 0 {
-		return false, nil
+	//调用做缓存方法
+	err = cache.SetMenuCache(allMenuByte)
+	if err != nil {
+		zap.L().Error("SetMenuCache failed", zap.Error(err))
 	}
-	return true, nil
+	//返回数据
+	return data, err
 }
 
 //删除菜单
@@ -139,7 +150,7 @@ func (m *SysMenu) DeleteMenu(ids []int) (err error) {
 			return err
 		}
 	}
-	if err := global.Rdb.Del(ForeNeed).Err(); err != nil {
+	if err := cache.DeleteMenuByIdCache(ids); err != nil {
 		return err
 	}
 	return nil
@@ -147,7 +158,8 @@ func (m *SysMenu) DeleteMenu(ids []int) (err error) {
 
 //更新菜单
 func (m *SysMenu) UpdateMenu(p *dto.UpdateMenuDto, userId int) (err error) {
-	err = global.Eloquent.Table("sys_menu").Where("id=?", p.ID).Updates(map[string]interface{}{
+	tx := global.Eloquent.Begin()
+	err = tx.Table("sys_menu").Where("id=?", p.ID).Updates(map[string]interface{}{
 		"pid":        p.Pid,
 		"sub_count":  p.SubCount,
 		"type":       p.Type,
@@ -163,28 +175,45 @@ func (m *SysMenu) UpdateMenu(p *dto.UpdateMenuDto, userId int) (err error) {
 		"cache":      utils.BoolIntoByte(p.Cache),
 		"hidden":     utils.BoolIntoByte(p.Iframe),
 	}).Error
-	if err := global.Rdb.Del(ForeNeed).Err(); err != nil {
+	if err != nil {
+		tx.Rollback()
+	}
+	var keys []string
+	keys, err = global.Rdb.Keys("menu::user:*").Result()
+	if err != nil {
+		tx.Rollback()
 		return err
 	}
-	return nil
+	err = cache.DeleteMenuByIdCache([]int{p.ID})
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	err = cache.DeleteAllUserMenuCache(keys)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
 }
 
 //查找前端所需菜单
 func (m *SysMenu) SelectForeNeedMenu(user *RedisUserInfo) (data []*bo.SelectForeNeedMenuBo, err error) {
 	//检查缓存有无,有的话从缓存中读取
-	//var val []byte
-	//if global.Rdb.Exists(ForeNeed).Val() == 1 {
-	//	val, err = global.Rdb.Get(ForeNeed).Bytes()
-	//	redisForeNeedMenu := new(RedisForeNeedMenu)
-	//	err = json.Unmarshal(val, redisForeNeedMenu)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//	data = redisForeNeedMenu.SelectForeNeedMenuList
-	//	if data != nil {
-	//		return data, nil
-	//	}
-	//}
+	var val []byte
+	forNeedKey := ForeNeed + strconv.Itoa(user.UserId)
+	if global.Rdb.Exists(forNeedKey).Val() == 1 {
+		val, err = global.Rdb.Get(forNeedKey).Bytes()
+		redisForeNeedMenu := new(RedisForeNeedMenu)
+		err = json.Unmarshal(val, redisForeNeedMenu)
+		if err != nil {
+			return nil, err
+		}
+		data = redisForeNeedMenu.SelectForeNeedMenuList
+		if data != nil && len(data) != 0 {
+			return data, nil
+		}
+	}
 	//查找角色Id
 	parentIds := make([]int, 0)
 	err = global.Eloquent.Table("sys_roles_menus").Select("menu_id").Where("role_id=?", 1).Joins("left join sys_menu "+
@@ -251,7 +280,7 @@ func (m *SysMenu) SelectForeNeedMenu(user *RedisUserInfo) (data []*bo.SelectFore
 		return nil, err
 	}
 	//添加缓存
-	err = global.Rdb.Set(ForeNeed, foreNeedMenu, 0).Err()
+	err = global.Rdb.Set(forNeedKey, foreNeedMenu, 0).Err()
 	if err != nil {
 		return nil, err
 	}
@@ -329,7 +358,7 @@ func (m *SysMenu) SuperiorMenu(p *dto.DataMenuDto) (data, child []*SysMenu, id i
 
 func (m *SysMenu) ChildMenu(p int) (data []int, err error) {
 	data = append(data, p)
-	var childMeau []*ChildMeau
+	var childMeau []*ChildMenu
 	for i := 0; i < len(data); i++ {
 		if err := global.Eloquent.Table("sys_menu").Where("is_deleted=? AND pid=?", []byte{0}, data[i]).
 			Find(&childMeau).Error; err != nil {
