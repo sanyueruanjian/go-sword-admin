@@ -2,13 +2,13 @@ package dto
 
 //SelectMenuDto 查询菜单
 type SelectMenuDto struct {
-	Current  int    `form:"current" binding:"required"`
-	Size     int    `form:"size" binding:"required"`
-	Pid      int    `form:"pid"` //父id
-	StatTime int    `form:"startTime"`
-	EndTime  int    `form:"endTime"`
-	Blurry   string `form:"blurry"`
-	Orders   string `form:"orders" binding:"required"`
+	Current   int    `form:"current"`
+	Size      int    `form:"size"`
+	Pid       int    `form:"pid"` //父id
+	StartTime int    `form:"startTime"`
+	EndTime   int    `form:"endTime"`
+	Blurry    string `form:"blurry"`
+	Orders    string `form:"orders"`
 }
 
 //InsertMenuDto 新增菜单
@@ -16,17 +16,17 @@ type InsertMenuDto struct {
 	Cache      bool   `json:"cache"`
 	Hidden     bool   `json:"hidden"`
 	Iframe     bool   `json:"iframe"`
-	MenuSort   int    `json:"menuSort" binding:"required"`
-	ID         int    `json:"id" binding:"required"`
-	Pid        int    `json:"pid" binding:"required"`
-	Type       int    `json:"type" binding:"required"`
-	Icon       string `json:"icon" binding:"required"`
-	Component  string `json:"component" binding:"required"`
-	Name       string `json:"name" binding:"required"`
-	Path       string `json:"path" binding:"required"`
-	Permission string `json:"permission" binding:"required"`
-	Title      string `json:"title" binding:"required"`
-	Roles      []int  `json:"roles" binding:"required"`
+	MenuSort   int    `json:"menuSort"`
+	ID         int    `json:"id"`
+	Pid        int    `json:"pid"`
+	Type       string `json:"type"`
+	Icon       string `json:"icon"`
+	Component  string `json:"component"`
+	Name       string `json:"name"`
+	Path       string `json:"path"`
+	Permission string `json:"permission"`
+	Title      string `json:"title"`
+	Roles      []int  `json:"roles"`
 }
 
 //UpdateMenuDto 修改菜单
@@ -34,7 +34,7 @@ type UpdateMenuDto struct {
 	Cache       bool   `json:"cache"`
 	Hidden      bool   `json:"hidden"`
 	Iframe      bool   `json:"iframe"`
-	HasChildren bool   `json:"hasChildren"` //TODO
+	HasChildren bool   `json:"hasChildren"`
 	Leaf        bool   `json:"leaf"`
 	MenuSort    int    `json:"menuSort" binding:"required"`
 	UpdatedBy   int    `json:"updatedBy"`

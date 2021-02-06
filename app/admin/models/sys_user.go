@@ -88,7 +88,7 @@ type RedisUserInfo struct {
 
 // OnlineUser 用户线上数据
 type OnlineUser struct {
-	LoginTime int64    `json:"loginTime"`
+	LoginTime int64  `json:"loginTime"`
 	Browser   string `json:"browser"`
 	Dept      string `json:"dept"`
 	Ip        string `json:"ip"`
@@ -189,23 +189,23 @@ func (u *SysUser) InsertUser(jobs []int, roles []int) (err error) {
 }
 
 func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.UserInfoListBo, err error) {
-	////读取缓存
-	var val []byte
-	if global.Rdb.Exists(CtxUserInfoList).Val() == 1 {
-		val, err = global.Rdb.Get(CtxUserInfoList).Bytes()
-		if err != nil {
-			return nil, err
-		}
-		userInfoList := new(RedisUserInfoList)
-		err = json.Unmarshal(val, userInfoList)
-		if err != nil {
-			return nil, err
-		}
-		data = userInfoList.Users
-		if data != nil {
-			return data, nil
-		}
-	}
+	//读取缓存
+	//var val []byte
+	//if global.Rdb.Exists(CtxUserInfoList).Val() == 1 {
+	//	val, err = global.Rdb.Get(CtxUserInfoList).Bytes()
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//	userInfoList := new(RedisUserInfoList)
+	//	err = json.Unmarshal(val, userInfoList)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//	data = userInfoList.Users
+	//	if data != nil {
+	//		return data, nil
+	//	}
+	//}
 
 	//排序条件
 	var orderJson []bo.Order
@@ -214,11 +214,15 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.Us
 	//查询用户基本信息
 	var userHalfs []*bo.RecordUserHalf
 	var users []*bo.RecordUser
-	enabled := 0
-	if p.Enabled {
-		enabled = 1
+	blurry := "%" + p.Blurry + "%"
+	var total int64
+	table := global.Eloquent.Table("sys_user").
+		Where("is_deleted=? AND enabled=? AND (username like ? or nick_name like ? or email like ?)", []byte{0}, 1, blurry, blurry, blurry)
+	if p.EndTime != 0 && p.StartTime != 0 {
+		table = table.Where("create_time > ? AND create_time < ?", p.StartTime, p.EndTime)
 	}
-	err = global.Eloquent.Table("sys_user").Where("is_deleted=? AND enabled=?", []byte{0}, enabled).Limit(p.Size).Offset(p.Current - 1*p.Size).Order(orderRule).Find(&userHalfs).Error
+	err = table.Limit(p.Size).Offset(p.Current - 1*p.Size).Count(&total).Order(orderRule).Find(&userHalfs).Error
+	pages := (int(total) + p.Size - 1) / p.Size
 	if err != nil {
 		return nil, err
 	}
@@ -278,6 +282,13 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.Us
 		users = append(users, user)
 	}
 	data = &bo.UserInfoListBo{Records: users} //添加缓存
+	data.Orders = orderJson
+	data.Size = p.Size
+	data.Current = p.Current
+	data.Pages = pages
+	data.Total = int(total)
+	data.SearchCount = true
+	data.OptimizeCountSql = true
 	var userInfoList []byte
 	redisUserInfoList := new(RedisUserInfoList)
 	redisUserInfoList.Users = data
@@ -287,7 +298,6 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.Us
 		return nil, err
 	}
 	return data, nil
-
 }
 
 func SelectUserRole(userId int) (role []*bo.Role, err error) {
@@ -436,7 +446,7 @@ func (u *SysUser) UpdateUser(p *dto.UpdateUserDto, optionId int) (err error) {
 
 func (u *SysUser) UpdateUserCenter(p *dto.UpdateUserCenterDto, optionId int) (err error) {
 	err = global.Eloquent.Table("sys_user").Where("id=?", p.Id).Updates(map[string]interface{}{
-		"gender":    utils.BoolIntoByte(p.Gender),
+		"gender":    utils.StrGenderIntoByte(p.Gender),
 		"phone":     p.Phone,
 		"nick_name": p.NickName,
 		"update_by": optionId,
