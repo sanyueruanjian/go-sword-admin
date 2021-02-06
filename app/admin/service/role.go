@@ -237,6 +237,9 @@ func (e Role) SelectRoleOne(id int) (roleData bo.SelectRoleBo, err error) {
 
 // 获取所有角色
 func (e Role) SelectRoleAll() (roleAll []bo.RecordRole, err error) {
+	// 1. 查询缓存 有数据拼装返回 无数据查询数据库加入缓存
+	// TODO
+
 	role := new(models.SysRole)
 	roleAll, err = role.SelectRoleAll()
 	return

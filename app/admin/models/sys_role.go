@@ -4,6 +4,7 @@ import (
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
 	"project/utils"
+	"reflect"
 	"strconv"
 
 	orm "project/common/global"
@@ -203,6 +204,15 @@ func (e SysRole) SelectRoleAll() (roleAll []bo.RecordRole, err error) {
 	if err = orm.Eloquent.Find(&sysRoleAll).Error; err != nil {
 		return
 	}
+	// 全部角色存入缓存
+	// TODO
+	err = RoleAllCache(sysRoleAll)
+	if err != nil {
+		//fmt.Println("角色缓存添加失败！")
+		//fmt.Println(err)
+		return
+	}
+
 	for _, roleID := range sysRoleAll {
 		var menuIDAll []SysRolesMenus
 		// 格式化角色数据
@@ -213,6 +223,9 @@ func (e SysRole) SelectRoleAll() (roleAll []bo.RecordRole, err error) {
 		for _, menuID := range menuIDAll {
 			var sysMenu SysMenu
 			orm.Eloquent.Where(map[string]interface{}{"id": menuID.MenuId}).First(&sysMenu)
+			if reflect.DeepEqual(sysMenu, SysMenu{}) {
+				break
+			}
 			if sysMenu.Cache[0] == 1 {
 				menuData.Cache = true
 			} else {
