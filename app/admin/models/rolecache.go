@@ -9,9 +9,10 @@ import (
 // 查询所有角色缓存
 func RoleAllCache(sysRoleAll []SysRole) (err error) {
 	for _, values := range sysRoleAll {
-		roleByte, err := json.Marshal(values)
+		roleByte, errValue := json.Marshal(values)
 		roleString := string(roleByte)
-		if err != nil {
+		if errValue != nil {
+			err = errValue
 			return
 		}
 		errRedis := orm.Rdb.Set("role::id:"+string(values.ID), roleString, 0).Err()
