@@ -77,6 +77,7 @@ func DeleteRoleCache(roleId int) (err error) {
 
 func InsertRoleId(roleId int) (err error) {
 	// TODO
+
 	//role, err := r.SelectRoleOne(roleId)
 	//roleByte, errValue := json.Marshal(role)
 	//roleString := string(roleByte)
