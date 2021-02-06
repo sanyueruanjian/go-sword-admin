@@ -110,7 +110,7 @@ func (m *Menu) ReturnToAllMenus(pid int) (data []*bo.ReturnToAllMenusBo, err err
 			HasChildren: false,
 			Hidden:      utils.ByteIntoBool(v.Hidden),
 			Icon:        v.Icon,
-			ID:          0,
+			ID:          v.ID,
 			Iframe:      utils.ByteIntoBool(v.IFrame),
 			Label:       v.Title,
 			Leaf:        true,
