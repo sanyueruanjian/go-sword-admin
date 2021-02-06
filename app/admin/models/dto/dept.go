@@ -2,14 +2,15 @@ package dto
 
 // SelectDeptListDto 多条件查询部门
 type SelectDeptDto struct {
-	Pid       int    `form:"pid"`                        // 上级部门（顶级部门为0，默认为0）
-	Current   int    `form:"current" binding:"required"` // 当前页
-	Size      int    `form:"size" binding:"required"`    // 每页数据
-	StartTime int64  `form:"startTime"`                  // 创建时间
-	EndTime   int64  `form:"endTime"`                    // 过期时间
-	Enabled   bool   `form:"enabled"`                    // 状态：1启用（默认）、0禁用
-	Orders    string `form:"orders" binding:"required"`  // 排序规则
-	Name      string `form:"name"`                       // 模糊
+	Pid       int    `form:"pid"`       // 上级部门（顶级部门为0，默认为0）
+	Current   int    `form:"current"`   // 当前页
+	Size      int    `form:"size"`      // 每页数据
+	StartTime int64  `form:"startTime"` // 创建时间
+	EndTime   int64  `form:"endTime"`   // 过期时间
+	Enabled   bool   `form:"enabled"`   // 状态：1启用（默认）、0禁用
+	Orders    string `form:"orders"`    // 排序规则
+	Name      string `form:"name"`      // 模糊
+	Sort      string `form:"sort"`
 }
 
 // InsertDeptDto 新增部门
@@ -26,8 +27,8 @@ type InsertDeptDto struct {
 type UpdateDeptDto struct {
 	Pid         *int   `json:"pid" binding:"required"`      // 上级部门id
 	SubCount    *int   `json:"subCount" binding:"required"` // 子部门个数
+	DeptSort    *int   `json:"deptSort" binding:"required"` // 部门排序
 	ID          int    `json:"id" binding:"required"`       // 部门id
-	DeptSort    int    `json:"deptSort" binding:"required"` // 部门排序
 	CreateBy    int    `json:"createBy"`
 	UpdatedBy   int    `json:"updateBy"`
 	CreateTime  int64  `json:"creatTime"`
