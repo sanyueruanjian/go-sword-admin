@@ -1,9 +1,7 @@
 package apis
 
 import (
-	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
 	"project/app/admin/service"
@@ -122,13 +120,6 @@ func UpdateRolesHandler(c *gin.Context) {
 		return
 	}
 
-	// 删除缓存
-	_, err = orm.Rdb.Do("DEL", "rolesAll").Result()
-	if err != nil {
-		app.ResponseError(c, app.CodeParamNotComplete)
-		return
-	}
-
 	// 3.返回数据
 	app.ResponseSuccess(c, nil)
 }
@@ -158,13 +149,6 @@ func DeleteRolesHandler(c *gin.Context) {
 		return
 	}
 	err = r.DeleteRole(ids, user.UserId)
-	if err != nil {
-		app.ResponseError(c, app.CodeParamNotComplete)
-		return
-	}
-
-	// 删除缓存
-	_, err = orm.Rdb.Do("DEL", "rolesAll").Result()
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
@@ -243,35 +227,14 @@ func SelectRoleHandler(c *gin.Context, id int) {
 // @Success 200 {object} models._ResponseLogin
 // @Router /api/roles/all [get]
 func SelectRolesAllHandler(c *gin.Context) {
-	val, err := orm.Rdb.Get("rolesAll").Result()
-	if val != "" && err == nil {
-		var roleData []bo.RecordRole
-		err := json.Unmarshal([]byte(val), &roleData)
-		if err == nil {
-			app.ResponseSuccess(c, roleData)
-			return
-		}
-	}
-
+	// 1.获取数据
 	role, err := r.SelectRoleAll()
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
 
-	// 3.加入缓存
-	roleByte, err := json.Marshal(role)
-	roleString := string(roleByte)
-	if err != nil {
-		app.ResponseError(c, app.CodeParamNotComplete)
-		return
-	}
-	errRedis := orm.Rdb.Set("rolesAll", roleString, 0).Err()
-	if errRedis != nil {
-		zap.L().Error("redis error: ", zap.Error(errRedis))
-	}
-
-	// 4.返回数据
+	// 2.返回数据
 	app.ResponseSuccess(c, role)
 }
 

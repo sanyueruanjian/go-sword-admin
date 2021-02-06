@@ -4,6 +4,7 @@ import (
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
 	"project/utils"
+	"reflect"
 	"strconv"
 
 	orm "project/common/global"
@@ -168,6 +169,17 @@ func (e SysRole) UpdateRole(deptsData []int, menusData []int) (err error) {
 func (e SysRole) DeleteRole(p []int) (err error) {
 	for _, values := range p {
 		err = orm.Eloquent.Table("sys_role").Where("id = ?", values).Updates(SysRole{UpdateBy: e.ID, IsDeleted: []byte{1}}).Error
+		if err != nil {
+			return
+		}
+		// 删除缓存
+		if err = DeleteRoleCache(values); err != nil {
+			return
+		}
+	}
+	// 删除RoleAll缓存
+	if err = DeleteRoleAll(); err != nil {
+		return
 	}
 	return
 }
@@ -213,6 +225,9 @@ func (e SysRole) SelectRoleAll() (roleAll []bo.RecordRole, err error) {
 		for _, menuID := range menuIDAll {
 			var sysMenu SysMenu
 			orm.Eloquent.Where(map[string]interface{}{"id": menuID.MenuId}).First(&sysMenu)
+			if reflect.DeepEqual(sysMenu, SysMenu{}) {
+				break
+			}
 			if sysMenu.Cache[0] == 1 {
 				menuData.Cache = true
 			} else {
@@ -262,6 +277,12 @@ func (e SysRole) SelectRoleAll() (roleAll []bo.RecordRole, err error) {
 			roleDate.Protection = false
 		}
 		roleAll = append(roleAll, roleDate)
+	}
+
+	// 全部角色存入缓存
+	err = InsertRoleAllCache(roleAll)
+	if err != nil {
+		return
 	}
 	return
 }

@@ -3,12 +3,11 @@ package utils
 import (
 	"bytes"
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/tealeg/xlsx"
 	"io"
 	"net/http"
 	"time"
-
-	"github.com/gin-gonic/gin"
-	"github.com/tealeg/xlsx"
 )
 
 func ToExcel(titleList []string, dataList []interface{}) (content io.ReadSeeker) {
