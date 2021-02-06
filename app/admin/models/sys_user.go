@@ -190,22 +190,22 @@ func (u *SysUser) InsertUser(jobs []int, roles []int) (err error) {
 
 func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.UserInfoListBo, err error) {
 	//读取缓存
-	//var val []byte
-	//if global.Rdb.Exists(CtxUserInfoList).Val() == 1 {
-	//	val, err = global.Rdb.Get(CtxUserInfoList).Bytes()
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//	userInfoList := new(RedisUserInfoList)
-	//	err = json.Unmarshal(val, userInfoList)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//	data = userInfoList.Users
-	//	if data != nil {
-	//		return data, nil
-	//	}
-	//}
+	var val []byte
+	if global.Rdb.Exists(CtxUserInfoList).Val() == 1 {
+		val, err = global.Rdb.Get(CtxUserInfoList).Bytes()
+		if err != nil {
+			return nil, err
+		}
+		userInfoList := new(RedisUserInfoList)
+		err = json.Unmarshal(val, userInfoList)
+		if err != nil {
+			return nil, err
+		}
+		data = userInfoList.Users
+		if data != nil {
+			return data, nil
+		}
+	}
 
 	//排序条件
 	var orderJson []bo.Order
