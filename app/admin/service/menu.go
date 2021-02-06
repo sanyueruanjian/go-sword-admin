@@ -66,8 +66,7 @@ func (m *Menu) SelectMenu(p *dto.SelectMenuDto) (data []*bo.SelectMenuBo, err er
 			Permission: v.Permission,
 			Title:      v.Title,
 		}
-		hasChild, _ := menu.SelectHasChild(tmp.ID)
-		tmp.HasChildren = hasChild
+		tmp.HasChildren = v.SubCount != 0
 		data = append(data, tmp)
 	}
 
