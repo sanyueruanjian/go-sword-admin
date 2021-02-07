@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-<<<<<<< HEAD
-	"project/app/admin/models/cache"
-=======
+	appcache "project/app/admin/models/cache"
 	"project/common/cache"
 	"project/pkg/jwt"
 	"project/utils/config"
->>>>>>> df519757dcef22fc600963824c22112832b7a949
+
 	"strconv"
 	"time"
 
@@ -356,7 +354,7 @@ func (u *User) UpdateUserCenter(p *dto.UpdateUserCenterDto, optionId int) (err e
 
 func (u *User) SelectUserInfo(p *models.RedisUserInfo) (data *bo.UserCenterInfoBo, err error) {
 	//读取缓存
-	if data, err = cache.GetUserCenterCache(p.UserId); err != nil && data != nil {
+	if data, err = appcache.GetUserCenterCache(p.UserId); err != nil && data != nil {
 		return data, nil
 	}
 	user := new(models.SysUser)
@@ -365,7 +363,7 @@ func (u *User) SelectUserInfo(p *models.RedisUserInfo) (data *bo.UserCenterInfoB
 		return nil, err
 	}
 	//	redis缓存
-	err = cache.SetUserCenterListCache(data)
+	err = appcache.SetUserCenterListCache(data)
 	if err != nil {
 		zap.L().Error("SetUserCenterListCache failed", zap.Error(err))
 	}

@@ -101,7 +101,7 @@ type OnlineUser struct {
 }
 
 type Admin struct {
-	IsAdmin      []byte `json:"is_admin"`       //是否为admin账号
+	IsAdmin []byte `json:"is_admin"` //是否为admin账号
 }
 
 func (SysUser) TableName() string {
@@ -582,12 +582,12 @@ func (u *SysUser) SelectUserInfo(p *RedisUserInfo) (data *bo.UserCenterInfoBo, e
 	}
 	//查询操作权限
 	optionPermission := []string{"admin"}
-	if !utils.ByteIntoBool(genderEnabled.IsAdmin) {
-		optionPermission, err = SelectUserMenuPermission(role)
-		if err != nil {
-			return nil, err
-		}
-	}
+	//if !utils.ByteIntoBool(genderEnabled.IsAdmin) {
+	//	optionPermission, err = SelectUserMenuPermission(role)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//}
 	//初始化bo
 	user.Role = role
 	user.Jobs = job
