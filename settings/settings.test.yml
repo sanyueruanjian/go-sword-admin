@@ -28,6 +28,10 @@ settings:
     # 日志等级
     level: info
   jwt:
+    # token header
+    header: Bearer
+    # rides user online header
+    redis_header: online-token
     # token 密钥，生产环境时及的修改
     secret: ezm9GrpBVGkpfJueE2G@uxu@oziR3$WUkzjqnqxdhN2Rf!qbxiQTtlh$Avd1#^$6
     # token 过期时间 单位：秒

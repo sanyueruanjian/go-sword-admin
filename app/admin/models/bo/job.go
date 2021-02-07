@@ -16,7 +16,7 @@ type GetJobList struct {
 	UpdateBy   int    `json:"updateBy"`   //更新人
 	CreateTime int64  `json:"createTime"` //创建时间
 	UpdateTime int64  `json:"updateTime"` //更新时间
-	Enabled    uint8  `json:"enabled"`    //状态：1启用（默认）、0禁用
+	Enabled    bool  `json:"enabled"`    //状态：1启用（默认）、0禁用
 	Name       string `json:"name"`       //岗位名称
 }
 

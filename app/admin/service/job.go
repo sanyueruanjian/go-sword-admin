@@ -56,7 +56,7 @@ func (e *Job) GetJobList(p *dto.GetJobList) (res *bo.GetJob, err error) {
 			UpdateBy:   job.UpdateBy,
 			CreateTime: job.CreateTime,
 			UpdateTime: job.UpdateTime,
-			Enabled:    utils.ByteIntoInt(job.Enabled),
+			Enabled:    utils.ByteIntoBool(job.Enabled),
 			Name:       job.Name,
 		})
 	}

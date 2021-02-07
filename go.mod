@@ -17,6 +17,7 @@ require (
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/google/uuid v1.1.2
 	github.com/mojocn/base64Captcha v1.3.1
+	github.com/mssola/user_agent v0.5.2
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/shamsher31/goimgext v1.0.0
 	github.com/spf13/cast v1.3.1 // indirect
