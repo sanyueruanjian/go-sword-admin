@@ -10,7 +10,7 @@
 main.exe
 main
 
-static/uploadfile/*
+#static/uploadfile/*
 logs/*
 logs/web_app.log
 tmp/*
