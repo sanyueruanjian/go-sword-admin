@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"errors"
+	"project/app/admin/models/cache"
 
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
@@ -48,6 +49,7 @@ type SysUserId struct {
 type GenderEnabled struct {
 	Gender  []byte `json:"gender"`  //性别（0为男默认，1为女）
 	Enabled []byte `json:"enabled"` //状态：1启用（默认）、0禁用
+	IsAdmin []byte `json:"is_admin"`
 }
 
 type SysUser struct {
@@ -88,12 +90,18 @@ type RedisUserInfo struct {
 
 // OnlineUser 用户线上数据
 type OnlineUser struct {
-	LoginTime int64  `json:"loginTime"`
-	Browser   string `json:"browser"`
-	Dept      string `json:"dept"`
-	Ip        string `json:"ip"`
-	Nickname  string `json:"nickname"`
-	Username  string `json:"username"`
+	LoginTime     int64  `json:"loginTime"`     //登录时间
+	LoginLocation string `json:"loginLocation"` // 归属地
+	Browser       string `json:"browser"`       // 浏览器
+	Dept          string `json:"dept"`          //部门
+	Ip            string `json:"ip"`            //ip地址
+	Nickname      string `json:"nickname"`      //昵称
+	Username      string `json:"username"`      //用户名
+	Token         string `json:"key"`           // token
+}
+
+type Admin struct {
+	IsAdmin []byte `json:"is_admin"` //是否为admin账号
 }
 
 func (SysUser) TableName() string {
@@ -107,45 +115,34 @@ var (
 	ErrorUserIsNotEnabled = errors.New("用户未激活")
 )
 
+func (a *Admin) GetIsAdmin(userId int) error {
+	return global.Eloquent.Table("sys_user").Where("id = ?", userId).First(a).Error
+}
+
+func (u *SysUser) GetUser(userId int) error {
+	return global.Eloquent.Table(u.TableName()).Where("id = ?", userId).First(u).Error
+}
+
 // Login 查询用户是否存在，并验证密码
-func (u *SysUser) Login() (*bo.RecordUser, error) {
+func (u *SysUser) Login() error {
 	oPassword := u.Password
-	err := global.Eloquent.Table(u.TableName()).Where("username = ?", u.Username).First(&u).Error
+	err := global.Eloquent.Table(u.TableName()).Where("username = ?", u.Username).First(u).Error
 	if err == gorm.ErrRecordNotFound {
 		zap.L().Error("用户不存在", zap.Error(err))
-		return nil, ErrorUserNotExist
+		return ErrorUserNotExist
 	}
 	if err != nil {
 		zap.L().Error("服务器繁忙", zap.Error(err))
-		return nil, ErrorServerBusy
+		return ErrorServerBusy
 	}
 	if u.Password != utils.EncodeMD5(oPassword) {
 		zap.L().Error("user account or password is error")
-		return nil, ErrorInvalidPassword
+		return ErrorInvalidPassword
 	}
 	if u.Enabled[0] == 0 {
-		return nil, ErrorUserIsNotEnabled
+		return ErrorUserIsNotEnabled
 	}
-
-	r := new(bo.RecordUser)
-	r.RecordUserHalf = new(bo.RecordUserHalf)
-	r.RoleDeptJobBool = new(bo.RoleDeptJobBool)
-	r.AvatarName = u.Avatar
-	r.AvatarPath = u.AvatarPath
-	r.Email = u.Email
-	r.NickName = u.NickName
-	r.Phone = u.Phone
-	r.Username = u.Username
-	r.Gender = utils.ByteIntoBool(u.Gender)
-	r.Enabled = utils.ByteIntoBool(u.Enabled)
-	r.Id = u.ID
-	r.DeptId = u.DeptId
-	r.PwdResetTime = u.PwdResetTime
-	r.CreateBy = u.CreateBy
-	r.UpdateBy = u.UpdateBy
-	r.CreateTime = u.CreateTime
-	r.UpdateTime = u.UpdateTime
-	return r, nil
+	return nil
 }
 
 func (u *SysUser) InsertUser(jobs []int, roles []int) (err error) {
@@ -157,6 +154,7 @@ func (u *SysUser) InsertUser(jobs []int, roles []int) (err error) {
 		tx.Rollback()
 		return err
 	}
+
 	//维护 user role 关系表
 	for _, role := range roles {
 		roleUser := &SysUsersRoles{
@@ -190,76 +188,106 @@ func (u *SysUser) InsertUser(jobs []int, roles []int) (err error) {
 
 func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.UserInfoListBo, err error) {
 	//读取缓存
-	//var val []byte
-	//if global.Rdb.Exists(CtxUserInfoList).Val() == 1 {
-	//	val, err = global.Rdb.Get(CtxUserInfoList).Bytes()
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//	userInfoList := new(RedisUserInfoList)
-	//	err = json.Unmarshal(val, userInfoList)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//	data = userInfoList.Users
-	//	if data != nil {
-	//		return data, nil
+	var val []byte
+	if global.Rdb.Exists(CtxUserInfoList).Val() == 1 {
+		val, err = global.Rdb.Get(CtxUserInfoList).Bytes()
+		if err != nil {
+			return nil, err
+		}
+		userInfoList := new(RedisUserInfoList)
+		err = json.Unmarshal(val, userInfoList)
+		if err != nil {
+			return nil, err
+		}
+		data = userInfoList.Users
+		if data != nil {
+			return data, nil
+		}
+	}
+
+	////TODO 获取部门权限
+	//var dataScopesRoleIds []int
+	//var dataScopes []int
+	//var allScopes bool
+	//for _, role := range roles {
+	//	switch role.DataScope {
+	//	case `全部`:
+	//		allScopes = true
+	//		break
+	//	case `本级`:
+	//		dataScopes = append(dataScopes, user.DeptId)
+	//	default:
+	//		dataScopesRoleIds = append(dataScopesRoleIds, role.ID)
 	//	}
 	//}
-
+	//
+	//if !allScopes {
+	//	deptIds, err := SelectUserDeptIdByRoleId(dataScopesRoleIds)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//	dataScopes = append(dataScopes, deptIds...)
+	//}
 	//排序条件
 	var orderJson []bo.Order
 	orderJson, err = utils.OrderJson(p.Orders)
 	orderRule := utils.GetOrderRule(orderJson)
 	//查询用户基本信息
 	var userHalfs []*bo.RecordUserHalf
-	var users []*bo.RecordUser
 	blurry := "%" + p.Blurry + "%"
 	var total int64
 	table := global.Eloquent.Table("sys_user").
 		Where("is_deleted=? AND enabled=? AND (username like ? or nick_name like ? or email like ?)", []byte{0}, 1, blurry, blurry, blurry)
+
+	//日期筛选
 	if p.EndTime != 0 && p.StartTime != 0 {
 		table = table.Where("create_time > ? AND create_time < ?", p.StartTime, p.EndTime)
 	}
+
+	//分页
 	err = table.Limit(p.Size).Offset(p.Current - 1*p.Size).Count(&total).Order(orderRule).Find(&userHalfs).Error
 	pages := (int(total) + p.Size - 1) / p.Size
 	if err != nil {
 		return nil, err
 	}
+
+	var users []*bo.RecordUser
 	for _, userHalf := range userHalfs {
-		//查询 角色 部门 岗位
-		var roles []*bo.Role
-		var jobs []*bo.Job
-		dept := new(bo.DeptCommon)
-		user := new(bo.RecordUser)
-		user.RecordUserHalf = new(bo.RecordUserHalf)
-		user.RoleDeptJobBool = new(bo.RoleDeptJobBool)
-		genderEnabled := new(GenderEnabled)
 		//查询角色
+		var roles []*bo.Role
 		roles, err = SelectUserRole(userHalf.Id)
 		if err != nil {
 			zap.L().Debug("查询角色", zap.Error(err))
 			return nil, err
 		}
+
 		//查询岗位
+		var jobs []*bo.Job
 		jobs, err = SelectUserJob(userHalf.Id)
 		if err != nil {
 			zap.L().Debug("查询岗位", zap.Error(err))
 			return nil, err
 		}
+
 		//查询部门
+		dept := new(bo.DeptCommon)
 		err = global.Eloquent.Table("sys_dept").Joins("left join sys_user "+
 			"on sys_user.dept_id = sys_dept.id").Where("sys_user.id=? AND sys_dept.is_deleted=?", userHalf.Id, []byte{0}).Scan(dept).Error
 		if err != nil {
 			zap.L().Debug("查询部门", zap.Error(err))
 			return nil, err
 		}
+
 		//查询性别
-		err = global.Eloquent.Table("sys_user").Select("gender", "enabled").Where("id=?", userHalf.Id).First(genderEnabled).Error
+		genderEnabled := new(GenderEnabled)
+		err = global.Eloquent.Table("sys_user").Select("gender", "enabled", "is_admin").Where("id=?", userHalf.Id).First(genderEnabled).Error
 		if err != nil {
 			zap.L().Debug("查询性别", zap.Error(err))
 			return nil, err
 		}
+		user := new(bo.RecordUser)
+		user.RecordUserHalf = new(bo.RecordUserHalf)
+		user.RoleDeptJobBool = new(bo.RoleDeptJobBool)
 		user.Role = roles
 		user.Jobs = jobs
 		user.Dept = dept
@@ -281,7 +309,8 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.Us
 		user.Gender = utils.ByteIntoBool(genderEnabled.Gender)
 		users = append(users, user)
 	}
-	data = &bo.UserInfoListBo{Records: users} //添加缓存
+
+	data = &bo.UserInfoListBo{Records: users}
 	data.Orders = orderJson
 	data.Size = p.Size
 	data.Current = p.Current
@@ -289,6 +318,8 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.Us
 	data.Total = int(total)
 	data.SearchCount = true
 	data.OptimizeCountSql = true
+	//添加缓存
+	data = &bo.UserInfoListBo{Records: users} //添加缓存
 	var userInfoList []byte
 	redisUserInfoList := new(RedisUserInfoList)
 	redisUserInfoList.Users = data
@@ -318,6 +349,42 @@ func SelectUserRole(userId int) (role []*bo.Role, err error) {
 	return
 }
 
+func GetUserJob(jobs *[]SysJob, userId int) (err error) {
+	//连表查询岗位
+	err = global.Eloquent.Table("sys_job").
+		Joins("left join sys_users_jobs on sys_users_jobs.job_id = sys_job.id").
+		Joins("left join sys_user on sys_user.id = sys_users_jobs.user_id").
+		Where("sys_job.is_deleted=? and sys_user.id=?", []byte{0}, userId).
+		Find(jobs).Error
+	if err == gorm.ErrRecordNotFound {
+		zap.L().Error("用户无岗位", zap.Error(err))
+		return ErrorUserNotExist
+	}
+	if err != nil {
+		zap.L().Error("服务器繁忙", zap.Error(err))
+		return ErrorServerBusy
+	}
+	return
+}
+
+func GetUserRole(role *[]SysRole, userId int) (err error) {
+	//连表查询角色
+	err = global.Eloquent.Table("sys_role").
+		Joins("left join sys_users_roles on sys_users_roles.role_id = sys_role.id").
+		Joins("left join sys_user on sys_user.id = sys_users_roles.user_id").
+		Where("sys_role.is_deleted=? and sys_user.id=?", []byte{0}, userId).
+		Find(role).Error
+	if err == gorm.ErrRecordNotFound {
+		zap.L().Error("用户无角色", zap.Error(err))
+		return ErrorUserNotExist
+	}
+	if err != nil {
+		zap.L().Error("服务器繁忙", zap.Error(err))
+		return ErrorServerBusy
+	}
+	return
+}
+
 func SelectUserJob(userId int) (jobs []*bo.Job, err error) {
 	//连表查询岗位
 	err = global.Eloquent.Table("sys_job").
@@ -337,8 +404,7 @@ func SelectUserJob(userId int) (jobs []*bo.Job, err error) {
 }
 
 // SelectUserDept 查询部门
-func SelectUserDept(userId int) (dept *bo.DeptCommon, err error) {
-	dept = new(bo.DeptCommon)
+func SelectUserDept(dept *SysDept, userId int) (err error) {
 	err = global.Eloquent.Table("sys_dept").
 		Joins("left join sys_user on sys_user.dept_id = sys_dept.id").
 		Where("sys_user.id=? AND sys_dept.is_deleted=?", userId, []byte{0}).
@@ -354,26 +420,29 @@ func SelectUserDeptIdByRoleId(roleId []int) (deptIds []int, err error) {
 }
 
 // SelectUserMenuPermission 查询菜单权限
-func SelectUserMenuPermission(roles []*bo.Role) (Roles []string, err error) {
+func SelectUserMenuPermission(menus *[]SysMenu, roles *[]SysRole) (err error) {
 	var rolesId []int
-	for _, role := range roles {
+	for _, role := range *roles {
 		rolesId = append(rolesId, role.ID)
 	}
-	err = global.Eloquent.Table("sys_roles_menus").Select([]string{"permission"}).
+	err = global.Eloquent.Table("sys_roles_menus").
 		Joins("left join sys_menu on sys_roles_menus.menu_id = sys_menu.id").
-		Where("sys_roles_menus.role_id in (?)", rolesId).Scan(&Roles).Error
+		Where("sys_roles_menus.role_id in (?)", rolesId).Find(menus).Error
 	return
 }
 
-func (u *SysUser) DeleteUser(ids *[]int) (err error) {
-	err = global.Eloquent.Table("sys_user").Where("id IN (?)", *ids).Updates(map[string]interface{}{"is_deleted": []byte{1}}).Error
+func (u *SysUser) DeleteUser(ids []int) (err error) {
+	tx := global.Eloquent.Begin()
+	err = tx.Table("sys_user").Where("id IN (?)", ids).Updates(map[string]interface{}{"is_deleted": []byte{1}}).Error
 	if err != nil {
 		return err
 	}
-	if err := global.Rdb.Del(CtxUserInfoList).Err(); err != nil {
+	//	删除userCenter缓存
+	if err := cache.DelManyUserCenterCache(ids); err != nil {
+		tx.Rollback()
 		return err
 	}
-	return nil
+	return tx.Commit().Error
 }
 
 func (u *SysUser) UpdateUser(p *dto.UpdateUserDto, optionId int) (err error) {
@@ -437,6 +506,11 @@ func (u *SysUser) UpdateUser(p *dto.UpdateUserDto, optionId int) (err error) {
 			return err
 		}
 	}
+	//	删除缓存
+	if err := cache.DelUserCenterCache(optionId); err != nil {
+		tx.Rollback()
+		return err
+	}
 	//提交事务
 	if err := global.Rdb.Del(CtxUserInfoList).Err(); err != nil {
 		return err
@@ -445,19 +519,24 @@ func (u *SysUser) UpdateUser(p *dto.UpdateUserDto, optionId int) (err error) {
 }
 
 func (u *SysUser) UpdateUserCenter(p *dto.UpdateUserCenterDto, optionId int) (err error) {
-	err = global.Eloquent.Table("sys_user").Where("id=?", p.Id).Updates(map[string]interface{}{
+	//创建事务
+	tx := global.Eloquent.Begin()
+	err = tx.Table("sys_user").Where("id=?", p.Id).Updates(map[string]interface{}{
 		"gender":    utils.StrGenderIntoByte(p.Gender),
 		"phone":     p.Phone,
 		"nick_name": p.NickName,
 		"update_by": optionId,
 	}).Error
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
-	if err := global.Rdb.Del(CtxUserInfoList).Err(); err != nil {
+	//	删除缓存
+	if err := cache.DelUserCenterCache(p.Id); err != nil {
+		tx.Rollback()
 		return err
 	}
-	return nil
+	return tx.Commit().Error
 }
 
 func (u *SysUser) SelectUserInfo(p *RedisUserInfo) (data *bo.UserCenterInfoBo, err error) {
@@ -496,11 +575,19 @@ func (u *SysUser) SelectUserInfo(p *RedisUserInfo) (data *bo.UserCenterInfoBo, e
 		return nil, err
 	}
 	//查询性别
-	err = global.Eloquent.Table("sys_user").Select("gender", "enabled").Where("id=?", userHalf.Id).First(genderEnabled).Error
+	err = global.Eloquent.Table("sys_user").Select("gender", "enabled", "is_admin").Where("id=?", userHalf.Id).First(genderEnabled).Error
 	if err != nil {
 		zap.L().Debug("查询性别", zap.Error(err))
 		return nil, err
 	}
+	//查询操作权限
+	optionPermission := []string{"admin"}
+	//if !utils.ByteIntoBool(genderEnabled.IsAdmin) {
+	//	optionPermission, err = SelectUserMenuPermission(role)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//}
 	//初始化bo
 	user.Role = role
 	user.Jobs = job
@@ -522,27 +609,33 @@ func (u *SysUser) SelectUserInfo(p *RedisUserInfo) (data *bo.UserCenterInfoBo, e
 	user.Enabled = utils.ByteIntoBool(genderEnabled.Enabled)
 	user.Gender = utils.ByteIntoBool(genderEnabled.Gender)
 	dataScopes := make([]string, 0)
-	roleNames := make([]string, 0)
-	for _, v := range role {
-		roleNames = append(roleNames, v.Name)
-		dataScopes = append(dataScopes, v.DataScope)
-	}
 	data = &bo.UserCenterInfoBo{
 		DataScopes: dataScopes,
 		User:       user,
-		Roles:      roleNames,
+		Roles:      optionPermission,
 	}
 	return data, nil
 }
 
 func (u *SysUser) UpdatePassWord(p *dto.UpdateUserPassDto, optionId int) (err error) {
 	//md5加密
+	tx := global.Eloquent.Begin()
 	pwd := utils.EncodeMD5(p.NewPass)
-	return global.Eloquent.Table("sys_user").Where("id=?", optionId).Updates(map[string]interface{}{
+	err = tx.Table("sys_user").Where("id=?", optionId).Updates(map[string]interface{}{
 		"password":       pwd,
 		"update_by":      optionId,
 		"pwd_reset_time": utils.GetCurrentTimeUnix(),
 	}).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	//	删除缓存
+	if err := cache.DelUserCenterCache(optionId); err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
 }
 
 func (u *SysUser) UpdateAvatar(path string, userId int) (err error) {

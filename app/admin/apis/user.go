@@ -2,6 +2,9 @@ package apis
 
 import (
 	"errors"
+	"fmt"
+	"project/common/global"
+	"project/utils/config"
 
 	"project/app/admin/models"
 	"project/app/admin/models/bo"
@@ -85,6 +88,15 @@ func LoginHandler(c *gin.Context) {
 // @Success 200 {object} models._ResponseLogin
 // @Router /api/auth/logout [delete]
 func LogoutHandler(c *gin.Context) {
+	userOnline, err := api.GetUserOnline(c)
+	if err != nil {
+		c.Error(err)
+		zap.L().Error("获取线上用户数据失败", zap.Error(err))
+		app.ResponseError(c, app.CodeBadRequest)
+		return
+	}
+
+	global.Rdb.Del(fmt.Sprintf("%s%s%s", config.JwtConfig.RedisHeader, "-", userOnline.Token))
 	app.ResponseSuccess(c, nil)
 }
 
@@ -203,7 +215,7 @@ func DeleteUserHandler(c *gin.Context) {
 		return
 	}
 	menu := new(service.User)
-	if err := menu.DeleteUser(&ids); err != nil {
+	if err := menu.DeleteUser(ids); err != nil {
 		zap.L().Error("DeleteUser failed", zap.Error(err))
 		app.ResponseError(c, app.CodeDeleteOperationFail)
 		return

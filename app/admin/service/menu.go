@@ -2,10 +2,13 @@ package service
 
 import (
 	"bytes"
+	"encoding/json"
 	"project/app/admin/models"
 	"project/app/admin/models/bo"
+	"project/app/admin/models/cache"
 	"project/app/admin/models/dto"
 	"project/utils"
+	"strconv"
 )
 
 type Menu struct {
@@ -39,6 +42,13 @@ func (m *Menu) InsertMenu(p *dto.InsertMenuDto, userID int) error {
 }
 
 func (m *Menu) SelectMenu(p *dto.SelectMenuDto) (data []*bo.SelectMenuBo, err error) {
+	////查询缓存
+	var redisData []byte
+	redisData, err = cache.GetMenuListCache("menu::pid:" + strconv.Itoa(p.Pid))
+	if redisData != nil && len(redisData) != 0 {
+		err = json.Unmarshal(redisData, &data)
+		return data, nil
+	}
 	var Menus []*models.SysMenu
 	menu := new(models.SysMenu)
 	Menus, err = menu.SelectMenu(p)
@@ -69,7 +79,10 @@ func (m *Menu) SelectMenu(p *dto.SelectMenuDto) (data []*bo.SelectMenuBo, err er
 		tmp.HasChildren = v.SubCount != 0
 		data = append(data, tmp)
 	}
-
+	//添加缓存
+	var dataByte []byte
+	dataByte, err = json.Marshal(data)
+	err = cache.SetMenuListCache(dataByte, p.Pid)
 	if err != nil {
 		return nil, err
 	}

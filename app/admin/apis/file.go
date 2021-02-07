@@ -15,8 +15,6 @@ import (
 	"github.com/google/uuid"
 )
 
-
-
 // UploadFile 文件上传（任意类型文件）
 // @Summary 文件上传（任意类型文件）
 // @Description Author：JiaKunLi 2021/01/27
@@ -152,7 +150,7 @@ func singleFile(c *gin.Context, fileResponse models.FileResponse, urlPerfix stri
 	fileResponse = models.FileResponse{
 		Size:     utils.GetFileSize(singleFile),
 		Path:     fileName,
-		FullPath: urlPerfix + "api/file/download/" +fileName,
+		FullPath: urlPerfix + "api/file/download/" + fileName,
 		Name:     files.Filename,
 		Type:     fileType,
 	}

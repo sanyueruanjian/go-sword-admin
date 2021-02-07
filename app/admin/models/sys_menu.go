@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
-const ForeNeed string = "menu::user:"
+const ForeNeed string = "menu::userNeed:"
 
 type SysMenu struct {
 	*BaseModel
@@ -82,29 +82,6 @@ func (m *SysMenu) SelectMenu(p *dto.SelectMenuDto) (data []*SysMenu, err error) 
 	orderRule := utils.GetOrderRule(orderJson)
 	//模糊条件
 	blurry := "%" + p.Blurry + "%"
-	////查询缓存
-	menuIdInRedis := cache.GetAllMenuIdCacheKeys()
-	if len(menuIdInRedis) != 0 {
-		dataByte, err := cache.GetAllMenuCache(menuIdInRedis)
-		if err != nil {
-			zap.L().Error("GetAllMenuCache failed", zap.Error(err))
-		}
-		for _, menuByte := range dataByte {
-			menu := new(SysMenu)
-			err = json.Unmarshal(menuByte, menu)
-			if err != nil {
-				break
-			}
-			blurryTitle := utils.BlurryCache(p.Blurry, menu.Title)
-			if menu.Pid == p.Pid && menu.IsDeleted[0] == 0 && blurryTitle {
-				data = append(data, menu)
-			}
-		}
-		if data != nil {
-			return data, nil
-		}
-	}
-
 	var total int64
 	//查询所有菜单
 	allMenu := make([]*SysMenu, 0)
@@ -200,9 +177,9 @@ func (m *SysMenu) UpdateMenu(p *dto.UpdateMenuDto, userId int) (err error) {
 //查找前端所需菜单
 func (m *SysMenu) SelectForeNeedMenu(user *RedisUserInfo) (data []*bo.SelectForeNeedMenuBo, err error) {
 	//检查缓存有无,有的话从缓存中读取
-	var val []byte
 	forNeedKey := ForeNeed + strconv.Itoa(user.UserId)
 	if global.Rdb.Exists(forNeedKey).Val() == 1 {
+		var val []byte
 		val, err = global.Rdb.Get(forNeedKey).Bytes()
 		redisForeNeedMenu := new(RedisForeNeedMenu)
 		err = json.Unmarshal(val, redisForeNeedMenu)

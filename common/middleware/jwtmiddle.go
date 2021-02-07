@@ -2,8 +2,10 @@ package middleware
 
 import (
 	"encoding/json"
+	"fmt"
 	"project/app/admin/models"
 	"project/common/global"
+	"project/utils/config"
 	"strconv"
 	"strings"
 
@@ -29,26 +31,38 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 		}
 		// 按空格分割
 		parts := strings.SplitN(authHeader, " ", 2)
-		if !(len(parts) == 2 && parts[0] == "Bearer") {
+		if !(len(parts) == 2 && parts[0] == config.JwtConfig.Header) {
 			app.ResponseError(c, app.CodeInvalidToken)
 			c.Abort()
 			return
 		}
 		// parts[1]是获取到的tokenString，我们使用之前定义好的解析JWT的函数来解析它
-		mc, err := jwt.ParseToken(parts[1])
+		res, err := global.Rdb.Get(fmt.Sprintf("%s%s%s", config.JwtConfig.RedisHeader, "-", parts[1])).Result()
 		if err != nil {
 			zap.L().Error("token解析失败", zap.Error(err))
 			app.ResponseError(c, app.CodeInvalidToken)
 			c.Abort()
 			return
 		}
+		c.Set(api.CtxUserOnline, res)
+
 		// 将当前请求的user_id信息保存到请求的上下文c上
+		mc, err := jwt.ParseToken(parts[1])
+		if err != nil {
+			c.Abort()
+			return
+		}
+		r := new(api.UserMessage)
+		r.UserId = mc.UserID
+		r.Username = mc.Username
+		c.Set(api.CtxUserIdAndName, r)
+
 		var UserInfoByte []byte
 		UserInfo := new(models.RedisUserInfo)
 		UserInfoByte, err = global.Rdb.Get(strconv.Itoa(mc.UserID)).Bytes()
 		err = json.Unmarshal(UserInfoByte, UserInfo)
-		c.Set(api.CtxUserIDKey, mc.UserID)
 		c.Set(api.CtxUserInfoKey, UserInfo)
+		c.Set(api.CtxUserIDKey, mc.UserID)
 		c.Next() // 后续的处理函数可以用过c.Get("username")来获取当前请求的用户信息
 	}
 }
