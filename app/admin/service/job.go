@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"io"
 
 	"project/app/admin/models"
@@ -34,42 +35,69 @@ func (e *Job) JobListDownload(p *dto.GetJobList) (content io.ReadSeeker, err err
 }
 
 // GetJobList 查询岗位列表业务逻辑
-func (e *Job) GetJobList(p *dto.GetJobList) (res *bo.GetJob, err error) {
+func (e *Job) GetJobList(p *dto.GetJobList) (*bo.GetJob, error) {
 	job := new(models.SysJob)
-
 	orderJson, err := utils.OrderJson(p.Orders)
 	if err != nil {
-		return
+		return nil, err
 	}
 	orderRule := utils.GetOrderRule(orderJson)
-	jobList, count, err := job.GetJobList(p, orderRule)
-	if err != nil {
-		return
+	res := new(bo.GetJob)
+	if p.Size==9999 && p.Current==0 && p.Page==0 {
+		jobList, count, err := job.GetJobEnabledList(p, orderRule)
+		if err != nil {
+			return nil, err
+		}
+		var getJobList []*bo.GetJobList
+		for _, job := range jobList {
+			getJobList = append(getJobList, &bo.GetJobList{
+				Id:         job.ID,
+				JobSort:    job.JobSort,
+				CreateBy:   job.CreateBy,
+				UpdateBy:   job.UpdateBy,
+				CreateTime: job.CreateTime,
+				UpdateTime: job.UpdateTime,
+				Enabled:    utils.ByteIntoBool(job.Enabled),
+				Name:       job.Name,
+			})
+		}
+
+		res.Size = p.Size
+		res.Current = p.Current
+		res.Orders = orderJson
+		res.Records = getJobList
+		res.Total = int(count)
+		res.Pages = p.Page
+
+	} else if p.Size==0 || p.Current==0 {
+		return nil, errors.New("参数缺失")
+	} else {
+		jobList, count, err := job.GetJobList(p, orderRule)
+		if err != nil {
+			return nil, err
+		}
+		var getJobList []*bo.GetJobList
+		for _, job := range jobList {
+			getJobList = append(getJobList, &bo.GetJobList{
+				Id:         job.ID,
+				JobSort:    job.JobSort,
+				CreateBy:   job.CreateBy,
+				UpdateBy:   job.UpdateBy,
+				CreateTime: job.CreateTime,
+				UpdateTime: job.UpdateTime,
+				Enabled:    utils.ByteIntoBool(job.Enabled),
+				Name:       job.Name,
+			})
+		}
+
+		res.Size = p.Size
+		res.Current = p.Current
+		res.Orders = orderJson
+		res.Records = getJobList
+		res.Total = int(count)
+		res.Pages = utils.PagesCount(res.Total, p.Size)
 	}
-
-	var getJobList []*bo.GetJobList
-	for _, job := range jobList {
-		getJobList = append(getJobList, &bo.GetJobList{
-			Id:         job.ID,
-			JobSort:    job.JobSort,
-			CreateBy:   job.CreateBy,
-			UpdateBy:   job.UpdateBy,
-			CreateTime: job.CreateTime,
-			UpdateTime: job.UpdateTime,
-			Enabled:    utils.ByteIntoBool(job.Enabled),
-			Name:       job.Name,
-		})
-	}
-
-	res = new(bo.GetJob)
-	res.Size = p.Size
-	res.Current = p.Current
-	res.Orders = orderJson
-	res.Records = getJobList
-	res.Total = int(count)
-	res.Pages = utils.PagesCount(res.Total, p.Size)
-
-	return
+	return res, nil
 }
 
 // DelJobById 删除岗位业务逻辑

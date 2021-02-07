@@ -3,22 +3,21 @@ package apis
 import (
 	"errors"
 	"fmt"
-	"project/common/global"
-	"project/utils/config"
 
 	"project/app/admin/models"
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
 	"project/app/admin/service"
 	"project/common/api"
+	"project/common/global"
 	"project/pkg/tools"
 	"project/utils"
 	"project/utils/app"
-
-	"github.com/google/uuid"
+	"project/utils/config"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
