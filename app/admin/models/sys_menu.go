@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
-const ForeNeed string = "menu::user:"
+const ForeNeed string = "menu::userNeed:"
 
 type SysMenu struct {
 	*BaseModel

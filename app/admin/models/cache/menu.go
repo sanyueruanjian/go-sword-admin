@@ -2,9 +2,7 @@ package cache
 
 import (
 	"project/common/global"
-	"project/utils/config"
 	"strconv"
-	"time"
 )
 
 const (
@@ -31,7 +29,7 @@ func GetAllMenuCache(menuIdInRedis []string) (data [][]byte, err error) {
 func SetMenuCache(allMenu map[string][]byte) error {
 	pipLine := global.Rdb.Pipeline()
 	for k, v := range allMenu {
-		pipLine.Set(k, v, time.Duration(config.JwtConfig.Timeout)*time.Second)
+		pipLine.Set(k, v, 0)
 	}
 	if _, err := pipLine.Exec(); err != nil {
 		return err
@@ -41,7 +39,7 @@ func SetMenuCache(allMenu map[string][]byte) error {
 
 //查询所有菜单bo缓存
 func SetMenuListCache(v []byte, pid int) error {
-	return global.Rdb.Set(MenuIdKeyFore+strconv.Itoa(pid), v, time.Duration(config.JwtConfig.Timeout)*time.Second).Err()
+	return global.Rdb.Set(MenuIdKeyFore+strconv.Itoa(pid), v, 0).Err()
 }
 
 //查询所有菜单bo缓存

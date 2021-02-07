@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"project/app/admin/models/bo"
 	"project/common/global"
-	"project/utils/config"
 	"strconv"
-	"time"
 )
 
 const (
@@ -18,7 +16,7 @@ func SetUserCenterListCache(userInfo *bo.UserCenterInfoBo) error {
 	if err != nil {
 		return err
 	}
-	return global.Rdb.Set(UserInfoKeyFore+strconv.Itoa(userInfo.User.Id), userByte, time.Duration(config.JwtConfig.Timeout)*time.Second).Err()
+	return global.Rdb.Set(UserInfoKeyFore+strconv.Itoa(userInfo.User.Id), userByte, 0).Err()
 }
 
 func GetUserCenterCache(id int) (userInfo *bo.UserCenterInfoBo, err error) {
