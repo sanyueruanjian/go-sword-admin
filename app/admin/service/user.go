@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	appcache "project/app/admin/models/cache"
 	"project/common/cache"
 	"project/pkg/jwt"
 	"project/utils/config"
+
 	"strconv"
 	"time"
 
@@ -299,18 +301,23 @@ func (u *User) RedisUserMessage(c *gin.Context, l *bo.LoginData, token string) (
 }
 
 func (u *User) InsertUser(p *dto.InsertUserDto, userID int) (err error) {
+	//设置默认密码123456
+	defaultPass := "123456"
+	pass := utils.EncodeMD5(defaultPass)
 	//初始化 user数据
 	user := &models.SysUser{
-		DeptId:   p.DeptId,
-		Email:    p.Email,
-		NickName: p.NickName,
-		Phone:    utils.Int64ToString(p.Phone),
-		Username: p.UserName,
-		Enabled:  utils.StrBoolIntoByte(p.Enabled),
-		Gender:   utils.StrBoolIntoByte(p.Gender),
-		CreateBy: userID,
-		UpdateBy: userID,
-		IsAdmin:  []byte{0},
+		DeptId:       p.DeptId,
+		Email:        p.Email,
+		NickName:     p.NickName,
+		Phone:        utils.Int64ToString(p.Phone),
+		Username:     p.UserName,
+		Enabled:      utils.StrBoolIntoByte(p.Enabled),
+		Gender:       utils.StrBoolIntoByte(p.Gender),
+		CreateBy:     userID,
+		UpdateBy:     userID,
+		IsAdmin:      []byte{0},
+		Password:     pass,
+		PwdResetTime: utils.GetCurrentTimeUnix(),
 	}
 	jobs := p.Jobs
 	roles := p.Roles
@@ -330,7 +337,7 @@ func (u *User) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.UserI
 	return data, nil
 }
 
-func (u *User) DeleteUser(ids *[]int) error {
+func (u *User) DeleteUser(ids []int) error {
 	user := new(models.SysUser)
 	return user.DeleteUser(ids)
 }
@@ -346,8 +353,21 @@ func (u *User) UpdateUserCenter(p *dto.UpdateUserCenterDto, optionId int) (err e
 }
 
 func (u *User) SelectUserInfo(p *models.RedisUserInfo) (data *bo.UserCenterInfoBo, err error) {
+	//读取缓存
+	if data, err = appcache.GetUserCenterCache(p.UserId); err != nil && data != nil {
+		return data, nil
+	}
 	user := new(models.SysUser)
-	return user.SelectUserInfo(p)
+	data, err = user.SelectUserInfo(p)
+	if err != nil {
+		return nil, err
+	}
+	//	redis缓存
+	err = appcache.SetUserCenterListCache(data)
+	if err != nil {
+		zap.L().Error("SetUserCenterListCache failed", zap.Error(err))
+	}
+	return data, nil
 }
 
 func (u *User) UpdatePassWord(p *dto.UpdateUserPassDto, optionId int) (err error) {

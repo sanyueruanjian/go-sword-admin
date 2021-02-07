@@ -215,7 +215,7 @@ func DeleteUserHandler(c *gin.Context) {
 		return
 	}
 	menu := new(service.User)
-	if err := menu.DeleteUser(&ids); err != nil {
+	if err := menu.DeleteUser(ids); err != nil {
 		zap.L().Error("DeleteUser failed", zap.Error(err))
 		app.ResponseError(c, app.CodeDeleteOperationFail)
 		return
