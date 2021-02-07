@@ -39,7 +39,7 @@ func SetMenuCache(allMenu map[string][]byte) error {
 
 //查询所有菜单bo缓存
 func SetMenuListCache(v []byte, pid int) error {
-	return global.Rdb.Set(MenuIdKeyFore+strconv.Itoa(pid), v, 0).Err()
+	return global.Rdb.Set("menu::pid:"+strconv.Itoa(pid), v, 0).Err()
 }
 
 //查询所有菜单bo缓存

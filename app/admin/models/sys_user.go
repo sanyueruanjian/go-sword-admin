@@ -232,7 +232,6 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.Us
 	//	}
 	//	dataScopes = append(dataScopes, deptIds...)
 	//}
-
 	//排序条件
 	var orderJson []bo.Order
 	orderJson, err = utils.OrderJson(p.Orders)
@@ -314,6 +313,7 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.Us
 		user.Gender = utils.ByteIntoBool(genderEnabled.Gender)
 		users = append(users, user)
 	}
+
 	data = &bo.UserInfoListBo{Records: users}
 	data.Orders = orderJson
 	data.Size = p.Size
@@ -323,6 +323,7 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.Us
 	data.SearchCount = true
 	data.OptimizeCountSql = true
 	//添加缓存
+	data = &bo.UserInfoListBo{Records: users} //添加缓存
 	var userInfoList []byte
 	redisUserInfoList := new(RedisUserInfoList)
 	redisUserInfoList.Users = data
@@ -480,6 +481,9 @@ func (u *SysUser) UpdateUser(p *dto.UpdateUserDto, optionId int) (err error) {
 		return err
 	}
 	//提交事务
+	if err := global.Rdb.Del(CtxUserInfoList).Err(); err != nil {
+		return err
+	}
 	return tx.Commit().Error
 }
 

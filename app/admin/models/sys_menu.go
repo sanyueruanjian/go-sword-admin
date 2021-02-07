@@ -347,33 +347,3 @@ func (m *SysMenu) ChildMenu(p int) (data []int, err error) {
 	}
 	return data, nil
 }
-
-func QuickSortMenuByCreateTime(arr []*SysMenu) []*SysMenu {
-	if len(arr) <= 1 {
-		return arr
-	}
-	splitData := arr[0]
-	litter := make([]*SysMenu, 0, 0)
-	bigger := make([]*SysMenu, 0, 0)
-	mid := make([]*SysMenu, 0, 0)
-	mid = append(mid, splitData)
-	for i := 1; i < len(arr); i++ {
-		if arr[i].CreateTime < splitData.CreateTime {
-			litter = append(litter, arr[i])
-		} else if arr[i].CreateTime > splitData.CreateTime {
-			bigger = append(bigger, arr[i])
-		} else {
-			mid = append(mid, arr[i])
-		}
-	}
-	litter, bigger = QuickSortMenuByCreateTime(litter), QuickSortMenuByCreateTime(bigger)
-	result := append(append(litter, mid...), bigger...)
-	return result
-}
-
-func Reverse(s []*SysMenu) []*SysMenu {
-	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
-		s[i], s[j] = s[j], s[i]
-	}
-	return s
-}
