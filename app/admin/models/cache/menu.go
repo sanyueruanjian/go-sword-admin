@@ -7,8 +7,12 @@ import (
 	"time"
 )
 
+const (
+	MenuIdKeyFore = "menu::id:"
+)
+
 func GetAllMenuIdCacheKeys() []string {
-	return global.Rdb.Keys("menu::id:*").Val()
+	return global.Rdb.Keys(MenuIdKeyFore + "*").Val()
 }
 
 //查询所有菜单缓存
@@ -36,8 +40,8 @@ func SetMenuCache(allMenu map[string][]byte) error {
 }
 
 //查询所有菜单bo缓存
-func SetMenuListCache(v []byte, k string) error {
-	return global.Rdb.Set(k, v, time.Duration(config.JwtConfig.Timeout)*time.Second).Err()
+func SetMenuListCache(v []byte, pid int) error {
+	return global.Rdb.Set(MenuIdKeyFore+strconv.Itoa(pid), v, time.Duration(config.JwtConfig.Timeout)*time.Second).Err()
 }
 
 //查询所有菜单bo缓存
@@ -48,7 +52,7 @@ func GetMenuListCache(k string) ([]byte, error) {
 //根据id查询缓存
 func GetMenuByIdCache(id int) (menu []byte, err error) {
 	strId := strconv.Itoa(id)
-	return global.Rdb.Get("menu::id:" + strId).Bytes()
+	return global.Rdb.Get(MenuIdKeyFore + strId).Bytes()
 }
 
 //根据id删除缓存
@@ -56,7 +60,7 @@ func DeleteMenuByIdCache(ids []int) error {
 	pipLine := global.Rdb.Pipeline()
 	for _, id := range ids {
 		strId := strconv.Itoa(id)
-		pipLine.Del("menu::id:" + strId)
+		pipLine.Del(MenuIdKeyFore + strId)
 	}
 	_, err := pipLine.Exec()
 	return err

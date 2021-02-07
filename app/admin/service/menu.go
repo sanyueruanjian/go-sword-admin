@@ -82,7 +82,7 @@ func (m *Menu) SelectMenu(p *dto.SelectMenuDto) (data []*bo.SelectMenuBo, err er
 	//添加缓存
 	var dataByte []byte
 	dataByte, err = json.Marshal(data)
-	err = cache.SetMenuListCache(dataByte, "menu::pid:"+strconv.Itoa(p.Pid))
+	err = cache.SetMenuListCache(dataByte, p.Pid)
 	if err != nil {
 		return nil, err
 	}

@@ -177,9 +177,9 @@ func (m *SysMenu) UpdateMenu(p *dto.UpdateMenuDto, userId int) (err error) {
 //查找前端所需菜单
 func (m *SysMenu) SelectForeNeedMenu(user *RedisUserInfo) (data []*bo.SelectForeNeedMenuBo, err error) {
 	//检查缓存有无,有的话从缓存中读取
-	var val []byte
 	forNeedKey := ForeNeed + strconv.Itoa(user.UserId)
 	if global.Rdb.Exists(forNeedKey).Val() == 1 {
+		var val []byte
 		val, err = global.Rdb.Get(forNeedKey).Bytes()
 		redisForeNeedMenu := new(RedisForeNeedMenu)
 		err = json.Unmarshal(val, redisForeNeedMenu)
