@@ -78,13 +78,6 @@ func InsertRolesHandler(c *gin.Context) {
 		return
 	}
 
-	// 删除缓存
-	_, err = orm.Rdb.Do("DEL", "rolesAll").Result()
-	if err != nil {
-		app.ResponseError(c, app.CodeParamNotComplete)
-		return
-	}
-
 	// 3.返回数据
 	app.ResponseSuccess(c, nil)
 }
@@ -184,6 +177,7 @@ func MenuRolesHandler(c *gin.Context) {
 		return
 	}
 
+	// TODO 缓存
 	// 删除缓存
 	_, err = orm.Rdb.Do("DEL", "rolesAll").Result()
 	if err != nil {

@@ -135,6 +135,9 @@ func (e SysRole) InsertRole(deptsData []int) (err error) {
 		}
 	}
 	tx.Commit()
+
+	// 更新单个role缓存
+	err = InsertRoleId(e.ID)
 	return
 }
 
@@ -300,6 +303,70 @@ func (e SysRole) SelectRoleLevel(roleName []string) (level bo.SelectCurrentUserL
 	}
 	if level.Level == 0 {
 		level.Level = 1
+	}
+	return
+}
+
+func (e SysRole) GetDeptsMenus(sysDept []SysDept, sysMenu []SysMenu) (deptList []bo.Dept, menuList []bo.Menu, err error) {
+	// Dept
+	for _, value := range sysDept {
+		var dept bo.Dept
+		dept.CreateBy = value.CreateBy
+		dept.CreateTime = value.CreateTime
+		dept.DeptSort = value.DeptSort
+		if value.Enabled[0] == 1 {
+			dept.Enabled = true
+		} else {
+			dept.Enabled = false
+		}
+		if value.SubCount > 0 {
+			dept.HasChildren = true
+		} else {
+			dept.HasChildren = false
+		}
+		dept.ID = value.ID
+		dept.Name = value.Name
+		dept.Pid = value.Pid
+		dept.SubCount = value.SubCount
+		dept.UpdateTime = value.UpdateTime
+		dept.UpdateBy = value.UpdateBy
+		deptList = append(deptList, dept)
+	}
+	// Menu
+	for _, value := range sysMenu {
+		var menu bo.Menu
+		menu.CreateBy = value.CreateBy
+		menu.Icon = value.Icon
+		menu.ID = value.ID
+		menu.MenuSort = value.MenuSort
+		menu.Pid = value.Pid
+		menu.SubCount = value.SubCount
+		menu.Type = value.Type
+		menu.UpdateBy = value.UpdateBy
+		menu.Component = value.Component
+		menu.CreateTime = value.CreateTime
+		menu.Name = value.Name
+		menu.Path = value.Path
+		menu.Permission = value.Permission
+		menu.Title = value.Title
+		menu.UpdateTime = value.UpdateTime
+		menu.Label = menu.Title
+		if value.Cache[0] == 1 {
+			menu.Cache = true
+		} else {
+			menu.Cache = false
+		}
+		if value.Hidden[0] == 1 {
+			menu.Hidden = true
+		} else {
+			menu.Hidden = false
+		}
+		if value.IFrame[0] == 1 {
+			menu.Iframe = true
+		} else {
+			menu.Iframe = false
+		}
+		menuList = append(menuList, menu)
 	}
 	return
 }

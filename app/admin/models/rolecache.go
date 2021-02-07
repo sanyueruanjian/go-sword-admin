@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"go.uber.org/zap"
+
 	"project/app/admin/models/bo"
 	orm "project/common/global"
 	"strconv"
@@ -75,21 +76,56 @@ func DeleteRoleCache(roleId int) (err error) {
 	return
 }
 
+// 但角色存入缓存
 func InsertRoleId(roleId int) (err error) {
-	// TODO
 
-	//role, err := r.SelectRoleOne(roleId)
-	//roleByte, errValue := json.Marshal(role)
-	//roleString := string(roleByte)
-	//if errValue != nil {
-	//	err = errValue
-	//	return
-	//}
-	//errRedis := orm.Rdb.Set("role::id:"+strconv.Itoa(roleId), roleString, 0).Err()
-	//if errRedis != nil {
-	//	err = errRedis
-	//	zap.L().Error("redis error: ", zap.Error(errRedis))
-	//}
+	var roleData bo.RecordRole
+	role := new(SysRole)
+	role.ID = roleId
+	roleOne, err := role.SelectRoleOne()
+	if err != nil {
+		return
+	}
+	sysDept, sysMenu, err := role.SysDeptAndMenu(roleOne.ID)
+	if err != nil {
+		return
+	}
+	roleData.CreateBy = roleOne.CreateBy
+	roleData.ID = roleOne.ID
+	roleData.Level = roleOne.Level
+	roleData.UpdateBy = roleOne.UpdateBy
+	roleData.CreateTime = roleOne.CreateTime
+	roleData.DataScope = roleOne.DataScope
+	roleData.Description = roleOne.Description
+	roleData.Name = roleOne.Name
+	roleData.UpdateTime = roleOne.UpdateTime
+	if roleOne.IsProtection[0] == 1 {
+		roleData.Protection = true
+	} else {
+		roleData.Protection = false
+	}
+	deptList, menuList, err := role.GetDeptsMenus(sysDept, sysMenu)
+	if err != nil {
+		return
+	}
+	// Depts
+	roleData.Depts = deptList
+	// Menu
+	roleData.Menus = menuList
+
+	// 缓存
+	roleIdData, err := role.SelectRoleOne()
+	roleByte, errValue := json.Marshal(roleIdData)
+	roleString := string(roleByte)
+	if errValue != nil {
+		err = errValue
+		return
+	}
+	errRedis := orm.Rdb.Set("role::id:"+strconv.Itoa(roleIdData.ID), roleString, 0).Err()
+	if errRedis != nil {
+		err = errRedis
+		zap.L().Error("redis error: ", zap.Error(errRedis))
+	}
 	return
 }
 
