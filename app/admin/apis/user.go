@@ -50,7 +50,7 @@ func LoginHandler(c *gin.Context) {
 
 	// 2.业务逻辑处理
 	//TODO 方便postman测试 (模拟前端数据)
-	p.Password, _ = utils.RsaPubEncode(p.Password)
+	//p.Password, _ = utils.RsaPubEncode(p.Password)
 	value, err := utils.RsaPriDecode(p.Password)
 	if err != nil {
 		zap.L().Error("ras decode fail", zap.Error(err))
