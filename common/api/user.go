@@ -3,10 +3,10 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	"github.com/gin-gonic/gin"
 	"project/app/admin/models"
 	"project/app/admin/service"
-
-	"github.com/gin-gonic/gin"
+	"project/common/cache"
 )
 
 const (
@@ -22,11 +22,11 @@ type UserMessage struct {
 }
 
 type UserInfo struct {
-	jobs           *[]models.SysJob
-	roles          *[]models.SysRole
-	menuPermission *[]string
-	dept           *models.SysDept
-	dataScopes     *[]int
+	Jobs           *[]models.SysJob  //用户岗位
+	Roles          *[]models.SysRole //用户角色
+	MenuPermission *[]string         //菜单权限
+	Dept           *models.SysDept   //部门
+	DataScopes     *[]int            //数据权限
 }
 
 var ErrorUserNotLogin = errors.New("用户未登录")
@@ -75,40 +75,50 @@ func GetUserData(c *gin.Context) (user *UserInfo, err error) {
 		return
 	}
 
+	keys := new([]string)
+	*keys = append(*keys, cache.KeyUserJob, cache.KeyUserRole, cache.KeyUserMenu, cache.KeyUserDept, cache.KeyUserDataScope)
+	cacheMap := cache.GetUserCache(keys, userId)
+
+	cacheJob, jobErr := cacheMap[cache.KeyUserJob].Result()
+	cacheRole, rolesErr := cacheMap[cache.KeyUserRole].Result()
+	cacheMenu, menuErr := cacheMap[cache.KeyUserMenu].Result()
+	cacheDept, deptErr := cacheMap[cache.KeyUserDept].Result()
+	cacheDataScopes, dataScopesErr := cacheMap[cache.KeyUserDataScope].Result()
 	jobs := new([]models.SysJob)
-	if err = service.GetUserJobData(jobs, userId); err != nil {
+	if err = service.GetUserJobData(cacheJob, jobErr, jobs, userId); err != nil {
 		return nil, err
 	}
 
 	roles := new([]models.SysRole)
-	if err = service.GetUserRoleData(roles, userId); err != nil {
+	if err = service.GetUserRoleData(cacheRole, rolesErr, roles, userId); err != nil {
 		return nil, err
 	}
 
 	menuPermission := new([]string)
-	if err = service.GetUserMenuData(userId, menuPermission, roles); err != nil {
+	if err = service.GetUserMenuData(cacheMenu, menuErr, userId, menuPermission, roles); err != nil {
 		return nil, err
 	}
 
 	dept := new(models.SysDept)
-	if err = service.GetUserDeptData(dept, userId); err != nil {
+	if err = service.GetUserDeptData(cacheDept, deptErr, dept, userId); err != nil {
 		return nil, err
 	}
 
 	dataScopes := new([]int)
-	if err = service.GetUserDataScopes(dataScopes, userId, dept.ID, roles); err != nil {
+	if err = service.GetUserDataScopes(cacheDataScopes, dataScopesErr, dataScopes, userId, dept.ID, roles); err != nil {
 		return nil, err
 	}
 
 	user = new(UserInfo)
-	user.jobs = jobs
-	user.roles = roles
-	user.menuPermission = menuPermission
-	user.dept = dept
-	user.dataScopes = dataScopes
+	user.Jobs = jobs
+	user.Roles = roles
+	user.MenuPermission = menuPermission
+	user.Dept = dept
+	user.DataScopes = dataScopes
 	return
 }
 
+// GetUserOnline 获取用户线上数据
 func GetUserOnline(c *gin.Context) (userOnline *models.OnlineUser, err error) {
 	res, ok := c.Get(CtxUserOnline)
 	if !ok {
