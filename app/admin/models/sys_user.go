@@ -159,6 +159,7 @@ func (u *SysUser) InsertUser(jobs []int, roles []int) (err error) {
 		tx.Rollback()
 		return err
 	}
+
 	//维护 user role 关系表
 	for _, role := range roles {
 		roleUser := &SysUsersRoles{
