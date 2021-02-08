@@ -99,7 +99,7 @@ func (m *Menu) UpdateMenu(p *dto.UpdateMenuDto, userId int) (err error) {
 	return menu.UpdateMenu(p, userId)
 }
 
-func (m *Menu) SelectForeNeedMenu(user *models.RedisUserInfo) (data []*bo.SelectForeNeedMenuBo, err error) {
+func (m *Menu) SelectForeNeedMenu(user *models.ModelUserMessage) (data []*bo.SelectForeNeedMenuBo, err error) {
 	menu := new(models.SysMenu)
 	return menu.SelectForeNeedMenu(user)
 }

@@ -3,10 +3,10 @@ package cache
 import (
 	"fmt"
 
+	"github.com/go-redis/redis/v7"
+
 	"project/common/global"
 	"project/utils"
-
-	"github.com/go-redis/redis/v7"
 )
 
 // GetUserCache 获取用户缓存

@@ -1,6 +1,7 @@
 package apis
 
 import (
+	"project/app/admin/models"
 	"strconv"
 
 	"project/app/admin/models/bo"
@@ -29,14 +30,14 @@ func InsertMenuHandler(c *gin.Context) {
 	// 1.获取参数 校验参数
 	p := new(dto.InsertMenuDto)
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
 		return
 	}
 	if err := c.ShouldBindJSON(p); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("InsertMenuHandler failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("InsertMenuHandler failed", zap.String("username", user.Username), zap.Error(err))
 		c.Error(err)
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
@@ -71,14 +72,14 @@ func SelectMenuHandler(c *gin.Context) {
 	// 1.获取参数 校验参数
 	p := new(dto.SelectMenuDto)
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
 		return
 	}
 	if err := c.ShouldBindQuery(p); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("SelectMenuHandler failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("SelectMenuHandler failed", zap.String("username", user.Username), zap.Error(err))
 		c.Error(err)
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
@@ -113,7 +114,7 @@ func SelectMenuHandler(c *gin.Context) {
 // @Router /api/menus [delete]
 func DeleteMenuHandler(c *gin.Context) {
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
 		return
@@ -122,7 +123,7 @@ func DeleteMenuHandler(c *gin.Context) {
 	var ids []int
 	if err := c.ShouldBind(&ids); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("DeleteMenuHandler failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("DeleteMenuHandler failed", zap.String("username", user.Username), zap.Error(err))
 		c.Error(err)
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
@@ -153,7 +154,7 @@ func DeleteMenuHandler(c *gin.Context) {
 // @Router /api/menus [put]
 func UpdateMenuHandler(c *gin.Context) {
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
 		return
@@ -163,7 +164,7 @@ func UpdateMenuHandler(c *gin.Context) {
 	p := new(dto.UpdateMenuDto)
 	if err := c.ShouldBind(p); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("UpdateMenuHandler failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("UpdateMenuHandler failed", zap.String("username", user.Username), zap.Error(err))
 		c.Error(err)
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
@@ -194,7 +195,7 @@ func UpdateMenuHandler(c *gin.Context) {
 // @Router /api/menus/build [get]
 func SelectForeNeedMenuHandler(c *gin.Context) {
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	userMessage, err := api.GetUserMessage(c)
 	if err != nil {
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
 		return
@@ -203,7 +204,10 @@ func SelectForeNeedMenuHandler(c *gin.Context) {
 	//TODO
 	m := new(service.Menu)
 	var data []*bo.SelectForeNeedMenuBo
-	data, err = m.SelectForeNeedMenu(user)
+	data, err = m.SelectForeNeedMenu(&models.ModelUserMessage{
+		Username: userMessage.Username,
+		UserId:   userMessage.UserId,
+	})
 	if err != nil {
 		zap.L().Error("select menu failed", zap.Error(err))
 		app.ResponseError(c, app.CodeSelectOperationFail)
