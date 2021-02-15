@@ -17,7 +17,7 @@ import (
 
 // Init 配置mysql gorm
 func Init(cfg *config.Mysql) (err error) {
-	source := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms",
+	source := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local&timeout=2000ms",
 		cfg.User,
 		cfg.Password,
 		cfg.Host,

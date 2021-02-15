@@ -2,6 +2,7 @@ package models
 
 import (
 	"project/app/admin/models/dto"
+	"project/common/cache"
 	orm "project/common/global"
 	"project/utils"
 )
@@ -62,9 +63,25 @@ func (e *SysJob) GetJobEnabledList(p *dto.GetJobList, orderRule string) (jobList
 }
 
 // DelJobById 删除岗位数据持久层
-func (e *SysJob) DelJobById(userId int, ids []int) (err error) {
-	table := orm.Eloquent.Table(e.TableName())
-	err = table.Where("id in (?) AND is_deleted = ?", ids, []byte{0}).Updates(map[string]interface{}{"is_deleted": 1, "update_by": userId}).Error
+func (e *SysJob) DelJobById(userId int, ids *[]int) (err error) {
+	// 查询修改岗位对应的用户id
+	userIds, err := GetUserIdByJobId(ids)
+	if err != nil {
+		return
+	}
+	tx := orm.Eloquent.Begin()
+	// 修改数据
+	err = tx.Table(e.TableName()).Where("id in (?) AND is_deleted = ?", *ids, []byte{0}).Updates(map[string]interface{}{"is_deleted": 1, "update_by": userId}).Error
+	if err != nil {
+		return
+	}
+	// 删除岗位相关用户缓存
+	err = cache.DelUserCacheById(cache.KeyUserJob, userIds)
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+	tx.Commit()
 	return
 }
 
@@ -76,5 +93,30 @@ func (e *SysJob) AddJob () (err error) {
 
 // UpdateJob 更新岗位数据持久层
 func (e *SysJob) UpdateJob (id int) (err error) {
-	return orm.Eloquent.Table(e.TableName()).Where("id=? AND is_deleted=?", id, []byte{0}).Updates(e).Error
+	// 查询修改岗位对应的用户id
+	userIds, err := GetUserIdByJobId(&[]int{id})
+	if err != nil {
+		return
+	}
+	tx := orm.Eloquent.Begin()
+	// 修改数据
+	err = tx.Table(e.TableName()).Where("id=? AND is_deleted=?", id, []byte{0}).Updates(e).Error
+	if err != nil {
+		return
+	}
+	// 删除岗位相关用户缓存
+	err = cache.DelUserCacheById(cache.KeyUserJob, userIds)
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+	tx.Commit()
+	return
+}
+
+// 查询岗位对应的用户id
+func GetUserIdByJobId(ids *[]int) (userIds *[]int, err error) {
+	userIds = new([]int)
+	err = orm.Eloquent.Table("sys_users_jobs").Select("user_id").Where("job_id in (?)", *ids).Find(userIds).Error
+	return
 }
