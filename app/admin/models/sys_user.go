@@ -1,20 +1,17 @@
 package models
 
 import (
-	"encoding/json"
 	"errors"
-	"project/app/admin/models/cache"
-
-	"project/app/admin/models/bo"
-	"project/app/admin/models/dto"
-	"project/common/global"
-	"project/utils"
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
-)
 
-const CtxUserInfoList string = "UserInfoList"
+	"project/app/admin/models/bo"
+	"project/app/admin/models/cache"
+	"project/app/admin/models/dto"
+	"project/common/global"
+	"project/utils"
+)
 
 // User
 type User struct {
@@ -76,10 +73,6 @@ type SysUser struct {
 	UpdateBy     int    `json:"update_by"`      //
 }
 
-type RedisUserInfoList struct {
-	Users *bo.UserInfoListBo
-}
-
 //redis 缓存model
 type RedisUserInfo struct {
 	UserId   int      `json:"user_id"`
@@ -98,6 +91,16 @@ type OnlineUser struct {
 	Nickname      string `json:"nickname"`      //昵称
 	Username      string `json:"username"`      //用户名
 	Token         string `json:"key"`           // token
+}
+
+type ModelUserMessage struct {
+	UserId         int
+	Username       string
+	DataScopes     *[]int
+	MenuPermission *[]string
+	Roles          *[]SysRole
+	Dept           *SysDept
+	Jobs           *[]SysJob
 }
 
 type Admin struct {
@@ -180,64 +183,33 @@ func (u *SysUser) InsertUser(jobs []int, roles []int) (err error) {
 		}
 	}
 	//提交事务
-	if err := global.Rdb.Del(CtxUserInfoList).Err(); err != nil {
-		return err
-	}
 	return tx.Commit().Error
 }
 
-func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.UserInfoListBo, err error) {
-	//读取缓存
-	var val []byte
-	if global.Rdb.Exists(CtxUserInfoList).Val() == 1 {
-		val, err = global.Rdb.Get(CtxUserInfoList).Bytes()
-		if err != nil {
-			return nil, err
-		}
-		userInfoList := new(RedisUserInfoList)
-		err = json.Unmarshal(val, userInfoList)
-		if err != nil {
-			return nil, err
-		}
-		data = userInfoList.Users
-		if data != nil {
-			return data, nil
-		}
+func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto, currentUser *ModelUserMessage) (data *bo.UserInfoListBo, err error) {
+	//查询缓存
+	data, err = cache.GetUserListCache(currentUser.UserId)
+	if err != nil {
+		zap.L().Error("GetUserListCache failed", zap.Error(err))
 	}
-
-	////TODO 获取部门权限
-	//var dataScopesRoleIds []int
-	//var dataScopes []int
-	//var allScopes bool
-	//for _, role := range roles {
-	//	switch role.DataScope {
-	//	case `全部`:
-	//		allScopes = true
-	//		break
-	//	case `本级`:
-	//		dataScopes = append(dataScopes, user.DeptId)
-	//	default:
-	//		dataScopesRoleIds = append(dataScopesRoleIds, role.ID)
-	//	}
-	//}
-	//
-	//if !allScopes {
-	//	deptIds, err := SelectUserDeptIdByRoleId(dataScopesRoleIds)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//	dataScopes = append(dataScopes, deptIds...)
-	//}
+	if data != nil {
+		return data, nil
+	}
 	//排序条件
 	var orderJson []bo.Order
 	orderJson, err = utils.OrderJson(p.Orders)
 	orderRule := utils.GetOrderRule(orderJson)
 	//查询用户基本信息
-	var userHalfs []*bo.RecordUserHalf
+	var usersHalf []*bo.RecordUserHalf
+
+	//模糊查询
 	blurry := "%" + p.Blurry + "%"
-	var total int64
-	table := global.Eloquent.Table("sys_user").
-		Where("is_deleted=? AND enabled=? AND (username like ? or nick_name like ? or email like ?)", []byte{0}, 1, blurry, blurry, blurry)
+	table := global.Eloquent.Table("sys_user").Where("is_deleted=? AND enabled=? AND (username like ? or nick_name like ? or email like ?)", []byte{0}, 1, blurry, blurry, blurry)
+
+	//部门筛选
+	if len(*currentUser.DataScopes) != 0 {
+		table = table.Where("dept_id in (?)", *currentUser.DataScopes)
+	}
 
 	//日期筛选
 	if p.EndTime != 0 && p.StartTime != 0 {
@@ -245,14 +217,15 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.Us
 	}
 
 	//分页
-	err = table.Limit(p.Size).Offset(p.Current - 1*p.Size).Count(&total).Order(orderRule).Find(&userHalfs).Error
+	var total int64
+	err = table.Limit(p.Size).Offset(p.Current - 1*p.Size).Count(&total).Order(orderRule).Find(&usersHalf).Error
 	pages := (int(total) + p.Size - 1) / p.Size
 	if err != nil {
 		return nil, err
 	}
 
 	var users []*bo.RecordUser
-	for _, userHalf := range userHalfs {
+	for _, userHalf := range usersHalf {
 		//查询角色
 		var roles []*bo.Role
 		roles, err = SelectUserRole(userHalf.Id)
@@ -318,15 +291,13 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.Us
 	data.Total = int(total)
 	data.SearchCount = true
 	data.OptimizeCountSql = true
-	//添加缓存
-	data = &bo.UserInfoListBo{Records: users} //添加缓存
-	var userInfoList []byte
-	redisUserInfoList := new(RedisUserInfoList)
-	redisUserInfoList.Users = data
-	userInfoList, err = json.Marshal(redisUserInfoList)
-	err = global.Rdb.Set(CtxUserInfoList, userInfoList, 0).Err()
-	if err != nil {
-		return nil, err
+	//设置缓存
+	if p.StartTime == 0 && p.EndTime == 0 && p.Blurry == "" {
+		zap.L().Info("set ok")
+		err = cache.SetUserListCache(data, currentUser.UserId)
+		if err != nil {
+			zap.L().Error("SetUserListCache failed", zap.Error(err))
+		}
 	}
 	return data, nil
 }
@@ -442,6 +413,11 @@ func (u *SysUser) DeleteUser(ids []int) (err error) {
 		tx.Rollback()
 		return err
 	}
+	//删除用户相关缓存
+	if err := cache.DelUsersAboutCache(ids); err != nil {
+		tx.Rollback()
+		return err
+	}
 	return tx.Commit().Error
 }
 
@@ -506,15 +482,22 @@ func (u *SysUser) UpdateUser(p *dto.UpdateUserDto, optionId int) (err error) {
 			return err
 		}
 	}
-	//	删除缓存
+	//	删除用户缓存
 	if err := cache.DelUserCenterCache(optionId); err != nil {
 		tx.Rollback()
 		return err
 	}
-	//提交事务
-	if err := global.Rdb.Del(CtxUserInfoList).Err(); err != nil {
+	//删除用户列表缓存
+	if err := cache.DelAllUserCenterCache(); err != nil {
+		tx.Rollback()
 		return err
 	}
+	//删除用户相关缓存
+	if err := cache.DelUserAboutCache(optionId); err != nil {
+		tx.Rollback()
+		return err
+	}
+	//提交事务
 	return tx.Commit().Error
 }
 
@@ -531,15 +514,20 @@ func (u *SysUser) UpdateUserCenter(p *dto.UpdateUserCenterDto, optionId int) (er
 		tx.Rollback()
 		return err
 	}
-	//	删除缓存
+	//	删除个人中心缓存
 	if err := cache.DelUserCenterCache(p.Id); err != nil {
+		tx.Rollback()
+		return err
+	}
+	//  删除用户列表缓存
+	if err := cache.DelAllUserCenterCache(); err != nil {
 		tx.Rollback()
 		return err
 	}
 	return tx.Commit().Error
 }
 
-func (u *SysUser) SelectUserInfo(p *RedisUserInfo) (data *bo.UserCenterInfoBo, err error) {
+func (u *SysUser) SelectUserInfo(p *ModelUserMessage) (data *bo.UserCenterInfoBo, err error) {
 	//查询用户基本信息
 	var userHalf bo.RecordUserHalf
 	err = global.Eloquent.Table("sys_user").Where("is_deleted=? AND id=?", []byte{0}, p.UserId).First(&userHalf).Error
@@ -581,13 +569,6 @@ func (u *SysUser) SelectUserInfo(p *RedisUserInfo) (data *bo.UserCenterInfoBo, e
 		return nil, err
 	}
 	//查询操作权限
-	optionPermission := []string{"admin"}
-	//if !utils.ByteIntoBool(genderEnabled.IsAdmin) {
-	//	optionPermission, err = SelectUserMenuPermission(role)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//}
 	//初始化bo
 	user.Role = role
 	user.Jobs = job
@@ -612,7 +593,7 @@ func (u *SysUser) SelectUserInfo(p *RedisUserInfo) (data *bo.UserCenterInfoBo, e
 	data = &bo.UserCenterInfoBo{
 		DataScopes: dataScopes,
 		User:       user,
-		Roles:      optionPermission,
+		Roles:      *p.MenuPermission,
 	}
 	return data, nil
 }
@@ -645,24 +626,90 @@ func (u *SysUser) UpdateAvatar(path string, userId int) (err error) {
 	if err != nil {
 		return err
 	}
-	if err := global.Rdb.Del(CtxUserInfoList).Err(); err != nil {
+	if err := cache.DelUserCenterCache(userId); err != nil {
 		return err
 	}
 	return nil
 }
 
 // UserDownload 导出用户数据
-func (u *SysUser) UserDownload(p *dto.DownloadUserInfoDto) (userList *bo.UserInfoListBo, err error) {
-	selectArrayParam := &dto.SelectUserInfoArrayDto{
-		Orders:  p.Orders,
-		Current: p.Current,
-		Size:    p.Size,
-		Enabled: p.Enabled,
-	}
-	//查询用户详细列表
-	userList, err = u.SelectUserInfoList(selectArrayParam)
+func (u *SysUser) UserDownload(p *dto.DownloadUserInfoDto) (data *bo.UserInfoListBo, err error) {
+	//排序条件
+	var orderJson []bo.Order
+	orderJson, err = utils.OrderJson(p.Orders)
+	orderRule := utils.GetOrderRule(orderJson)
+	//查询用户基本信息
+	var usersHalf []*bo.RecordUserHalf
+	//分页
+	var total int64
+	err = global.Eloquent.Limit(p.Size).Offset(p.Current - 1*p.Size).Count(&total).Order(orderRule).Find(&usersHalf).Error
+	pages := (int(total) + p.Size - 1) / p.Size
 	if err != nil {
-		return
+		return nil, err
 	}
-	return
+	var users []*bo.RecordUser
+	for _, userHalf := range usersHalf {
+		//查询角色
+		var roles []*bo.Role
+		roles, err = SelectUserRole(userHalf.Id)
+		if err != nil {
+			zap.L().Debug("查询角色", zap.Error(err))
+			return nil, err
+		}
+		//查询岗位
+		var jobs []*bo.Job
+		jobs, err = SelectUserJob(userHalf.Id)
+		if err != nil {
+			zap.L().Debug("查询岗位", zap.Error(err))
+			return nil, err
+		}
+		//查询部门
+		dept := new(bo.DeptCommon)
+		err = global.Eloquent.Table("sys_dept").Joins("left join sys_user "+
+			"on sys_user.dept_id = sys_dept.id").Where("sys_user.id=? AND sys_dept.is_deleted=?", userHalf.Id, []byte{0}).Scan(dept).Error
+		if err != nil {
+			zap.L().Debug("查询部门", zap.Error(err))
+			return nil, err
+		}
+		//查询性别
+		genderEnabled := new(GenderEnabled)
+		err = global.Eloquent.Table("sys_user").Select("gender", "enabled", "is_admin").Where("id=?", userHalf.Id).First(genderEnabled).Error
+		if err != nil {
+			zap.L().Debug("查询性别", zap.Error(err))
+			return nil, err
+		}
+		user := new(bo.RecordUser)
+		user.RecordUserHalf = new(bo.RecordUserHalf)
+		user.RoleDeptJobBool = new(bo.RoleDeptJobBool)
+		user.Role = roles
+		user.Jobs = jobs
+		user.Dept = dept
+		user.Id = userHalf.Id
+		user.Phone = userHalf.Phone
+		user.DeptId = userHalf.DeptId
+		user.PwdResetTime = userHalf.PwdResetTime
+		user.CreateBy = userHalf.CreateBy
+		user.CreateTime = userHalf.CreateTime
+		user.UpdateBy = userHalf.UpdateBy
+		user.UpdateTime = userHalf.UpdateTime
+		user.AvatarName = userHalf.AvatarName
+		user.AvatarPath = userHalf.AvatarPath
+		user.Email = userHalf.Email
+		user.NickName = userHalf.NickName
+		user.Phone = userHalf.Phone
+		user.Username = userHalf.Username
+		user.Enabled = utils.ByteIntoBool(genderEnabled.Enabled)
+		user.Gender = utils.ByteIntoBool(genderEnabled.Gender)
+		users = append(users, user)
+	}
+
+	data = &bo.UserInfoListBo{Records: users}
+	data.Orders = orderJson
+	data.Size = p.Size
+	data.Current = p.Current
+	data.Pages = pages
+	data.Total = int(total)
+	data.SearchCount = true
+	data.OptimizeCountSql = true
+	return data, nil
 }

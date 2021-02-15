@@ -2,14 +2,13 @@ package models
 
 import (
 	"encoding/json"
+
 	"project/app/admin/models/bo"
 	"project/app/admin/models/cache"
 	"project/app/admin/models/dto"
 	"project/common/global"
 	"project/utils"
 	"strconv"
-
-	"go.uber.org/zap"
 )
 
 const ForeNeed string = "menu::userNeed:"
@@ -99,22 +98,6 @@ func (m *SysMenu) SelectMenu(p *dto.SelectMenuDto) (data []*SysMenu, err error) 
 		table = table.Order(orderRule)
 	}
 	err = table.Find(&data).Error
-
-	//做菜单缓存
-	allMenuByte := make(map[string][]byte, 0)
-	for _, menu := range allMenu {
-		menuKey := "menu::id:" + strconv.Itoa(menu.ID)
-		menuRedis, err := json.Marshal(menu)
-		if err != nil {
-			break
-		}
-		allMenuByte[menuKey] = menuRedis
-	}
-	//调用做缓存方法
-	err = cache.SetMenuCache(allMenuByte)
-	if err != nil {
-		zap.L().Error("SetMenuCache failed", zap.Error(err))
-	}
 	//返回数据
 	return data, err
 }
@@ -127,7 +110,12 @@ func (m *SysMenu) DeleteMenu(ids []int) (err error) {
 			return err
 		}
 	}
+	//删除bo缓存
 	if err := cache.DeleteMenuByIdCache(ids); err != nil {
+		return err
+	}
+	//删除userMenu 缓存
+	if err := cache.DelAllUserMenuCache(); err != nil {
 		return err
 	}
 	return nil
@@ -171,11 +159,15 @@ func (m *SysMenu) UpdateMenu(p *dto.UpdateMenuDto, userId int) (err error) {
 		tx.Rollback()
 		return err
 	}
+	//删除userMenu 缓存
+	if err := cache.DelAllUserMenuCache(); err != nil {
+		return err
+	}
 	return tx.Commit().Error
 }
 
 //查找前端所需菜单
-func (m *SysMenu) SelectForeNeedMenu(user *RedisUserInfo) (data []*bo.SelectForeNeedMenuBo, err error) {
+func (m *SysMenu) SelectForeNeedMenu(user *ModelUserMessage) (data []*bo.SelectForeNeedMenuBo, err error) {
 	//检查缓存有无,有的话从缓存中读取
 	forNeedKey := ForeNeed + strconv.Itoa(user.UserId)
 	if global.Rdb.Exists(forNeedKey).Val() == 1 {

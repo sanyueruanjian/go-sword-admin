@@ -329,9 +329,9 @@ func (u *User) InsertUser(p *dto.InsertUserDto, userID int) (err error) {
 	return nil
 }
 
-func (u *User) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.UserInfoListBo, err error) {
+func (u *User) SelectUserInfoList(p *dto.SelectUserInfoArrayDto, currentUser *models.ModelUserMessage) (data *bo.UserInfoListBo, err error) {
 	user := new(models.SysUser)
-	data, err = user.SelectUserInfoList(p)
+	data, err = user.SelectUserInfoList(p, currentUser)
 	if err != nil {
 		return nil, err
 	}
@@ -353,7 +353,7 @@ func (u *User) UpdateUserCenter(p *dto.UpdateUserCenterDto, optionId int) (err e
 	return user.UpdateUserCenter(p, optionId)
 }
 
-func (u *User) SelectUserInfo(p *models.RedisUserInfo) (data *bo.UserCenterInfoBo, err error) {
+func (u *User) SelectUserInfo(p *models.ModelUserMessage) (data *bo.UserCenterInfoBo, err error) {
 	//读取缓存
 	if data, err = appcache.GetUserCenterCache(p.UserId); err != nil && data != nil {
 		return data, nil
@@ -364,9 +364,9 @@ func (u *User) SelectUserInfo(p *models.RedisUserInfo) (data *bo.UserCenterInfoB
 		return nil, err
 	}
 	//	redis缓存
-	err = appcache.SetUserCenterListCache(data)
+	err = appcache.SetUserCenterInfoCache(data)
 	if err != nil {
-		zap.L().Error("SetUserCenterListCache failed", zap.Error(err))
+		zap.L().Error("SetUserCenterInfoCache failed", zap.Error(err))
 	}
 	return data, nil
 }
