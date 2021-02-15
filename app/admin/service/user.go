@@ -156,7 +156,7 @@ func GetUserRoleData(cacheRole string, rolesErr error, roles *[]models.SysRole, 
 		if err != nil {
 			return
 		}
-		cache.SetUserCache(userId, roles, cache.KeyUserRole)
+		go cache.SetUserCache(userId, roles, cache.KeyUserRole)
 	} else {
 		err = utils.JsonToStruct(cacheRole, roles)
 	}
@@ -173,7 +173,7 @@ func GetUserMenuData(cacheMenu string, menuErr error, userId int, menuPermission
 
 		if utils.ByteIntoInt(a.IsAdmin) == 1 {
 			*menuPermission = []string{`admin`}
-			cache.SetUserCache(userId, menuPermission, cache.KeyUserMenu)
+			go cache.SetUserCache(userId, menuPermission, cache.KeyUserMenu)
 		} else {
 			menus := new([]models.SysMenu)
 			if err = models.SelectUserMenuPermission(menus, roles); err != nil {
@@ -184,7 +184,7 @@ func GetUserMenuData(cacheMenu string, menuErr error, userId int, menuPermission
 					*menuPermission = append(*menuPermission, menu.Permission)
 				}
 			}
-			cache.SetUserCache(userId, menus, cache.KeyUserMenu)
+			go cache.SetUserCache(userId, menus, cache.KeyUserMenu)
 		}
 	} else {
 		if cacheMenu == `["admin"]` {
@@ -211,7 +211,7 @@ func GetUserDeptData(cacheDept string, deptErr error, dept *models.SysDept, user
 		if err != nil {
 			return
 		}
-		cache.SetUserCache(userId, dept, cache.KeyUserDept)
+		go cache.SetUserCache(userId, dept, cache.KeyUserDept)
 	} else {
 		err = utils.JsonToStruct(cacheDept, dept)
 	}
@@ -243,7 +243,7 @@ func GetUserDataScopes(cacheDataScopes string, dataScopesErr error, dataScopes *
 			}
 			*dataScopes = append(*dataScopes, deptIds...)
 		}
-		cache.SetUserCache(userId, dataScopes, cache.KeyUserDataScope)
+		go cache.SetUserCache(userId, dataScopes, cache.KeyUserDataScope)
 	} else {
 		err = utils.JsonToStruct(cacheDataScopes, dataScopes)
 	}

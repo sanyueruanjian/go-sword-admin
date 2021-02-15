@@ -1,8 +1,6 @@
 package apis
 
 import (
-	"fmt"
-
 	"project/app/admin/models/dto"
 	"project/app/admin/service"
 	"project/common/api"
@@ -95,13 +93,12 @@ func DelJobById(c *gin.Context) {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
-	fmt.Println(ids)
 	if len(ids) == 0 {
 		app.ResponseError(c, app.CodeParamIsBlank)
 		return
 	}
 	job := new(service.Job)
-	if err = job.DelJobById(user.UserId, ids); err != nil {
+	if err = job.DelJobById(user.UserId, &ids); err != nil {
 		c.Error(err)
 		zap.L().Error("delete job service failed", zap.String("Username", user.Username), zap.Error(err))
 		app.ResponseError(c, app.CodeDeleteOperationFail)

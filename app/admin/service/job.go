@@ -101,7 +101,7 @@ func (e *Job) GetJobList(p *dto.GetJobList) (*bo.GetJob, error) {
 }
 
 // DelJobById 删除岗位业务逻辑
-func (e *Job) DelJobById(userId int, ids []int) (err error) {
+func (e *Job) DelJobById(userId int, ids *[]int) (err error) {
 	job := new(models.SysJob)
 	err = job.DelJobById(userId, ids)
 	return
@@ -124,7 +124,7 @@ func (e *Job) Update(userId int, p *dto.UpdateJob) (err error) {
 	job := new(models.SysJob)
 	job.JobSort = p.JobSort
 	job.Name = p.Name
-	job.Enabled = []byte{p.Enabled}
+	job.Enabled = utils.BoolIntoByte(p.Enabled)
 	job.UpdateBy = userId
 	err = job.UpdateJob(p.ID)
 	return
