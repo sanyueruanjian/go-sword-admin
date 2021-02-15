@@ -2,29 +2,25 @@ package cache
 
 import (
 	"fmt"
-	"project/app/admin/models"
-	"project/utils"
+
+	"github.com/go-redis/redis/v7"
 
 	"project/common/global"
+	"project/utils"
 )
 
-const (
-	KeyUserJob = "job::user:"
-	KeyUserRole = "role::user:"
-	KeyUserMenu = "menu::user:"
-	KeyUserDept = "dept::user:"
-	KeyUserDataScope = "data::user:"
-)
-
-func GetUserCache(userId int, cacheKey string) (cache string, err error) {
-	return global.Rdb.Get(fmt.Sprintf("%s%d", cacheKey, userId)).Result()
+// GetUserCache 获取用户缓存
+func GetUserCache(keys *[]string, userId int) (cacheMap map[string]*redis.StringCmd) {
+	cacheMap = make(map[string]*redis.StringCmd, len(*keys))
+	pipe := global.Rdb.TxPipeline()
+	for _, k := range *keys {
+		cacheMap[k] = pipe.Get(fmt.Sprintf("%s%d", k, userId))
+	}
+	_, _ = pipe.Exec()
+	return
 }
 
-func SetUserJobCache(userId int, jobs *[]*models.SysJob, cacheKey string) {
-	s, e := global.Rdb.Set(fmt.Sprintf("%s%d", cacheKey, userId), *jobs, 0).Result()
-	fmt.Println(s, e)
-}
-
+// SetUserCache 设置用户缓存
 func SetUserCache(userId int, data interface{}, cacheKey string) {
 	res, err := utils.StructToJson(data)
 	if err != nil {

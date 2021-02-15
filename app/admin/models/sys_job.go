@@ -44,7 +44,6 @@ func (e *SysJob) JobListDownload(p *dto.GetJobList) (jobList []*SysJob, err erro
 // GetJobList 查询岗位列表数据持久层
 func (e *SysJob) GetJobList(p *dto.GetJobList, orderRule string) (jobList []*SysJob, count int64, err error) {
 	name := "%" + p.Name + "%"
-
 	table := orm.Eloquent.Table(e.TableName()).Where("is_deleted=? AND name like ?", []byte{0}, name)
 	if p.EndTime != 0 && p.StartTime != 0 {
 		err = table.Where("create_time > ? AND create_time < ?", p.StartTime, p.EndTime).Count(&count).
@@ -52,6 +51,13 @@ func (e *SysJob) GetJobList(p *dto.GetJobList, orderRule string) (jobList []*Sys
 	} else {
 		err = table.Count(&count).Offset((p.Current - 1) * p.Size).Limit(p.Size).Order(orderRule).Find(&jobList).Error
 	}
+	return
+}
+
+// GetJobList 查询岗位列表数据持久层
+func (e *SysJob) GetJobEnabledList(p *dto.GetJobList, orderRule string) (jobList []*SysJob, count int64, err error) {
+	err = orm.Eloquent.Table(e.TableName()).Where("is_deleted=?", []byte{0}).
+	Count(&count).Order(orderRule).Find(&jobList).Error
 	return
 }
 

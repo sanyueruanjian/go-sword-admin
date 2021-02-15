@@ -29,16 +29,16 @@ func GetJobList(c *gin.Context) {
 	p := new(dto.GetJobList)
 
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		c.Error(err)
-		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
+		zap.L().Error("GetUserMessage failed", zap.Error(err))
 		return
 	}
 
 	if err := c.ShouldBindQuery(p); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("job bind params failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("job bind params failed", zap.String("Username", user.Username), zap.Error(err))
 		c.Error(err)
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
@@ -54,7 +54,7 @@ func GetJobList(c *gin.Context) {
 	res, err := s.GetJobList(p)
 	if err != nil {
 		c.Error(err)
-		zap.L().Error("get job list failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("get job list failed", zap.String("Username", user.Username), zap.Error(err))
 		app.ResponseError(c, app.CodeSelectOperationFail)
 		return
 	}
@@ -77,15 +77,15 @@ func DelJobById(c *gin.Context) {
 	var ids []int
 
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		c.Error(err)
-		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
+		zap.L().Error("GetUserMessage failed", zap.Error(err))
 		return
 	}
 	if err := c.ShouldBindJSON(&ids); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("del job bind ids failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("del job bind ids failed", zap.String("Username", user.Username), zap.Error(err))
 		c.Error(err)
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
@@ -103,7 +103,7 @@ func DelJobById(c *gin.Context) {
 	job := new(service.Job)
 	if err = job.DelJobById(user.UserId, ids); err != nil {
 		c.Error(err)
-		zap.L().Error("delete job service failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("delete job service failed", zap.String("Username", user.Username), zap.Error(err))
 		app.ResponseError(c, app.CodeDeleteOperationFail)
 		return
 	}
@@ -126,16 +126,16 @@ func AddJob(c *gin.Context) {
 	p := new(dto.AddJob)
 
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		c.Error(err)
-		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
+		zap.L().Error("GetUserMessage failed", zap.Error(err))
 		return
 	}
 
 	if err := c.ShouldBindJSON(p); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("del job bind ids failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("del job bind ids failed", zap.String("Username", user.Username), zap.Error(err))
 		c.Error(err)
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
@@ -149,7 +149,7 @@ func AddJob(c *gin.Context) {
 	job := new(service.Job)
 	if err := job.AddJob(user.UserId, p); err != nil {
 		c.Error(err)
-		zap.L().Error("add job service failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("add job service failed", zap.String("Username", user.Username), zap.Error(err))
 		app.ResponseError(c, app.CodeInsertOperationFail)
 		return
 	}
@@ -170,16 +170,16 @@ func UpdateJob(c *gin.Context) {
 	p := new(dto.UpdateJob)
 
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		c.Error(err)
-		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
+		zap.L().Error("GetUserMessage failed", zap.Error(err))
 		return
 	}
 
 	if err := c.ShouldBindJSON(p); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("update job bind body failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("update job bind body failed", zap.String("Username", user.Username), zap.Error(err))
 		c.Error(err)
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
@@ -193,7 +193,7 @@ func UpdateJob(c *gin.Context) {
 	job := new(service.Job)
 	if err = job.Update(user.UserId, p); err != nil {
 		c.Error(err)
-		zap.L().Error("update job failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("update job failed", zap.String("Username", user.Username), zap.Error(err))
 		app.ResponseError(c, app.CodeUpdateOperationFail)
 		return
 	}
@@ -216,16 +216,16 @@ func JobDownload(c *gin.Context) {
 	p := new(dto.GetJobList)
 
 	//获取上下文中信息
-	//user, err := api.GetCurrentUserInfo(c)
+	//user, err := api.GetUserMessage(c)
 	//if err != nil {
 	//	c.Error(err)
-	//	zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
+	//	zap.L().Error("GetUserMessage failed", zap.Error(err))
 	//	return
 	//}
 
 	if err := c.ShouldBindQuery(p); err != nil {
 		// 请求参数有误， 直接返回响应
-		//zap.L().Error("job bind params failed", zap.String("username", user.UserName), zap.Error(err))
+		//zap.L().Error("job bind params failed", zap.String("Username", user.Username), zap.Error(err))
 		c.Error(err)
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
@@ -241,7 +241,7 @@ func JobDownload(c *gin.Context) {
 	res, err := s.JobListDownload(p)
 	if err != nil {
 		c.Error(err)
-		//zap.L().Error("get job list failed", zap.String("username", user.UserName), zap.Error(err))
+		//zap.L().Error("get job list failed", zap.String("Username", user.Username), zap.Error(err))
 		app.ResponseError(c, app.CodeSelectOperationFail)
 		return
 	}

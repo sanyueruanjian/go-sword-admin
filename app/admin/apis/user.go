@@ -3,22 +3,21 @@ package apis
 import (
 	"errors"
 	"fmt"
-	"project/common/global"
-	"project/utils/config"
 
 	"project/app/admin/models"
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
 	"project/app/admin/service"
 	"project/common/api"
+	"project/common/global"
 	"project/pkg/tools"
 	"project/utils"
 	"project/utils/app"
-
-	"github.com/google/uuid"
+	"project/utils/config"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -39,7 +38,6 @@ func LoginHandler(c *gin.Context) {
 		// 请求参数有误， 直接返回响应
 		zap.L().Error("Login failed", zap.String("username", p.Username), zap.Error(err))
 		_, ok := err.(validator.ValidationErrors)
-		//errs, ok := err.(validator.ValidationErrors)
 		if !ok {
 			app.ResponseError(c, app.CodeParamIsInvalid)
 			return
@@ -114,14 +112,14 @@ func InsertUserHandler(c *gin.Context) {
 	// 1.获取参数 校验参数
 	p := new(dto.InsertUserDto)
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
 		return
 	}
 	if err := c.ShouldBindJSON(p); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("InsertUserHandler failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("InsertUserHandler failed", zap.String("username", user.Username), zap.Error(err))
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
 			app.ResponseError(c, app.CodeParamIsInvalid)
@@ -155,14 +153,16 @@ func SelectUserInfoListHandler(c *gin.Context) {
 	// 1.获取参数 校验参数
 	p := new(dto.SelectUserInfoArrayDto)
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	userInfo, err := api.GetUserData(c)
+	userMessage := new(api.UserMessage)
+	userMessage, err = api.GetUserMessage(c)
 	if err != nil {
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
 		return
 	}
 	if err := c.ShouldBindQuery(p); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("SelectUserInfoList failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("SelectUserInfoList failed", zap.String("username", userMessage.Username), zap.Error(err))
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
 			app.ResponseError(c, app.CodeParamIsInvalid)
@@ -174,7 +174,15 @@ func SelectUserInfoListHandler(c *gin.Context) {
 	//menu业务逻辑处理
 	m := new(service.User)
 	var data *bo.UserInfoListBo
-	data, err = m.SelectUserInfoList(p)
+	data, err = m.SelectUserInfoList(p, &models.ModelUserMessage{
+		UserId:         userMessage.UserId,
+		Username:       userMessage.Username,
+		DataScopes:     userInfo.DataScopes,
+		Dept:           userInfo.Dept,
+		Jobs:           userInfo.Jobs,
+		Roles:          userInfo.Roles,
+		MenuPermission: userInfo.MenuPermission,
+	})
 	if err != nil {
 		zap.L().Error("select user failed", zap.Error(err))
 		app.ResponseError(c, app.CodeSelectOperationFail)
@@ -196,7 +204,7 @@ func SelectUserInfoListHandler(c *gin.Context) {
 // @Router /api/users [delete]
 func DeleteUserHandler(c *gin.Context) {
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
 		return
@@ -205,7 +213,7 @@ func DeleteUserHandler(c *gin.Context) {
 	var ids []int
 	if err := c.ShouldBind(&ids); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("DeleteMenuHandler failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("DeleteMenuHandler failed", zap.String("username", user.Username), zap.Error(err))
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
 			app.ResponseError(c, app.CodeParamIsInvalid)
@@ -235,7 +243,7 @@ func DeleteUserHandler(c *gin.Context) {
 // @Router /api/users/center [put]
 func UpdateUserHandler(c *gin.Context) {
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
 		return
@@ -244,7 +252,7 @@ func UpdateUserHandler(c *gin.Context) {
 	p := new(dto.UpdateUserDto)
 	if err := c.ShouldBindJSON(p); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("UpdateUserHandler failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("UpdateUserHandler failed", zap.String("username", user.Username), zap.Error(err))
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
 			app.ResponseError(c, app.CodeParamIsInvalid)
@@ -274,7 +282,7 @@ func UpdateUserHandler(c *gin.Context) {
 // @Router /api/users [put]
 func UpdateUserCenterHandler(c *gin.Context) {
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
 		return
@@ -283,7 +291,7 @@ func UpdateUserCenterHandler(c *gin.Context) {
 	p := new(dto.UpdateUserCenterDto)
 	if err := c.ShouldBindJSON(p); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("UpdateUserCenterHandler failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("UpdateUserCenterHandler failed", zap.String("username", user.Username), zap.Error(err))
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
 			app.ResponseError(c, app.CodeParamIsInvalid)
@@ -312,7 +320,9 @@ func UpdateUserCenterHandler(c *gin.Context) {
 // @Router /api/auth/info [get]
 func SelectUserInfoHandler(c *gin.Context) {
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	userMessage, err := api.GetUserMessage(c)
+	var userInfo *api.UserInfo
+	userInfo, err = api.GetUserData(c)
 	if err != nil {
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
 		return
@@ -320,7 +330,11 @@ func SelectUserInfoHandler(c *gin.Context) {
 	//处理逻辑
 	u := new(service.User)
 	var data *bo.UserCenterInfoBo
-	data, err = u.SelectUserInfo(user)
+	data, err = u.SelectUserInfo(&models.ModelUserMessage{
+		Username:       userMessage.Username,
+		UserId:         userMessage.UserId,
+		MenuPermission: userInfo.MenuPermission,
+	})
 	if err != nil {
 		zap.L().Error("SelectUserInfo failed", zap.Error(err))
 		app.ResponseError(c, app.CodeSelectOperationFail)
@@ -341,7 +355,7 @@ func SelectUserInfoHandler(c *gin.Context) {
 // @Router /api/users/updatePass [post]
 func UpdatePassWordHandler(c *gin.Context) {
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
 		return
@@ -350,7 +364,7 @@ func UpdatePassWordHandler(c *gin.Context) {
 	p := new(dto.UpdateUserPassDto)
 	if err := c.ShouldBindQuery(p); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("UpdatePassWordHandler failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("UpdatePassWordHandler failed", zap.String("username", user.Username), zap.Error(err))
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
 			app.ResponseError(c, app.CodeParamIsInvalid)
@@ -401,7 +415,7 @@ func UpdatePassWordHandler(c *gin.Context) {
 // @Router /api/users/updateAvatar [post]
 func UpdateAvatarHandler(c *gin.Context) {
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
 		return
@@ -409,7 +423,7 @@ func UpdateAvatarHandler(c *gin.Context) {
 	//上传图片
 	files, err := c.FormFile("avatar")
 	if err != nil {
-		zap.L().Error("FormFile failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("FormFile failed", zap.String("username", user.Username), zap.Error(err))
 		app.ResponseError(c, app.CodeImageIsNotNull)
 		return
 	}
@@ -446,7 +460,7 @@ func UpdateAvatarHandler(c *gin.Context) {
 func UserDownloadHandler(c *gin.Context) {
 	p := new(dto.DownloadUserInfoDto)
 	//获取上下文中信息
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		c.Error(err)
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
@@ -454,7 +468,7 @@ func UserDownloadHandler(c *gin.Context) {
 	}
 	if err := c.ShouldBindQuery(p); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("user bind params failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("user bind params failed", zap.String("username", user.Username), zap.Error(err))
 		c.Error(err)
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
@@ -470,7 +484,7 @@ func UserDownloadHandler(c *gin.Context) {
 	res, err := s.UserDownload(p)
 	if err != nil {
 		c.Error(err)
-		zap.L().Error("get user list failed", zap.String("username", user.UserName), zap.Error(err))
+		zap.L().Error("get user list failed", zap.String("username", user.Username), zap.Error(err))
 		app.ResponseError(c, app.CodeSelectOperationFail)
 		return
 	}

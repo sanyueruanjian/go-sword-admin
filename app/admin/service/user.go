@@ -33,37 +33,47 @@ func (u *User) Login(c *gin.Context, p *dto.UserLoginDto) (data *bo.LoginData, e
 
 	user.Password = p.Password
 	if err = user.Login(); err != nil {
-		return nil, err
+		return
 	}
 
+	keys := new([]string)
+	*keys = append(*keys, cache.KeyUserJob, cache.KeyUserRole, cache.KeyUserMenu, cache.KeyUserDept, cache.KeyUserDataScope)
+	cacheMap := cache.GetUserCache(keys, user.ID)
+
+	cacheJob, jobErr := cacheMap[cache.KeyUserJob].Result()
+	cacheRole, rolesErr := cacheMap[cache.KeyUserRole].Result()
+	cacheMenu, menuErr := cacheMap[cache.KeyUserMenu].Result()
+	cacheDept, deptErr := cacheMap[cache.KeyUserDept].Result()
+	cacheDataScopes, dataScopesErr := cacheMap[cache.KeyUserDataScope].Result()
+
 	jobs := new([]models.SysJob)
-	if err = GetUserJobData(jobs, user.ID); err != nil {
-		return nil, err
+	if err = GetUserJobData(cacheJob, jobErr, jobs, user.ID); err != nil {
+		return
 	}
 
 	roles := new([]models.SysRole)
-	if err = GetUserRoleData(roles, user.ID); err != nil {
-		return nil, err
+	if err = GetUserRoleData(cacheRole, rolesErr, roles, user.ID); err != nil {
+		return
 	}
 
 	menuPermission := new([]string)
-	if err = GetUserMenuData(user.ID, menuPermission, roles); err != nil {
-		return nil, err
+	if err = GetUserMenuData(cacheMenu, menuErr, user.ID, menuPermission, roles); err != nil {
+		return
 	}
 
 	dept := new(models.SysDept)
-	if err = GetUserDeptData(dept, user.ID); err != nil {
-		return nil, err
+	if err = GetUserDeptData(cacheDept, deptErr, dept, user.ID); err != nil {
+		return
 	}
 
 	dataScopes := new([]int)
-	if err = GetUserDataScopes(dataScopes, user.ID, dept.ID, roles); err != nil {
-		return nil, err
+	if err = GetUserDataScopes(cacheDataScopes, dataScopesErr, dataScopes, user.ID, dept.ID, roles); err != nil {
+		return
 	}
 
 	token, err := jwt.GenToken(user.ID, user.Username)
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	var jobMessage []*bo.Job
@@ -125,14 +135,13 @@ func (u *User) Login(c *gin.Context, p *dto.UserLoginDto) (data *bo.LoginData, e
 }
 
 // GetUserJobData 获取用户岗位数据
-func GetUserJobData(jobs *[]models.SysJob, userId int) (err error) {
-	cacheJob, err := cache.GetUserCache(userId, cache.KeyUserJob)
-	if err != nil {
+func GetUserJobData(cacheJob string, jobErr error, jobs *[]models.SysJob, userId int) (err error) {
+	if jobErr != nil {
 		err = models.GetUserJob(jobs, userId)
 		if err != nil {
 			return
 		}
-		cache.SetUserCache(userId, jobs, cache.KeyUserJob)
+		go cache.SetUserCache(userId, jobs, cache.KeyUserJob)
 
 	} else {
 		err = utils.JsonToStruct(cacheJob, jobs)
@@ -141,9 +150,8 @@ func GetUserJobData(jobs *[]models.SysJob, userId int) (err error) {
 }
 
 // GetUserRoleData 获取用户角色数据
-func GetUserRoleData(roles *[]models.SysRole, userId int) (err error) {
-	cacheRole, err := cache.GetUserCache(userId, cache.KeyUserRole)
-	if err != nil {
+func GetUserRoleData(cacheRole string, rolesErr error, roles *[]models.SysRole, userId int) (err error) {
+	if rolesErr != nil {
 		err = models.GetUserRole(roles, userId)
 		if err != nil {
 			return
@@ -156,9 +164,8 @@ func GetUserRoleData(roles *[]models.SysRole, userId int) (err error) {
 }
 
 // GetUserMenuData 获取用户菜单权限
-func GetUserMenuData(userId int, menuPermission *[]string, roles *[]models.SysRole) (err error) {
-	cacheMenu, err := cache.GetUserCache(userId, cache.KeyUserMenu)
-	if err != nil {
+func GetUserMenuData(cacheMenu string, menuErr error, userId int, menuPermission *[]string, roles *[]models.SysRole) (err error) {
+	if menuErr != nil {
 		a := new(models.Admin)
 		if err = a.GetIsAdmin(userId); err != nil {
 			return
@@ -198,9 +205,8 @@ func GetUserMenuData(userId int, menuPermission *[]string, roles *[]models.SysRo
 }
 
 // GetUserDeptData 获取用户部门数据
-func GetUserDeptData(dept *models.SysDept, userId int) (err error) {
-	cacheDept, err := cache.GetUserCache(userId, cache.KeyUserDept)
-	if err != nil {
+func GetUserDeptData(cacheDept string, deptErr error, dept *models.SysDept, userId int) (err error) {
+	if deptErr != nil {
 		err = models.SelectUserDept(dept, userId)
 		if err != nil {
 			return
@@ -213,10 +219,8 @@ func GetUserDeptData(dept *models.SysDept, userId int) (err error) {
 }
 
 // GetUserDataScopes 获取用户数据权限
-func GetUserDataScopes(dataScopes *[]int, userId int, deptId int, roles *[]models.SysRole) error {
-	cacheDataScopes, err := cache.GetUserCache(userId, cache.KeyUserDataScope)
-	if err != nil {
-		err = nil
+func GetUserDataScopes(cacheDataScopes string, dataScopesErr error, dataScopes *[]int, userId int, deptId int, roles *[]models.SysRole) (err error) {
+	if dataScopesErr != nil {
 		var dataScopesRoleIds []int
 		var allScopes bool
 		for _, role := range *roles {
@@ -242,9 +246,6 @@ func GetUserDataScopes(dataScopes *[]int, userId int, deptId int, roles *[]model
 		cache.SetUserCache(userId, dataScopes, cache.KeyUserDataScope)
 	} else {
 		err = utils.JsonToStruct(cacheDataScopes, dataScopes)
-		if err != nil {
-			return err
-		}
 	}
 	return err
 }
@@ -328,9 +329,9 @@ func (u *User) InsertUser(p *dto.InsertUserDto, userID int) (err error) {
 	return nil
 }
 
-func (u *User) SelectUserInfoList(p *dto.SelectUserInfoArrayDto) (data *bo.UserInfoListBo, err error) {
+func (u *User) SelectUserInfoList(p *dto.SelectUserInfoArrayDto, currentUser *models.ModelUserMessage) (data *bo.UserInfoListBo, err error) {
 	user := new(models.SysUser)
-	data, err = user.SelectUserInfoList(p)
+	data, err = user.SelectUserInfoList(p, currentUser)
 	if err != nil {
 		return nil, err
 	}
@@ -352,7 +353,7 @@ func (u *User) UpdateUserCenter(p *dto.UpdateUserCenterDto, optionId int) (err e
 	return user.UpdateUserCenter(p, optionId)
 }
 
-func (u *User) SelectUserInfo(p *models.RedisUserInfo) (data *bo.UserCenterInfoBo, err error) {
+func (u *User) SelectUserInfo(p *models.ModelUserMessage) (data *bo.UserCenterInfoBo, err error) {
 	//读取缓存
 	if data, err = appcache.GetUserCenterCache(p.UserId); err != nil && data != nil {
 		return data, nil
@@ -363,9 +364,9 @@ func (u *User) SelectUserInfo(p *models.RedisUserInfo) (data *bo.UserCenterInfoB
 		return nil, err
 	}
 	//	redis缓存
-	err = appcache.SetUserCenterListCache(data)
+	err = appcache.SetUserCenterInfoCache(data)
 	if err != nil {
-		zap.L().Error("SetUserCenterListCache failed", zap.Error(err))
+		zap.L().Error("SetUserCenterInfoCache failed", zap.Error(err))
 	}
 	return data, nil
 }
