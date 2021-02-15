@@ -76,9 +76,8 @@ func DeleteRoleCache(roleId int) (err error) {
 	return
 }
 
-// 但角色存入缓存
+// 单角色存入缓存
 func InsertRoleId(roleId int) (err error) {
-
 	var roleData bo.RecordRole
 	role := new(SysRole)
 	role.ID = roleId

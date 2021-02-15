@@ -41,9 +41,9 @@ settings:
     # 用户名
     user: root
     # 密码
-    password: 123456
+    password: 991012
     # 服务器地址
-    host: 120.26.141.144
+    host: 121.196.160.185
     # 端口
     port: 3306
     # 数据库名

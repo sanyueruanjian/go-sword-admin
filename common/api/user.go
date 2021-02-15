@@ -22,11 +22,11 @@ type UserMessage struct {
 }
 
 type UserInfo struct {
-	jobs           *[]models.SysJob
-	roles          *[]models.SysRole
-	menuPermission *[]string
-	dept           *models.SysDept
-	dataScopes     *[]int
+	Jobs           *[]models.SysJob
+	Roles          *[]models.SysRole
+	MenuPermission *[]string
+	Dept           *models.SysDept
+	DataScopes     *[]int
 }
 
 var ErrorUserNotLogin = errors.New("用户未登录")
@@ -101,11 +101,11 @@ func GetUserData(c *gin.Context) (user *UserInfo, err error) {
 	}
 
 	user = new(UserInfo)
-	user.jobs = jobs
-	user.roles = roles
-	user.menuPermission = menuPermission
-	user.dept = dept
-	user.dataScopes = dataScopes
+	user.Jobs = jobs
+	user.Roles = roles
+	user.MenuPermission = menuPermission
+	user.Dept = dept
+	user.DataScopes = dataScopes
 	return
 }
 
