@@ -11,6 +11,7 @@ import (
 )
 
 //权限检查中间件
+// TODO 需要修改
 func AuthCheckRole() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		data, _ := c.Get(api.CtxUserInfoKey)

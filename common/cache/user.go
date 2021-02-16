@@ -2,11 +2,13 @@ package cache
 
 import (
 	"fmt"
-
-	"github.com/go-redis/redis/v7"
+	"time"
 
 	"project/common/global"
 	"project/utils"
+	"project/utils/config"
+
+	"github.com/go-redis/redis/v7"
 )
 
 // GetUserCache 获取用户缓存
@@ -26,5 +28,5 @@ func SetUserCache(userId int, data interface{}, cacheKey string) {
 	if err != nil {
 		return
 	}
-	global.Rdb.Set(fmt.Sprintf("%s%d", cacheKey, userId), res, 0)
+	global.Rdb.Set(fmt.Sprintf("%s%d", cacheKey, userId), res, time.Duration(config.JwtConfig.Timeout) * time.Second)
 }

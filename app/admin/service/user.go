@@ -8,8 +8,6 @@ import (
 	"project/common/cache"
 	"project/pkg/jwt"
 	"project/utils/config"
-
-	"strconv"
 	"time"
 
 	"project/app/admin/models"
@@ -251,31 +249,6 @@ func GetUserDataScopes(cacheDataScopes string, dataScopesErr error, dataScopes *
 }
 
 func (u *User) RedisUserMessage(c *gin.Context, l *bo.LoginData, token string) (err error) {
-	//构造角色名字集合
-	roleNames := make([]string, 0)
-	for _, v := range l.User.User.Role {
-		roleNames = append(roleNames, v.Name)
-	}
-	//初始化缓存模型
-	var userInfo []byte
-	userInfo, err = json.Marshal(models.RedisUserInfo{
-		UserId:   l.User.User.Id,
-		UserName: l.User.User.Username,
-		DeptId:   l.User.User.DeptId,
-		Role:     roleNames,
-	})
-
-	if err != nil {
-		zap.L().Error("RedisUserInfo Marshal failed", zap.Error(err))
-		return
-	}
-
-	//添加缓存
-	if err := global.Rdb.Set(strconv.Itoa(l.User.User.Id), userInfo, 0).Err(); err != nil {
-		zap.L().Error("用户缓存错误", zap.Error(err))
-		return err
-	}
-
 	online := new(models.OnlineUser)
 	ua := user_agent.New(c.Request.UserAgent())
 	browserName, browserVersion := ua.Browser()
