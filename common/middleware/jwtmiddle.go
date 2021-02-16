@@ -1,12 +1,9 @@
 package middleware
 
 import (
-	"encoding/json"
 	"fmt"
-	"project/app/admin/models"
 	"project/common/global"
 	"project/utils/config"
-	"strconv"
 	"strings"
 
 	"project/common/api"
@@ -56,12 +53,6 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 		r.UserId = mc.UserID
 		r.Username = mc.Username
 		c.Set(api.CtxUserIdAndName, r)
-
-		var UserInfoByte []byte
-		UserInfo := new(models.RedisUserInfo)
-		UserInfoByte, err = global.Rdb.Get(strconv.Itoa(mc.UserID)).Bytes()
-		err = json.Unmarshal(UserInfoByte, UserInfo)
-		c.Set(api.CtxUserInfoKey, UserInfo)
 		c.Set(api.CtxUserIDKey, mc.UserID)
 		c.Next() // 后续的处理函数可以用过c.Get("username")来获取当前请求的用户信息
 	}

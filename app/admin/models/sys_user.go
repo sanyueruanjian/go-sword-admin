@@ -74,6 +74,7 @@ type SysUser struct {
 }
 
 //redis 缓存model
+// TODO 需要删除
 type RedisUserInfo struct {
 	UserId   int      `json:"user_id"`
 	UserName string   `json:"user_name"`
