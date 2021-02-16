@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-
 	"project/app/admin/models/bo"
 	"project/app/admin/models/cache"
 	"project/app/admin/models/dto"
@@ -187,18 +186,41 @@ func (u *SysUser) InsertUser(jobs []int, roles []int) (err error) {
 }
 
 func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto, currentUser *ModelUserMessage) (data *bo.UserInfoListBo, err error) {
-	//查询缓存
-	data, err = cache.GetUserListCache(currentUser.UserId)
-	if err != nil {
-		zap.L().Error("GetUserListCache failed", zap.Error(err))
-	}
-	if data != nil {
-		return data, nil
-	}
 	//排序条件
 	var orderJson []bo.Order
 	orderJson, err = utils.OrderJson(p.Orders)
 	orderRule := utils.GetOrderRule(orderJson)
+
+	//查询缓存
+	if p.StartTime == 0 && p.EndTime == 0 && p.Blurry == "" {
+		userRecords := make([]*bo.RecordUser, 0, 0)
+		userRecords, err = cache.GetUserRecordsCache(currentUser.UserId)
+		if err != nil {
+			zap.L().Error("GetUserRecordsCache failed", zap.Error(err))
+		}
+		//分页
+		var total int
+		total = len(userRecords)
+		start := p.Size * (p.Current - 1)
+		end := p.Size*(p.Current-1) + p.Size - 1
+		if end > total {
+			end = total
+		}
+		records := userRecords[start:end]
+		//查询页数
+
+		data = &bo.UserInfoListBo{Records: records}
+		data.Orders = orderJson
+		data.Size = p.Size
+		data.Current = p.Current
+		data.Pages = (total + p.Size - 1) / p.Size
+		data.Total = int(total)
+		data.SearchCount = true
+		data.OptimizeCountSql = true
+		if records != nil && total >= 0 {
+			return data, nil
+		}
+	}
 	//查询用户基本信息
 	var usersHalf []*bo.RecordUserHalf
 
@@ -216,7 +238,7 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto, currentUser 
 		table = table.Where("create_time > ? AND create_time < ?", p.StartTime, p.EndTime)
 	}
 
-	//分页
+	//分页 排序
 	var total int64
 	err = table.Limit(p.Size).Offset(p.Current - 1*p.Size).Count(&total).Order(orderRule).Find(&usersHalf).Error
 	pages := (int(total) + p.Size - 1) / p.Size
@@ -283,6 +305,15 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto, currentUser 
 		users = append(users, user)
 	}
 
+	//设置records缓存
+	if p.StartTime == 0 && p.EndTime == 0 && p.Blurry == "" {
+		zap.L().Info("set ok")
+		err = cache.SetUserRecordsCache(users, currentUser.UserId)
+		if err != nil {
+			zap.L().Error("SetUserRecordsCache failed", zap.Error(err))
+		}
+	}
+
 	data = &bo.UserInfoListBo{Records: users}
 	data.Orders = orderJson
 	data.Size = p.Size
@@ -291,14 +322,6 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto, currentUser 
 	data.Total = int(total)
 	data.SearchCount = true
 	data.OptimizeCountSql = true
-	//设置缓存
-	if p.StartTime == 0 && p.EndTime == 0 && p.Blurry == "" {
-		zap.L().Info("set ok")
-		err = cache.SetUserListCache(data, currentUser.UserId)
-		if err != nil {
-			zap.L().Error("SetUserListCache failed", zap.Error(err))
-		}
-	}
 	return data, nil
 }
 

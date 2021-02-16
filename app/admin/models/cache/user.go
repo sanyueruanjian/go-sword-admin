@@ -11,7 +11,8 @@ import (
 
 const (
 	UserInfoKeyFore  = "user::userInfo:id"
-	UserInfoListFore = "user::infoList:auth:"
+	UserRecordsFore  = "user::records:auth:"
+	UsersTotalFore   = "user::total:auth:"
 	KeyUserJob       = "job::user:"
 	KeyUserRole      = "role::user:"
 	KeyUserMenu      = "menu::user:"
@@ -27,36 +28,35 @@ func SetUserCenterInfoCache(userInfo *bo.UserCenterInfoBo) error {
 	return global.Rdb.Set(UserInfoKeyFore+strconv.Itoa(userInfo.User.Id), userByte, 0).Err()
 }
 
-func SetUserListCache(userInfo *bo.UserInfoListBo, userId int) error {
-	userByte, err := json.Marshal(userInfo)
+func SetUserRecordsCache(userRecords []*bo.RecordUser, userId int) error {
+	userByte, err := json.Marshal(userRecords)
 	if err != nil {
 		return err
 	}
-	return global.Rdb.Set(UserInfoListFore+strconv.Itoa(userId), userByte, 0).Err()
+	return global.Rdb.Set(UserRecordsFore+strconv.Itoa(userId), userByte, 0).Err()
 }
 
-func GetUserListCache(userId int) (userInfoList *bo.UserInfoListBo, err error) {
+func GetUserRecordsCache(userId int) (userRecords []*bo.RecordUser, err error) {
 	idStr := strconv.Itoa(userId)
 	var userListByte []byte
-	userListByte, err = global.Rdb.Get(UserInfoListFore + idStr).Bytes()
+	userListByte, err = global.Rdb.Get(UserRecordsFore + idStr).Bytes()
 	if err != nil {
 		return nil, err
 	}
-	userList := new(bo.UserInfoListBo)
-	err = json.Unmarshal(userListByte, userList)
-	return userList, err
+	err = json.Unmarshal(userListByte, &userRecords)
+	return
 }
 
 func DelUserListCache(id int) error {
 	idStr := strconv.Itoa(id)
-	return global.Rdb.Del(UserInfoListFore + idStr).Err()
+	return global.Rdb.Del(UserRecordsFore + idStr).Err()
 }
 
 func DelManyListCenterCache(ids []int) error {
 	pipLine := global.Rdb.Pipeline()
 	for _, id := range ids {
 		idStr := strconv.Itoa(id)
-		key := UserInfoListFore + idStr
+		key := UserRecordsFore + idStr
 		pipLine.Del(key)
 	}
 	_, err := pipLine.Exec()
@@ -92,7 +92,7 @@ func DelManyUserCenterCache(ids []int) error {
 }
 
 func DelAllUserCenterCache() error {
-	keys := global.Rdb.Keys(UserInfoListFore).Val()
+	keys := global.Rdb.Keys(UserRecordsFore).Val()
 	pipLine := global.Rdb.Pipeline()
 	for _, key := range keys {
 		pipLine.Del(key)
