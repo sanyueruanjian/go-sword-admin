@@ -16,8 +16,12 @@ type RecordDept struct {
 }
 
 type SelectDeptListBo struct {
-	Records []*RecordDept `json:"records"`
-	Paging  paging
+	Current int          `json:"current"`
+	Size    int          `json:"size"`
+	Pages   int          `json:"pages"`
+	Total   int          `json:"total"`
+	Orders  []Order      `json:"orders"`
+	Records []RecordDept `json:"records"`
 }
 
 type DownloadDeptList struct {

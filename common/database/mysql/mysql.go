@@ -3,7 +3,7 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
-	
+
 	"project/common/global"
 	"project/utils"
 	"project/utils/config"
@@ -12,7 +12,6 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
-
 )
 
 // Init 配置mysql gorm
@@ -35,7 +34,7 @@ func Init(cfg *config.Mysql) (err error) {
 	db.SetMaxIdleConns(cfg.DbMaxIdle)
 
 	global.Eloquent, err = open(db, &gorm.Config{
-			NamingStrategy: schema.NamingStrategy{
+		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
 		},
 	})

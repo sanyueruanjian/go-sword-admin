@@ -32,22 +32,27 @@ func Setup() (err error) {
 	var m model.Model
 	var e *casbin.SyncedEnforcer
 
+	// Initialize a gorm adapter with MySQL database. 使用MySQL数据库初始化gorm适配器。
 	Apter, err = gormAdapter.NewAdapterByDB(global.Eloquent)
 	if err != nil {
 		zap.L().Error("NewAdapterByDB()", zap.Error(err))
 		return err
 	}
 
+	// NewModelFromString从包含模型文本的字符串创建模型
 	m, err = model.NewModelFromString(text)
 	if err != nil {
 		zap.L().Error("NewModelFromString()", zap.Error(err))
 		return err
 	}
+
+	//NewSyncedEnforcer通过file或DB创建一个同步强制器
 	e, err = casbin.NewSyncedEnforcer(m, Apter)
 	if err != nil {
 		zap.L().Error("NewSyncedEnforcer()", zap.Error(err))
 		return err
 	}
+
 	global.CasbinEnforcer = e
 	return nil
 }

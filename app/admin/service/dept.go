@@ -4,48 +4,86 @@ import (
 	"io"
 	"project/app/admin/models"
 	"project/app/admin/models/bo"
+	"project/app/admin/models/cache"
 	"project/app/admin/models/dto"
 	"project/utils"
+
+	"go.uber.org/zap"
 )
 
 type Dept struct {
 }
 
-func (d Dept) SelectDeptList(de *dto.SelectDeptDto, orderData []bo.Order) (data []*bo.RecordDept, err error) {
-	// 数据查询
+func (d Dept) SelectDeptList(de *dto.SelectDeptDto, orderData []bo.Order) (data *bo.SelectDeptListBo, err error) {
+	// 声明所需变量，开辟空间
+	data = new(bo.SelectDeptListBo)
+	deptList := new([]bo.RecordDept)
 	dept := new(models.SysDept)
-	sysDeptList, err := dept.SelectDeptList(de, orderData)
+	sysDeptList := new([]models.SysDept)
+	var count int64
+
+	// 数据查询 判断条件
+	tag := de.Name != "" || de.StartTime != 0 || de.EndTime != 0
+
+	// 进dao层
+	if tag {
+		// 模糊查询直接过数据库
+		sysDeptList, count, err = dept.SelectDeptListByNameTime(de, orderData)
+	} else {
+		// 非模糊查询先过缓存
+		*deptList, err = cache.GetRedisDeptByPid(de.Pid)
+		if err == nil && len(*deptList) > 0 {
+			// 封装paging
+			data.Orders = orderData
+			data.Current = de.Current
+			data.Total = len(*deptList)
+			data.Size = de.Size
+			data.Pages = utils.PagesCount(data.Total, de.Size)
+			data.Records = *deptList
+			return
+		}
+		// 缓存有问题
+		if err != nil {
+			zap.L().Error("GetRedisDeptByPid failed", zap.Error(err))
+			err = nil
+		}
+		_ = cache.DeleteRedisDeptByPid(de.Pid)
+		sysDeptList, count, err = dept.SelectDeptListByPid(de, orderData)
+	}
+
+	// 数据库错误
 	if err != nil {
+		zap.L().Error("SelectDeptDao Select failed", zap.Error(err))
 		return
 	}
 
 	// 封装bo数据传输对象
-	if len(sysDeptList) > 0 {
-		for _, value := range sysDeptList {
-			recordDept := new(bo.RecordDept)
-			recordDept.ID = value.ID
-			if value.Pid != 0 {
-				recordDept.Leaf = false
-			} else {
-				recordDept.Leaf = true
-			}
-			recordDept.Pid = value.Pid
-			recordDept.Name = value.Name
-			recordDept.Label = value.Name
-			recordDept.Enabled = utils.ByteIntoBool(value.Enabled)
-			if value.SubCount > 0 {
-				recordDept.HasChildren = true
-			} else {
-				recordDept.HasChildren = false
-			}
-			recordDept.CreateTime = value.CreateTime
-			recordDept.CreateBy = value.CreateBy
-			recordDept.UpdateTime = value.UpdateTime
-			recordDept.UpdateBy = value.UpdateBy
+	if len(*sysDeptList) > 0 {
+		deptList = modelToBo(sysDeptList)
+		// 子部门缓存
+		if !tag {
+			_ = cache.DeleteRedisDeptByPid(de.Pid)
 
-			// append
-			data = append(data, recordDept)
+			err = cache.SetRedisDeptByPid(de.Pid, deptList)
+			if err != nil {
+				zap.L().Error("SetRedisDeptByPid failed", zap.Error(err))
+				err = nil
+			}
+
+			err = cache.SetRedisDeptList(deptList)
+			if err != nil {
+				zap.L().Error("SetRedisDeptList failed", zap.Error(err))
+				err = nil
+			}
 		}
+
+		// 封装paging
+		data.Orders = orderData
+		data.Current = de.Current
+		data.Total = int(count)
+		data.Size = de.Size
+		data.Pages = utils.PagesCount(data.Total, de.Size)
+		data.Records = *deptList
 	}
 	return
 }
@@ -62,61 +100,82 @@ func (d Dept) InsertDept(de *dto.InsertDeptDto, userId int) (err error) {
 	dept.CreateBy = userId
 	dept.UpdateBy = userId
 
+	// 删除缓存
+	err = cache.DeleteRedisDeptByPid(*de.Pid)
+	if err != nil {
+		return
+	}
 	// 存入数据库
 	err = dept.InsertDept()
-	return err
+	return
 }
 
 // 修改部门
 func (d Dept) UpdateDept(de *dto.UpdateDeptDto) (err error) {
 	dept := new(models.SysDept)
+
+	// 删除缓存
+	err = cache.DeleteRedisDeptByPid(*de.Pid)
+	if err != nil {
+		return
+	}
+	err = cache.DeleteRedisDeptById(de.ID)
+	if err != nil {
+		return
+	}
 	// 持久层
 	err = dept.UpdateDept(de)
 	return
 }
 
 // 删除部门
-func (d Dept) DeleteDept(ids *[]int) (err error) {
+func (d Dept) DeleteDept(ids *[]int) (count int64, err error) {
 	dept := new(models.SysDept)
-	err = dept.DeleteDept(ids)
+	count, err = dept.DeleteDept(ids)
+	if count == 0 {
+	}
 	return
 }
 
-func (d Dept) SuperiorDept(ids *[]int) (data []*bo.RecordDept, err error) {
+func (d Dept) SuperiorDept(ids *[]int) (deptList *[]bo.RecordDept, err error) {
 	// 数据查询
+	deptList = new([]bo.RecordDept)
+	sysDeptList := new([]models.SysDept)
 	dept := new(models.SysDept)
-	sysDeptList, err := dept.SuperiorDept(ids)
+	// 非模糊查询先过缓存
+	*deptList, err = cache.GetRedisDeptByPid(0)
+	if err == nil && len(*deptList) > 0 {
+		return
+	}
+	// 缓存有问题
+	if err != nil {
+		zap.L().Error("GetRedisDeptByPid failed", zap.Error(err))
+		err = nil
+	}
+	_ = cache.DeleteRedisDeptByPid(0)
+	sysDeptList, err = dept.SuperiorDept(ids)
 	if err != nil {
 		return
 	}
 
 	// 封装bo数据传输对象
-	if len(sysDeptList) > 0 {
-		for _, value := range sysDeptList {
-			recordDept := new(bo.RecordDept)
-			recordDept.ID = value.ID
-			if value.Pid != 0 {
-				recordDept.Leaf = false
-			} else {
-				recordDept.Leaf = true
-			}
-			recordDept.Pid = value.Pid
-			recordDept.Name = value.Name
-			recordDept.Label = value.Name
-			recordDept.Enabled = utils.ByteIntoBool(value.Enabled)
-			if value.SubCount > 0 {
-				recordDept.HasChildren = true
-			} else {
-				recordDept.HasChildren = false
-			}
-			recordDept.CreateTime = value.CreateTime
-			recordDept.CreateBy = value.CreateBy
-			recordDept.UpdateTime = value.UpdateTime
-			recordDept.UpdateBy = value.UpdateBy
+	if len(*sysDeptList) > 0 {
+		deptList = modelToBo(sysDeptList)
+		// 子部门缓存
+		_ = cache.DeleteRedisDeptByPid(0)
 
-			// append
-			data = append(data, recordDept)
+		err = cache.SetRedisDeptByPid(0, deptList)
+		if err != nil {
+			zap.L().Error("SetRedisDeptByPid failed", zap.Error(err))
+			err = nil
 		}
+
+		err = cache.SetRedisDeptList(deptList)
+		if err != nil {
+			zap.L().Error("SetRedisDeptList failed", zap.Error(err))
+			err = nil
+		}
+
 	}
 	return
 }
@@ -128,7 +187,7 @@ func (d Dept) DownloadDeptList(dt *dto.SelectDeptDto, orderJson []bo.Order) (con
 	sysDeptList, err := dept.DownloadDept(dt, orderJson)
 	// 对数据库取出的sysDept封住存入deptList
 	for _, dept := range sysDeptList {
-		deptList = append(deptList, &bo.DownloadDeptList{
+		deptList = append(deptList, bo.DownloadDeptList{
 			Name:       dept.Name,
 			Enabled:    utils.ByteEnabledToString(dept.Enabled),
 			CreateTime: utils.UnixTimeToString(dept.CreateTime),
@@ -137,5 +196,31 @@ func (d Dept) DownloadDeptList(dt *dto.SelectDeptDto, orderJson []bo.Order) (con
 
 	// 生成excel
 	content = utils.ToExcel([]string{`部门名称`, `部门状态`, `创建日期`}, deptList)
+	return
+}
+
+func modelToBo(sysDeptList *[]models.SysDept) (deptList *[]bo.RecordDept) {
+	var r bo.RecordDept
+	deptList = new([]bo.RecordDept)
+	for _, value := range *sysDeptList {
+		r.ID = value.ID
+		r.Pid = value.Pid
+		r.Name = value.Name
+		r.Label = value.Name
+		r.Enabled = utils.ByteIntoBool(value.Enabled)
+		if value.SubCount > 0 {
+			r.HasChildren = true
+			r.Leaf = false
+		} else {
+			r.HasChildren = false
+			r.Leaf = true
+		}
+		r.CreateTime = value.CreateTime
+		r.CreateBy = value.CreateBy
+		r.UpdateTime = value.UpdateTime
+		r.UpdateBy = value.UpdateBy
+		// append
+		*deptList = append(*deptList, r)
+	}
 	return
 }
