@@ -12,7 +12,6 @@ import (
 const (
 	UserInfoKeyFore  = "user::userInfo:id"
 	UserRecordsFore  = "user::records:auth:"
-	UsersTotalFore   = "user::total:auth:"
 	KeyUserJob       = "job::user:"
 	KeyUserRole      = "role::user:"
 	KeyUserMenu      = "menu::user:"
@@ -47,16 +46,10 @@ func GetUserRecordsCache(userId int) (userRecords []*bo.RecordUser, err error) {
 	return
 }
 
-func DelUserListCache(id int) error {
-	idStr := strconv.Itoa(id)
-	return global.Rdb.Del(UserRecordsFore + idStr).Err()
-}
-
-func DelManyListCenterCache(ids []int) error {
+func DelAllUserRecordsCache() error {
+	recordsUser := global.Rdb.Keys(UserRecordsFore + "*").Val()
 	pipLine := global.Rdb.Pipeline()
-	for _, id := range ids {
-		idStr := strconv.Itoa(id)
-		key := UserRecordsFore + idStr
+	for _, key := range recordsUser {
 		pipLine.Del(key)
 	}
 	_, err := pipLine.Exec()
