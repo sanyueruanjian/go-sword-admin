@@ -57,7 +57,7 @@ func Setup() (err error) {
 	return nil
 }
 
-func Casbin() (*casbin.SyncedEnforcer, error) {
+func LoadPolicy() (*casbin.SyncedEnforcer, error) {
 	if err := global.CasbinEnforcer.LoadPolicy(); err == nil {
 		return global.CasbinEnforcer, err
 	} else {
