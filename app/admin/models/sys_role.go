@@ -32,7 +32,7 @@ func (e SysRole) RoleAllNum() (num int64) {
 }
 
 // 多条件查询角色
-func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sysRole []SysRole, err error) {
+func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (roleAll []bo.RecordRole, sysRole []SysRole, err error) {
 	var order string
 	for key, value := range orderData {
 		order += value.Column + " "
@@ -92,6 +92,14 @@ func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sy
 			Limit(p.Size).Offset((p.Current - 1) * p.Size).Order(order).Find(&sysRole).Error
 		return
 	}
+
+	// 1.查找redis缓存
+	roleAll, err = SelectRoleAllCache()
+	if err == nil && len(roleAll) > 0 {
+		return
+	}
+
+	//  2.查找mysql
 	if err = orm.Eloquent.Where("is_deleted=0").Limit(p.Size).Offset((p.Current - 1) * p.Size).Order(order).Find(&sysRole).Error; err != nil {
 		return
 	}

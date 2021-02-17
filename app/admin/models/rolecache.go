@@ -71,6 +71,7 @@ func InsertRoleAllCache(sysRoleAll []bo.RecordRole) (err error) {
 }
 
 // -----------------------------/api/roles/{Post Delete Put}-----------------------------
+// 删除单角色缓存
 func DeleteRoleCache(roleId int) (err error) {
 	_, err = orm.Rdb.Do("DEL", "role::id:"+strconv.Itoa(roleId)).Result()
 	return

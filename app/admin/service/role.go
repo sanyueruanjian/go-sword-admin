@@ -14,9 +14,12 @@ type Role struct {
 // 多条件查询角色
 func (e Role) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (roleData bo.SelectRoleArrayBo, err error) {
 	role := new(models.SysRole)
-	sysRole, err := role.SelectRoles(p, orderData)
+	roleAll, sysRole, err := role.SelectRoles(p, orderData)
 	if err != nil {
 		return
+	}
+	if roleAll != nil {
+		roleData.Records = append(roleData.Records, roleAll...)
 	}
 	if len(sysRole) > 0 {
 		for _, value := range sysRole {
@@ -147,6 +150,11 @@ func (e Role) UpdateRoleMenu(id int, p []int) (err error) {
 	if err = role.UpdateRoleMenu(id, p); err != nil {
 		return
 	}
+
+	// 删除缓存
+	if err = models.DeleteRoleAll(); err != nil {
+		return
+	}
 	return
 }
 
@@ -214,7 +222,7 @@ func (e Role) SelectRoleLevel(roleName []string) (level bo.SelectCurrentUserLeve
 // 导出角色数据
 func (e Role) DownloadRoleInfoBo(p dto.SelectRoleArrayDto, orderData []bo.Order) (roleData []bo.DownloadRoleInfoBo, err error) {
 	role := new(models.SysRole)
-	sysRole, err := role.SelectRoles(p, orderData)
+	_, sysRole, err := role.SelectRoles(p, orderData)
 	if err != nil {
 		return
 	}
