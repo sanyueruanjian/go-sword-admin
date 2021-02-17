@@ -4,12 +4,13 @@ import (
 	"net/http"
 	"project/common/api"
 	mycasbin "project/pkg/casbin"
+	"project/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
 //权限检查中间件
-// TODO 需要修改
+// TODO 前端需要修改
 func AuthCheckRole() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		data := new(api.UserInfo)
@@ -19,7 +20,7 @@ func AuthCheckRole() gin.HandlerFunc {
 		data = userInfo
 		roles := data.Roles
 		for _, v := range *roles {
-			role = append(role, v.Name)
+			role = append(role, utils.IntToString(v.ID))
 		}
 		if err != nil {
 			c.Abort()
@@ -38,13 +39,6 @@ func AuthCheckRole() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
-		//fmt.Printf("%s [INFO] %s %s \r\n",
-		//	//tools.GetCurrentTimeStr(),
-		//	c.Request.Method,
-		//	c.Request.URL.Path,
-		//	role,
-		//)
 
 		if res {
 			c.Next()
