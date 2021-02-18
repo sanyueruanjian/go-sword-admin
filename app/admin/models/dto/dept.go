@@ -10,7 +10,7 @@ type SelectDeptDto struct {
 	Enabled   bool   `form:"enabled"`   // 状态：1启用（默认）、0禁用
 	Orders    string `form:"orders"`    // 排序规则
 	Name      string `form:"name"`      // 模糊
-	Sort      string `form:"sort"`
+	Sort      string `form:"sort"`      // id排序
 }
 
 // InsertDeptDto 新增部门

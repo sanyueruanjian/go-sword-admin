@@ -73,7 +73,98 @@ func InsertRoleAllCache(sysRoleAll []bo.RecordRole) (err error) {
 // -----------------------------/api/roles/{Post Delete Put}-----------------------------
 // 删除单角色缓存
 func DeleteRoleCache(roleId int) (err error) {
-	_, err = orm.Rdb.Do("DEL", "role::id:"+strconv.Itoa(roleId)).Result()
+	_, err = orm.Rdb.Do("DEL", "role::dept::id:"+strconv.Itoa(roleId)).Result()
+	return
+}
+
+// 删除单角色的Dept存入缓存
+func DeleteDeptCache(roleId int) (err error) {
+	_, err = orm.Rdb.Do("DEL", "role::dept::id:"+strconv.Itoa(roleId)).Result()
+	return
+}
+
+// 删除单角色的Menu存入缓存
+func DeletMenuCache(roleId int) (err error) {
+	_, err = orm.Rdb.Do("DEL", "role::menu::id:"+strconv.Itoa(roleId)).Result()
+	return
+}
+
+// 单角色的Dept存入缓存
+func InsertDept(role *SysRole, id int) (deptListData []bo.Dept, err error) {
+	// 1. 查询缓存  有 返回数据
+	valDept, err := orm.Rdb.Get("role::dept::id:" + strconv.Itoa(id)).Result()
+	if err != nil && err.Error()[0:10] == "redis: nil" {
+		err = nil
+	}
+	if valDept != "" {
+		err = json.Unmarshal([]byte(valDept), &deptListData)
+		if err == nil {
+			return
+		}
+	} else {
+		// 2. 无数据mysql查询数据 存入cache 返回数据
+		sysDept, errSysDept := role.SysDeptSelect(id)
+		if errSysDept != nil {
+			err = errSysDept
+			return
+		}
+		deptList, errDept := role.GetDepts(sysDept)
+		if errDept != nil {
+			err = errDept
+			return
+		}
+		roleDept, errValue := json.Marshal(deptList)
+		rolesDept := string(roleDept)
+		if errValue != nil {
+			err = errValue
+			return
+		}
+		errDeptRedis := orm.Rdb.Set("role::dept::id:"+strconv.Itoa(id), rolesDept, 0).Err()
+		if errDeptRedis != nil {
+			err = errDeptRedis
+			zap.L().Error("redis error: ", zap.Error(errDeptRedis))
+		}
+		deptListData = deptList
+	}
+	return
+}
+
+// 单角色的Menu存入缓存
+func InsertMenu(role *SysRole, id int) (menuListData []bo.Menu, err error) {
+	valMenu, err := orm.Rdb.Get("role::menu::id:" + strconv.Itoa(id)).Result()
+	if err != nil && err.Error()[0:10] == "redis: nil" {
+		err = nil
+	}
+	if valMenu != "" {
+		err = json.Unmarshal([]byte(valMenu), &menuListData)
+		if err == nil {
+			return
+		}
+	} else {
+		// 2. 无数据mysql查询数据 存入cache 返回数据
+		sysMenu, errSysMenu := role.SysMenuSelect(id)
+		if errSysMenu != nil {
+			err = errSysMenu
+			return
+		}
+		menuList, errMenu := role.GetMenus(sysMenu)
+		if errMenu != nil {
+			err = errMenu
+			return
+		}
+		roleMenu, errValue := json.Marshal(menuList)
+		rolesMenu := string(roleMenu)
+		if errValue != nil {
+			err = errValue
+			return
+		}
+		errMenuRedis := orm.Rdb.Set("role::menu::id:"+strconv.Itoa(id), rolesMenu, 0).Err()
+		if errMenuRedis != nil {
+			err = errMenuRedis
+			zap.L().Error("redis error: ", zap.Error(errMenuRedis))
+		}
+		menuListData = menuList
+	}
 	return
 }
 
@@ -121,7 +212,7 @@ func InsertRoleId(roleId int) (err error) {
 		err = errValue
 		return
 	}
-	errRedis := orm.Rdb.Set("role::id:"+strconv.Itoa(roleIdData.ID), roleString, 0).Err()
+	errRedis := orm.Rdb.Set("role::id:"+strconv.Itoa(roleId), roleString, 0).Err()
 	if errRedis != nil {
 		err = errRedis
 		zap.L().Error("redis error: ", zap.Error(errRedis))

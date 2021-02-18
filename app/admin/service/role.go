@@ -14,12 +14,9 @@ type Role struct {
 // 多条件查询角色
 func (e Role) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (roleData bo.SelectRoleArrayBo, err error) {
 	role := new(models.SysRole)
-	roleAll, sysRole, err := role.SelectRoles(p, orderData)
+	sysRole, status, err := role.SelectRoles(p, orderData)
 	if err != nil {
 		return
-	}
-	if roleAll != nil {
-		roleData.Records = append(roleData.Records, roleAll...)
 	}
 	if len(sysRole) > 0 {
 		for _, value := range sysRole {
@@ -38,18 +35,18 @@ func (e Role) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (roleD
 			} else {
 				recordRole.Protection = false
 			}
-			sysDept, sysMenu, errSysMenu := role.SysDeptAndMenu(value.ID)
-			if errSysMenu != nil {
-				err = errSysMenu
-				return
-			}
-			deptList, menuList, errGetMenu := role.GetDeptsMenus(sysDept, sysMenu)
-			if errGetMenu != nil {
-				err = errGetMenu
-				return
-			}
-			recordRole.Depts = deptList
-			recordRole.Menus = menuList
+
+			// 慢原因 查询缓存  TODO
+			// 1. 有返回数据  2. 无 查询数据库 序列化加入缓存
+			//recordRole.Depts, err = models.InsertDept(role, value.ID)
+			//if err != nil {
+			//	return
+			//}
+			//recordRole.Menus, err = models.InsertMenu(role, value.ID)
+			//if err != nil {
+			//	return
+			//}
+
 			if recordRole.Depts == nil {
 				recordRole.Depts = make([]bo.Dept, 0)
 			}
@@ -60,10 +57,15 @@ func (e Role) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (roleD
 		}
 	}
 	roleData.Current = p.Current
-	roleData.Page = utils.PagesCount(int(role.RoleAllNum()), p.Size)
+	if status == 1 {
+		roleData.Page = utils.PagesCount(len(roleData.Records), p.Size)
+		roleData.Total = len(roleData.Records)
+	} else {
+		roleData.Page = utils.PagesCount(int(role.RoleAllNum()), p.Size)
+		roleData.Total = int(role.RoleAllNum())
+	}
 	roleData.SearchCount = true
 	roleData.Size = p.Size
-	roleData.Total = int(role.RoleAllNum())
 	roleData.HitCount = false
 	roleData.OptimizeCountSql = true
 	for _, value := range orderData {
@@ -125,6 +127,9 @@ func (e Role) UpdateRole(p dto.UpdateRoleDto, userId int) (err error) {
 	if err = models.DeleteRoleCache(role.ID); err != nil {
 		return
 	}
+	if err = models.DeleteDeptCache(role.ID); err != nil {
+		return
+	}
 	if err = models.DeleteRoleAll(); err != nil {
 		return
 	}
@@ -153,6 +158,9 @@ func (e Role) UpdateRoleMenu(id int, p []int) (err error) {
 
 	// 删除缓存
 	if err = models.DeleteRoleAll(); err != nil {
+		return
+	}
+	if err = models.DeletMenuCache(id); err != nil {
 		return
 	}
 	return
@@ -222,7 +230,7 @@ func (e Role) SelectRoleLevel(roleName []string) (level bo.SelectCurrentUserLeve
 // 导出角色数据
 func (e Role) DownloadRoleInfoBo(p dto.SelectRoleArrayDto, orderData []bo.Order) (roleData []bo.DownloadRoleInfoBo, err error) {
 	role := new(models.SysRole)
-	_, sysRole, err := role.SelectRoles(p, orderData)
+	sysRole, _, err := role.SelectRoles(p, orderData)
 	if err != nil {
 		return
 	}

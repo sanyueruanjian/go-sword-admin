@@ -8,7 +8,6 @@ import (
 	"project/common/api"
 	"project/utils"
 	"project/utils/app"
-	"strconv"
 )
 
 var r = new(service.Role)
@@ -284,16 +283,13 @@ func LevelRolesHandler(c *gin.Context) {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
-	var userLevel []string
+	var level bo.SelectCurrentUserLevel
 	for _, values := range *user.Roles {
-		userLevel = append(userLevel, strconv.Itoa(values.Level))
+		if level.Level < values.Level {
+			level.Level = values.Level
+		}
 	}
 
-	level, err := r.SelectRoleLevel(userLevel)
-	if err != nil {
-		app.ResponseError(c, app.CodeParamNotComplete)
-		return
-	}
 	// 3.返回数据
 	app.ResponseSuccess(c, level)
 }

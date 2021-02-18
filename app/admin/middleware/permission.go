@@ -1,21 +1,32 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
-	"project/app/admin/models"
 	"project/common/api"
 	mycasbin "project/pkg/casbin"
+	"project/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
 //权限检查中间件
+// TODO 前端需要修改
 func AuthCheckRole() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		data, _ := c.Get(api.CtxUserInfoKey)
-		v := data.(models.RedisUserInfo)
-		e, err := mycasbin.Casbin()
+		data := new(api.UserInfo)
+		var role []string
+		var err error
+		userInfo, err := api.GetUserData(c)
+		data = userInfo
+		roles := data.Roles
+		for _, v := range *roles {
+			role = append(role, utils.IntToString(v.ID))
+		}
+		if err != nil {
+			c.Abort()
+			return
+		}
+		e, err := mycasbin.LoadPolicy()
 		if err != nil {
 			c.Abort()
 			return
@@ -23,18 +34,11 @@ func AuthCheckRole() gin.HandlerFunc {
 		//检查权限
 		//此处为多角色 要在做处理
 		var res bool
-		res, err = e.Enforce(v.Role, c.Request.URL.Path, c.Request.Method)
+		res, err = e.Enforce(role, c.Request.URL.Path, c.Request.Method)
 		if err != nil {
 			c.Abort()
 			return
 		}
-
-		fmt.Printf("%s [INFO] %s %s \r\n",
-			//tools.GetCurrentTimeStr(),
-			c.Request.Method,
-			c.Request.URL.Path,
-			v.Role,
-		)
 
 		if res {
 			c.Next()

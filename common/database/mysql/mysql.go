@@ -3,7 +3,7 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
-	
+
 	"project/common/global"
 	"project/utils"
 	"project/utils/config"
@@ -12,12 +12,11 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
-
 )
 
 // Init 配置mysql gorm
 func Init(cfg *config.Mysql) (err error) {
-	source := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms",
+	source := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local&timeout=2000ms",
 		cfg.User,
 		cfg.Password,
 		cfg.Host,
@@ -35,7 +34,7 @@ func Init(cfg *config.Mysql) (err error) {
 	db.SetMaxIdleConns(cfg.DbMaxIdle)
 
 	global.Eloquent, err = open(db, &gorm.Config{
-			NamingStrategy: schema.NamingStrategy{
+		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
 		},
 	})

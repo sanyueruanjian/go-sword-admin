@@ -22,6 +22,6 @@ type AddJob struct {
 type UpdateJob struct {
 	ID      int    `json:"id"`                         //ID
 	JobSort int    `json:"jobSort" binding:"required"` //排序
-	Enabled uint8  `json:"enabled" binding:"required"` //岗位状态
+	Enabled bool  `json:"enabled" binding:"required"` //岗位状态
 	Name    string `json:"name" binding:"required"`    //岗位名称
 }

@@ -8,8 +8,6 @@ import (
 	"project/common/cache"
 	"project/pkg/jwt"
 	"project/utils/config"
-
-	"strconv"
 	"time"
 
 	"project/app/admin/models"
@@ -156,7 +154,7 @@ func GetUserRoleData(cacheRole string, rolesErr error, roles *[]models.SysRole, 
 		if err != nil {
 			return
 		}
-		cache.SetUserCache(userId, roles, cache.KeyUserRole)
+		go cache.SetUserCache(userId, roles, cache.KeyUserRole)
 	} else {
 		err = utils.JsonToStruct(cacheRole, roles)
 	}
@@ -173,7 +171,7 @@ func GetUserMenuData(cacheMenu string, menuErr error, userId int, menuPermission
 
 		if utils.ByteIntoInt(a.IsAdmin) == 1 {
 			*menuPermission = []string{`admin`}
-			cache.SetUserCache(userId, menuPermission, cache.KeyUserMenu)
+			go cache.SetUserCache(userId, menuPermission, cache.KeyUserMenu)
 		} else {
 			menus := new([]models.SysMenu)
 			if err = models.SelectUserMenuPermission(menus, roles); err != nil {
@@ -184,7 +182,7 @@ func GetUserMenuData(cacheMenu string, menuErr error, userId int, menuPermission
 					*menuPermission = append(*menuPermission, menu.Permission)
 				}
 			}
-			cache.SetUserCache(userId, menus, cache.KeyUserMenu)
+			go cache.SetUserCache(userId, menus, cache.KeyUserMenu)
 		}
 	} else {
 		if cacheMenu == `["admin"]` {
@@ -211,7 +209,7 @@ func GetUserDeptData(cacheDept string, deptErr error, dept *models.SysDept, user
 		if err != nil {
 			return
 		}
-		cache.SetUserCache(userId, dept, cache.KeyUserDept)
+		go cache.SetUserCache(userId, dept, cache.KeyUserDept)
 	} else {
 		err = utils.JsonToStruct(cacheDept, dept)
 	}
@@ -243,7 +241,7 @@ func GetUserDataScopes(cacheDataScopes string, dataScopesErr error, dataScopes *
 			}
 			*dataScopes = append(*dataScopes, deptIds...)
 		}
-		cache.SetUserCache(userId, dataScopes, cache.KeyUserDataScope)
+		go cache.SetUserCache(userId, dataScopes, cache.KeyUserDataScope)
 	} else {
 		err = utils.JsonToStruct(cacheDataScopes, dataScopes)
 	}
@@ -251,31 +249,6 @@ func GetUserDataScopes(cacheDataScopes string, dataScopesErr error, dataScopes *
 }
 
 func (u *User) RedisUserMessage(c *gin.Context, l *bo.LoginData, token string) (err error) {
-	//构造角色名字集合
-	roleNames := make([]string, 0)
-	for _, v := range l.User.User.Role {
-		roleNames = append(roleNames, v.Name)
-	}
-	//初始化缓存模型
-	var userInfo []byte
-	userInfo, err = json.Marshal(models.RedisUserInfo{
-		UserId:   l.User.User.Id,
-		UserName: l.User.User.Username,
-		DeptId:   l.User.User.DeptId,
-		Role:     roleNames,
-	})
-
-	if err != nil {
-		zap.L().Error("RedisUserInfo Marshal failed", zap.Error(err))
-		return
-	}
-
-	//添加缓存
-	if err := global.Rdb.Set(strconv.Itoa(l.User.User.Id), userInfo, 0).Err(); err != nil {
-		zap.L().Error("用户缓存错误", zap.Error(err))
-		return err
-	}
-
 	online := new(models.OnlineUser)
 	ua := user_agent.New(c.Request.UserAgent())
 	browserName, browserVersion := ua.Browser()
