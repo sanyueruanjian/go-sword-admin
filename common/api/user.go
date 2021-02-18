@@ -23,11 +23,11 @@ type UserMessage struct {
 }
 
 type UserInfo struct {
-	Jobs           *[]models.SysJob  //用户岗位
-	Roles          *[]models.SysRole //用户角色
-	MenuPermission *[]string         //菜单权限
-	Dept           *models.SysDept   //部门
-	DataScopes     *[]int            //数据权限
+	Jobs           *[]models.SysJob
+	Roles          *[]models.SysRole
+	MenuPermission *[]string
+	Dept           *models.SysDept
+	DataScopes     *[]int
 }
 
 var ErrorUserNotLogin = errors.New("用户未登录")

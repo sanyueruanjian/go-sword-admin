@@ -6,7 +6,6 @@ import (
 	"project/app/admin/models/dto"
 	"project/app/admin/service"
 	"project/common/api"
-	orm "project/common/global"
 	"project/utils"
 	"project/utils/app"
 )
@@ -63,7 +62,7 @@ func InsertRolesHandler(c *gin.Context) {
 	err := c.ShouldBind(&insertrole)
 
 	// 2.参数正确执行响应
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
@@ -74,13 +73,6 @@ func InsertRolesHandler(c *gin.Context) {
 			app.ResponseError(c, app.CodeUserNameExist)
 			return
 		}
-		app.ResponseError(c, app.CodeParamNotComplete)
-		return
-	}
-
-	// 删除缓存
-	_, err = orm.Rdb.Do("DEL", "rolesAll").Result()
-	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
@@ -105,7 +97,7 @@ func UpdateRolesHandler(c *gin.Context) {
 	err := c.ShouldBind(&updateRole)
 
 	// 2.参数正确执行响应
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
@@ -143,7 +135,7 @@ func DeleteRolesHandler(c *gin.Context) {
 	}
 
 	// 2.参数正确执行响应
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserMessage(c)
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
@@ -179,13 +171,6 @@ func MenuRolesHandler(c *gin.Context) {
 
 	// 2.参数正确执行响应
 	err = r.UpdateRoleMenu(roleMenus.ID, roleMenus.Menus)
-	if err != nil {
-		app.ResponseError(c, app.CodeParamNotComplete)
-		return
-	}
-
-	// 删除缓存
-	_, err = orm.Rdb.Do("DEL", "rolesAll").Result()
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
@@ -293,16 +278,18 @@ func DownRolesHandler(c *gin.Context) {
 // @Success 200 {object} models._ResponseLogin
 // @Router /api/roles/level [get]
 func LevelRolesHandler(c *gin.Context) {
-	user, err := api.GetCurrentUserInfo(c)
+	user, err := api.GetUserData(c)
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
-	level, err := r.SelectRoleLevel(user.Role)
-	if err != nil {
-		app.ResponseError(c, app.CodeParamNotComplete)
-		return
+	var level bo.SelectCurrentUserLevel
+	for _, values := range *user.Roles {
+		if level.Level < values.Level {
+			level.Level = values.Level
+		}
 	}
+
 	// 3.返回数据
 	app.ResponseSuccess(c, level)
 }

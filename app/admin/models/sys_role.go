@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
 	"project/utils"
@@ -41,7 +42,7 @@ func (e SysRole) RoleAllNum() (num int64) {
 }
 
 // 多条件查询角色
-func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sysRole []SysRole, err error) {
+func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sysRole []SysRole, status int, err error) {
 	var order string
 	for key, value := range orderData {
 		order += value.Column + " "
@@ -63,6 +64,8 @@ func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sy
 	// 查询
 	if p.Blurry != "" && p.StartTime == "" {
 		// 查询Blurry
+		fmt.Println("blurry")
+		status = 1
 		err = orm.Eloquent.Where("name like ? or description like ? and is_deleted=0",
 			"%"+p.Blurry+"%", "%"+p.Blurry+"%").
 			Limit(p.Size).Offset((p.Current - 1) * p.Size).Order(order).Find(&sysRole).Error
@@ -70,6 +73,8 @@ func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sy
 	}
 	if p.Blurry == "" && p.StartTime != "" {
 		// 查询Time
+		fmt.Println("Time")
+		status = 1
 		startTime, err1 := strconv.ParseInt(p.StartTime, 10, 64)
 		if err1 != nil {
 			err = err1
@@ -86,6 +91,8 @@ func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sy
 	}
 	if p.Blurry != "" && p.StartTime != "" {
 		// 查询All
+		fmt.Println("All")
+		status = 1
 		startTime, err1 := strconv.ParseInt(p.StartTime, 10, 64)
 		if err1 != nil {
 			err = err1
@@ -101,7 +108,37 @@ func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sy
 			Limit(p.Size).Offset((p.Current - 1) * p.Size).Order(order).Find(&sysRole).Error
 		return
 	}
+
+	// 1.查找redis缓存
+	// TODO
+	//roleAll, err = SelectRoleAllCache()
+	//if err == nil && len(roleAll) > 0 {
+	//	return
+	//}
+
+	//  2.查找mysql
+	fmt.Println("mysql")
 	if err = orm.Eloquent.Where("is_deleted=0").Limit(p.Size).Offset((p.Current - 1) * p.Size).Order(order).Find(&sysRole).Error; err != nil {
+		return
+	}
+	return
+}
+
+// 查询Dept
+func (e SysRole) SysDeptSelect(id int) (sysDept []SysDept, err error) {
+	// 查询Dept
+	if err = orm.Eloquent.Where("id = any(?)", orm.Eloquent.Table("sys_roles_depts").Select("dept_id").
+		Where("role_id = ?", id)).Find(&sysDept).Error; err != nil {
+		return
+	}
+	return
+}
+
+// 查询Menu
+func (e SysRole) SysMenuSelect(id int) (sysMenu []SysMenu, err error) {
+	// 查询Menu
+	if err = orm.Eloquent.Where("id = any(?)", orm.Eloquent.Table("sys_roles_menus").Select("menu_id").
+		Where("role_id = ?", id)).Find(&sysMenu).Error; err != nil {
 		return
 	}
 	return
@@ -109,16 +146,11 @@ func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sy
 
 // 查询Dept Menu
 func (e SysRole) SysDeptAndMenu(id int) (sysDept []SysDept, sysMenu []SysMenu, err error) {
-	// 查询Dept
-	if err = orm.Eloquent.Where("id = any(?)", orm.Eloquent.Table("sys_roles_depts").Select("dept_id").
-		Where("role_id = ?", id)).Find(&sysDept).Error; err != nil {
+	sysDept, err = e.SysDeptSelect(id)
+	if err != nil {
 		return
 	}
-	// 查询Menu
-	if err = orm.Eloquent.Where("id = any(?)", orm.Eloquent.Table("sys_roles_menus").Select("menu_id").
-		Where("role_id = ?", id)).Find(&sysMenu).Error; err != nil {
-		return
-	}
+	sysMenu, err = e.SysMenuSelect(id)
 	return
 }
 
@@ -144,6 +176,9 @@ func (e SysRole) InsertRole(deptsData []int) (err error) {
 		}
 	}
 	tx.Commit()
+
+	// 更新单个role缓存
+	err = InsertRoleId(e.ID)
 	return
 }
 
@@ -197,6 +232,12 @@ func (e SysRole) DeleteRole(p []int) (err error) {
 		}
 		// 删除缓存
 		if err = DeleteRoleCache(values); err != nil {
+			return
+		}
+		if err = DeleteDeptCache(values); err != nil {
+			return
+		}
+		if err = DeletMenuCache(values); err != nil {
 			return
 		}
 	}
@@ -353,6 +394,85 @@ func (e SysRole) SelectRoleLevel(roleName []string) (level bo.SelectCurrentUserL
 	if level.Level == 0 {
 		level.Level = 1
 	}
+	return
+}
+
+func (e SysRole) GetDepts(sysDept []SysDept) (deptList []bo.Dept, err error) {
+	// Dept
+	for _, value := range sysDept {
+		var dept bo.Dept
+		dept.CreateBy = value.CreateBy
+		dept.CreateTime = value.CreateTime
+		dept.DeptSort = value.DeptSort
+		if value.Enabled[0] == 1 {
+			dept.Enabled = true
+		} else {
+			dept.Enabled = false
+		}
+		if value.SubCount > 0 {
+			dept.HasChildren = true
+		} else {
+			dept.HasChildren = false
+		}
+		dept.ID = value.ID
+		dept.Name = value.Name
+		dept.Pid = value.Pid
+		dept.SubCount = value.SubCount
+		dept.UpdateTime = value.UpdateTime
+		dept.UpdateBy = value.UpdateBy
+		deptList = append(deptList, dept)
+	}
+	return
+}
+
+func (e SysRole) GetMenus(sysMenu []SysMenu) (menuList []bo.Menu, err error) {
+	// Menu
+	for _, value := range sysMenu {
+		var menu bo.Menu
+		menu.CreateBy = value.CreateBy
+		menu.Icon = value.Icon
+		menu.ID = value.ID
+		menu.MenuSort = value.MenuSort
+		menu.Pid = value.Pid
+		menu.SubCount = value.SubCount
+		menu.Type = value.Type
+		menu.UpdateBy = value.UpdateBy
+		menu.Component = value.Component
+		menu.CreateTime = value.CreateTime
+		menu.Name = value.Name
+		menu.Path = value.Path
+		menu.Permission = value.Permission
+		menu.Title = value.Title
+		menu.UpdateTime = value.UpdateTime
+		menu.Label = menu.Title
+		if value.Cache[0] == 1 {
+			menu.Cache = true
+		} else {
+			menu.Cache = false
+		}
+		if value.Hidden[0] == 1 {
+			menu.Hidden = true
+		} else {
+			menu.Hidden = false
+		}
+		if value.IFrame[0] == 1 {
+			menu.Iframe = true
+		} else {
+			menu.Iframe = false
+		}
+		menuList = append(menuList, menu)
+	}
+	return
+}
+
+func (e SysRole) GetDeptsMenus(sysDept []SysDept, sysMenu []SysMenu) (deptList []bo.Dept, menuList []bo.Menu, err error) {
+	// Dept
+	deptList, err = e.GetDepts(sysDept)
+	if err != nil {
+		return
+	}
+	// Menu
+	menuList, err = e.GetMenus(sysMenu)
 	return
 }
 
