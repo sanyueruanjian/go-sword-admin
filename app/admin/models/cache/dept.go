@@ -56,6 +56,18 @@ func DeleteRedisDeptByPid(pid int) error {
 	return global.Rdb.Del(DeptPidKeyFore + strId).Err()
 }
 
+// dept::pid:{number} 删除子部门缓存
+func DeleteRedisDeptByPids(pids []int) (err error) {
+	for _, pid := range pids {
+		var strId = strconv.Itoa(pid)
+		err = global.Rdb.Del(DeptPidKeyFore + strId).Err()
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
 // dept::id:{number} 设置某个部门缓存
 func SetRedisDeptById(id int, value interface{}) {
 	data, err := json.Marshal(value)
@@ -99,4 +111,16 @@ func GetRedisDeptByIdList(ids []int) (value []bo.RecordDept, err error) {
 func DeleteRedisDeptById(id int) (err error) {
 	var strId = strconv.Itoa(id)
 	return global.Rdb.Del(DeptIdKeyFore + strId).Err()
+}
+
+// dept::pid:{number} 删除某些部门缓存
+func DeleteRedisDeptByIds(ids []int) (err error) {
+	for _, id := range ids {
+		var strId = strconv.Itoa(id)
+		err = global.Rdb.Del(DeptIdKeyFore + strId).Err()
+		if err != nil {
+			return
+		}
+	}
+	return
 }

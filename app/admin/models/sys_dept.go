@@ -6,6 +6,8 @@ import (
 	"project/common/global"
 	orm "project/common/global"
 	"project/utils"
+
+	"gorm.io/gorm"
 )
 
 type SysDept struct {
@@ -25,7 +27,7 @@ func (d *SysDept) TableName() string {
 }
 
 // 查询部门
-func (d SysDept) SelectDeptListByPid(de *dto.SelectDeptDto, orderJson []bo.Order) (sysDeptList *[]SysDept, count int64, err error) {
+func (d *SysDept) SelectDeptListByPid(de *dto.SelectDeptDto, orderJson []bo.Order) (sysDeptList *[]SysDept, count int64, err error) {
 	sysDeptList = new([]SysDept) // 实例化
 
 	// 排序规则
@@ -34,8 +36,8 @@ func (d SysDept) SelectDeptListByPid(de *dto.SelectDeptDto, orderJson []bo.Order
 	// 查询pid下的子部门数据
 	if de.Pid >= 0 {
 		//数据库查询
-		_ = orm.Eloquent.Table(d.TableName()).Where("enabled = ? AND pid = ? AND is_deleted = ?", 1, de.Pid, []byte{0}).Count(&count).
-			Limit(de.Size).Offset((de.Current - 1) * de.Size).Order(order).Find(sysDeptList).Error
+		_ = orm.Eloquent.Table(d.TableName()).Where("pid = ? AND is_deleted = ?", de.Pid, 0).Count(&count).
+			Order(order).Limit(de.Size).Offset((de.Current - 1) * de.Size).Find(sysDeptList).Error
 		return
 	}
 
@@ -43,7 +45,7 @@ func (d SysDept) SelectDeptListByPid(de *dto.SelectDeptDto, orderJson []bo.Order
 }
 
 // 模糊查询和时间
-func (d SysDept) SelectDeptListByNameTime(de *dto.SelectDeptDto, orderJson []bo.Order) (sysDeptList *[]SysDept, count int64, err error) {
+func (d *SysDept) SelectDeptListByNameTime(de *dto.SelectDeptDto, orderJson []bo.Order) (sysDeptList *[]SysDept, count int64, err error) {
 	sysDeptList = new([]SysDept) // 实例化
 
 	// 排序规则
@@ -54,51 +56,82 @@ func (d SysDept) SelectDeptListByNameTime(de *dto.SelectDeptDto, orderJson []bo.
 
 	// 时间条件
 	if de.EndTime != 0 && de.StartTime != 0 {
-		err = global.Eloquent.Table(d.TableName()).Where("pid = ? AND is_deleted=? AND create_time > ? AND create_time < ? AND title like ?", 0, []byte{0}, de.StartTime, de.EndTime, blurry).
-			Count(&count).Limit(de.Size).Offset(de.Current - 1*de.Size).Order(order).Find(sysDeptList).Error
+		err = global.Eloquent.Table(d.TableName()).Where("pid = ? AND is_deleted=? AND create_time > ? AND create_time < ? AND name like ?", 0, 0, de.StartTime, de.EndTime, blurry).
+			Order(order).Count(&count).Limit(de.Size).Offset((de.Current - 1) * de.Size).Find(sysDeptList).Error
 		return
 	} else {
 		// 数据库查询
-		err = global.Eloquent.Table(d.TableName()).Where("pid = ? AND is_deleted=? AND name like ?", 0, []byte{0}, blurry).
-			Count(&count).Limit(de.Size).Offset(de.Current - 1*de.Size).Order(order).Find(sysDeptList).Error
+		err = global.Eloquent.Table(d.TableName()).Where("pid = ? AND is_deleted=? AND name like ?", 0, 0, blurry).
+			Order(order).Count(&count).Limit(de.Size).Offset((de.Current - 1) * de.Size).Find(sysDeptList).Error
 	}
 	return
 }
 
 // 新增部门
-func (d SysDept) InsertDept() (err error) {
-	err = global.Eloquent.Table(d.TableName()).Create(&d).Error
+func (d *SysDept) InsertDept() (err error) {
+	tx := global.Eloquent.Begin()
+	err = tx.Table(d.TableName()).Create(d).Error
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+	if d.Pid != 0 {
+		err = tx.Table(d.TableName()).Where("id = ?", d.Pid).Update("sub_count", gorm.Expr("sub_count + ?", 1)).Error
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+	}
+	err = tx.Commit().Error
 	return
 }
 
 // 修改部门
-func (d SysDept) UpdateDept(de *dto.UpdateDeptDto) (err error) {
-	err = global.Eloquent.Table(d.TableName()).Where("id=? AND is_deleted=?", de.ID, 0).Updates(map[string]interface{}{
-		"pid":       de.Pid,
-		"sub_count": de.SubCount,
-		"name":      de.Name,
-		"dept_sort": de.DeptSort,
-		"update_by": de.UpdatedBy,
-		"enabled":   utils.StrBoolIntoByte(de.Enabled),
+func (d *SysDept) UpdateDept(de *dto.UpdateDeptDto) (err error) {
+	err = global.Eloquent.Table(d.TableName()).Where("id=? AND is_deleted=?", de.ID, 0).Updates(&SysDept{
+		Pid:      *de.Pid,
+		Name:     de.Name,
+		DeptSort: *de.DeptSort,
+		UpdateBy: de.UpdateBy,
+		Enabled:  utils.StrBoolIntoByte(de.Enabled),
 	}).Error
 	return
 }
 
 // 删除部门
-func (d SysDept) DeleteDept(ids *[]int) (count int64, err error) {
+func (d *SysDept) DeleteDept(ids *[]int) (count int64, err error) {
 	child := new([]int)
-	err = global.Eloquent.Table(d.TableName()).Select("id").Where("pid = ? AND is_deleted = ?", *ids, 0).Find(child).Error
-
+	err = global.Eloquent.Table(d.TableName()).Select("id").Where("pid IN (?) AND is_deleted = ?", *ids, 0).Find(child).Error
+	if err != nil {
+		return
+	}
 	err = global.Eloquent.Table("sys_user").Where("dept_id IN (?) AND is_deleted = ?", 0).Count(&count).Error
 	if err != nil || count > 0 {
 		return
 	}
 
-	err = global.Eloquent.Table(d.TableName()).Where("id IN (?)", *ids).Updates(map[string]interface{}{"is_deleted": []byte{1}}).Error
+	tx := global.Eloquent.Begin()
+	err = tx.Table(d.TableName()).Where("id IN (?)", *ids).Updates(&SysDept{
+		BaseModel: BaseModel{
+			IsDeleted: []byte{1},
+		},
+	}).Error
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	err = tx.Table(d.TableName()).Where("pid IN (?)", *ids).Update("sub_count", gorm.Expr("sub_count - ?", 1)).Error
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	err = tx.Commit().Error
 	return
 }
 
-func (d SysDept) SuperiorDept(ids *[]int) (sysDeptList *[]SysDept, err error) {
+func (d *SysDept) SuperiorDept(ids *[]int) (sysDeptList *[]SysDept, err error) {
 	sysDeptList = new([]SysDept) // 实例化
 
 	err = global.Eloquent.Table(d.TableName()).Where("pid = ? AND is_deleted = ?", 0, 0).
@@ -107,7 +140,7 @@ func (d SysDept) SuperiorDept(ids *[]int) (sysDeptList *[]SysDept, err error) {
 }
 
 // 获取要下载的数据
-func (d SysDept) DownloadDept(de *dto.SelectDeptDto, orderJson []bo.Order) (sysDeptList []*SysDept, err error) {
+func (d *SysDept) DownloadDept(de *dto.SelectDeptDto, orderJson []bo.Order) (sysDeptList []*SysDept, err error) {
 	order := utils.GetOrderRule(orderJson)
 
 	// 模糊查询
@@ -115,12 +148,12 @@ func (d SysDept) DownloadDept(de *dto.SelectDeptDto, orderJson []bo.Order) (sysD
 
 	// 时间条件
 	if de.EndTime != 0 && de.StartTime != 0 {
-		err = global.Eloquent.Table(d.TableName()).Where("pid = ? AND is_deleted=? AND create_time > ? AND create_time < ? AND title like ?", 0, []byte{0}, de.StartTime, de.EndTime, blurry).
-			Limit(de.Size).Offset(de.Current - 1*de.Size).Order(order).Find(&sysDeptList).Error
+		err = global.Eloquent.Table(d.TableName()).Where("pid = ? AND is_deleted=? AND create_time > ? AND create_time < ? AND title like ?", 0, 0, de.StartTime, de.EndTime, blurry).
+			Order(order).Limit(de.Size).Offset((de.Current - 1) * de.Size).Find(&sysDeptList).Error
 		return
 	} else {
-		err = global.Eloquent.Table(d.TableName()).Where("pid = ? AND is_deleted=? AND name like ?", 0, []byte{0}, blurry).
-			Limit(de.Size).Offset(de.Current - 1*de.Size).Order(order).Find(&sysDeptList).Error
+		err = global.Eloquent.Table(d.TableName()).Where("pid = ? AND is_deleted=? AND name like ?", 0, 0, blurry).
+			Order(order).Limit(de.Size).Offset((de.Current - 1) * de.Size).Find(&sysDeptList).Error
 	}
 	return
 }
