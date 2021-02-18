@@ -140,7 +140,7 @@ func InsertDeptHandler(c *gin.Context) {
 // @Param object body dto.UpdateDeptDto false "查询参数"
 // @Security ApiKeyAuth
 // @Success 200 {object} models._ResponseDept
-// @Router /api/dept [post]
+// @Router /api/dept [put]
 func UpdateDeptHandler(c *gin.Context) {
 	//获取上下文中信息
 	user, err := api.GetUserMessage(c)
@@ -162,7 +162,7 @@ func UpdateDeptHandler(c *gin.Context) {
 		return
 	}
 	// 替换更新者
-	dept.UpdatedBy = user.UserId
+	dept.UpdateBy = user.UserId
 	// 业务处理
 	if err := d.UpdateDept(dept); err != nil {
 		zap.L().Error("UpdateDeptHandler UpdateSQL failed", zap.Error(err))
