@@ -35,7 +35,6 @@ type InsertUserDto struct {
 	Email    string `json:"email"`                       //邮箱 (目前不传)
 	NickName string `json:"nickName" binding:"required"` //昵称
 	UserName string `json:"username" binding:"required"` //用户名
-	Enabled  string `json:"enabled" binding:"required"`  //是否激活
 	Gender   string `json:"gender" binding:"required"`   //性别
 	Jobs     []int  `json:"jobs" binding:"required"`     //职位
 	Roles    []int  `json:"roles" binding:"required"`    //角色
