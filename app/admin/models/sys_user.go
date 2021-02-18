@@ -182,6 +182,12 @@ func (u *SysUser) InsertUser(jobs []int, roles []int) (err error) {
 			return err
 		}
 	}
+	//删除用户列表缓存
+	if err := cache.DelAllUserRecordsCache(); err != nil {
+		zap.L().Error("DelAllUserCenterCache", zap.Error(err))
+		tx.Rollback()
+		return err
+	}
 	//提交事务
 	return tx.Commit().Error
 }
@@ -442,6 +448,12 @@ func (u *SysUser) DeleteUser(ids []int) (err error) {
 		tx.Rollback()
 		return err
 	}
+	//删除用户列表缓存
+	if err := cache.DelAllUserRecordsCache(); err != nil {
+		zap.L().Error("DelAllUserCenterCache", zap.Error(err))
+		tx.Rollback()
+		return err
+	}
 	return tx.Commit().Error
 }
 
@@ -512,7 +524,8 @@ func (u *SysUser) UpdateUser(p *dto.UpdateUserDto, optionId int) (err error) {
 		return err
 	}
 	//删除用户列表缓存
-	if err := cache.DelAllUserCenterCache(); err != nil {
+	if err := cache.DelAllUserRecordsCache(); err != nil {
+		zap.L().Error("DelAllUserCenterCache", zap.Error(err))
 		tx.Rollback()
 		return err
 	}
@@ -544,7 +557,7 @@ func (u *SysUser) UpdateUserCenter(p *dto.UpdateUserCenterDto, optionId int) (er
 		return err
 	}
 	//  删除用户列表缓存
-	if err := cache.DelAllUserCenterCache(); err != nil {
+	if err := cache.DelAllUserRecordsCache(); err != nil {
 		tx.Rollback()
 		return err
 	}

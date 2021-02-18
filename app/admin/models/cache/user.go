@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	UserInfoKeyFore  = "user::userInfo:id"
+	UserInfoKeyFore  = "user::userInfo:id:"
 	UserRecordsFore  = "user::records:auth:"
 	KeyUserJob       = "job::user:"
 	KeyUserRole      = "role::user:"
@@ -85,7 +85,7 @@ func DelManyUserCenterCache(ids []int) error {
 }
 
 func DelAllUserCenterCache() error {
-	keys := global.Rdb.Keys(UserRecordsFore).Val()
+	keys := global.Rdb.Keys(UserRecordsFore + "*").Val()
 	pipLine := global.Rdb.Pipeline()
 	for _, key := range keys {
 		pipLine.Del(key)
