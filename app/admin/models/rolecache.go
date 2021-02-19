@@ -9,6 +9,34 @@ import (
 	"strconv"
 )
 
+// 查找所有角色缓存
+func SelectRoleAllCaches() (roleAll []bo.RecordRole, err error) {
+	// 1. 先找redis rolesAlls
+	val, err := orm.Rdb.Get("rolesAlls").Result()
+	if val != "" && err == nil {
+		err = json.Unmarshal([]byte(val), &roleAll)
+		if err == nil {
+			return
+		}
+	}
+	return
+}
+
+// 添加rolesAlls缓存
+func InsertRoleAlls(sysRoleAll []bo.RecordRole) (err error) {
+	roleByte, err := json.Marshal(sysRoleAll)
+	roleString := string(roleByte)
+	if err != nil {
+		return
+	}
+	errRedis := orm.Rdb.Set("rolesAlls", roleString, 0).Err()
+	if errRedis != nil {
+		err = errRedis
+		zap.L().Error("redis error: ", zap.Error(errRedis))
+	}
+	return
+}
+
 // -----------------------------/api/roles/all-----------------------------
 // 查找所有角色缓存
 func SelectRoleAllCache() (roleAll []bo.RecordRole, err error) {
@@ -73,7 +101,7 @@ func InsertRoleAllCache(sysRoleAll []bo.RecordRole) (err error) {
 // -----------------------------/api/roles/{Post Delete Put}-----------------------------
 // 删除单角色缓存
 func DeleteRoleCache(roleId int) (err error) {
-	_, err = orm.Rdb.Do("DEL", "role::dept::id:"+strconv.Itoa(roleId)).Result()
+	_, err = orm.Rdb.Do("DEL", "role::id:"+strconv.Itoa(roleId)).Result()
 	return
 }
 
@@ -223,5 +251,11 @@ func InsertRoleId(roleId int) (err error) {
 // 删除RoleAll缓存
 func DeleteRoleAll() (err error) {
 	_, err = orm.Rdb.Do("DEL", "rolesAll").Result()
+	return
+}
+
+// 删除RoleAll缓存
+func DeleteRoleAlls() (err error) {
+	_, err = orm.Rdb.Do("DEL", "rolesAlls").Result()
 	return
 }

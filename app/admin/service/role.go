@@ -6,6 +6,7 @@ import (
 	"project/app/admin/models/dto"
 	"project/utils"
 	"strconv"
+	"sync"
 )
 
 type Role struct {
@@ -18,6 +19,20 @@ func (e Role) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (roleD
 	if err != nil {
 		return
 	}
+	// 1. 查询缓存All
+	if status != 1 {
+		roleAll, err := models.SelectRoleAllCaches()
+		if err == nil && len(roleAll) > 0 {
+			// 分页
+			if p.Current*p.Size > len(roleAll) {
+				roleData.Records = roleAll[(p.Current-1)*p.Size : len(roleAll)]
+			} else {
+				roleData.Records = roleAll[(p.Current-1)*p.Size : p.Current*p.Size]
+			}
+			sysRole = nil
+		}
+	}
+
 	if len(sysRole) > 0 {
 		for _, value := range sysRole {
 			var recordRole bo.RecordRole
@@ -36,17 +51,24 @@ func (e Role) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (roleD
 				recordRole.Protection = false
 			}
 
-			// 慢原因 查询缓存  TODO
-			// 1. 有返回数据  2. 无 查询数据库 序列化加入缓存
-			//recordRole.Depts, err = models.InsertDept(role, value.ID)
-			//if err != nil {
-			//	return
-			//}
-			//recordRole.Menus, err = models.InsertMenu(role, value.ID)
-			//if err != nil {
-			//	return
-			//}
-
+			// 查询缓存
+			var wg sync.WaitGroup
+			wg.Add(2)
+			go func() {
+				recordRole.Depts, err = models.InsertDept(role, value.ID)
+				if err != nil {
+					return
+				}
+				wg.Done()
+			}()
+			go func() {
+				recordRole.Menus, err = models.InsertMenu(role, value.ID)
+				if err != nil {
+					return
+				}
+				wg.Done()
+			}()
+			wg.Wait()
 			if recordRole.Depts == nil {
 				recordRole.Depts = make([]bo.Dept, 0)
 			}
@@ -55,7 +77,13 @@ func (e Role) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (roleD
 			}
 			roleData.Records = append(roleData.Records, recordRole)
 		}
+
+		// 存入RoleAll缓存
+		if status != 1 {
+			_ = models.InsertRoleAlls(roleData.Records)
+		}
 	}
+
 	roleData.Current = p.Current
 	if status == 1 {
 		roleData.Page = utils.PagesCount(len(roleData.Records), p.Size)
@@ -98,6 +126,7 @@ func (e Role) InsertRole(p dto.InsertRoleDto, userId int) (err error) {
 	if err = models.DeleteRoleAll(); err != nil {
 		return
 	}
+	err = models.DeleteRoleAlls()
 	return
 }
 
@@ -133,7 +162,9 @@ func (e Role) UpdateRole(p dto.UpdateRoleDto, userId int) (err error) {
 	if err = models.DeleteRoleAll(); err != nil {
 		return
 	}
-
+	if err = models.DeleteRoleAlls(); err != nil {
+		return
+	}
 	// 更新单个role缓存
 	err = models.InsertRoleId(p.ID)
 	return
@@ -163,6 +194,7 @@ func (e Role) UpdateRoleMenu(id int, p []int) (err error) {
 	if err = models.DeletMenuCache(id); err != nil {
 		return
 	}
+	err = models.DeleteRoleAlls()
 	return
 }
 
