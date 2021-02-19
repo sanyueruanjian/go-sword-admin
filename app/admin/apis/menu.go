@@ -224,9 +224,9 @@ func SelectForeNeedMenuHandler(c *gin.Context) {
 // @Tags 系统：菜单管理 Menu Controller
 // @Accept application/json
 // @Produce application/json
-// @Param object body pid false "查询参数"
+// @Param pid query int false "查询参数"
 // @Security ApiKeyAuth
-// @Success 200 {object} models._ReturnToAllMenusBo
+// @Success 200 {object} models._ResponseMenuData
 // @Router /api/menus/lazy [get]
 func ReturnToAllMenusHandler(c *gin.Context) {
 	var pidInt int

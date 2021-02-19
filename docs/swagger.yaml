@@ -1,4 +1,18 @@
 definitions:
+  bo.Children:
+    properties:
+      component:
+        type: string
+      hidden:
+        type: boolean
+      meta:
+        $ref: '#/definitions/bo.Meta'
+        type: object
+      name:
+        type: string
+      path:
+        type: string
+    type: object
   bo.DeptCommon:
     properties:
       id:
@@ -8,21 +22,45 @@ definitions:
     type: object
   bo.GetJobList:
     properties:
+      createBy:
+        description: 创建人
+        type: integer
+      createTime:
+        description: 创建时间
+        type: integer
       enabled:
         description: 状态：1启用（默认）、0禁用
+        type: boolean
+      id:
+        description: Id
         type: integer
-      job_sort:
+      jobSort:
         description: 排序
         type: integer
       name:
         description: 岗位名称
         type: string
+      updateBy:
+        description: 更新人
+        type: integer
+      updateTime:
+        description: 更新时间
+        type: integer
     type: object
   bo.Job:
     properties:
       id:
         type: integer
       name:
+        type: string
+    type: object
+  bo.Meta:
+    properties:
+      icon:
+        type: string
+      noCache:
+        type: boolean
+      title:
         type: string
     type: object
   bo.Order:
@@ -103,6 +141,53 @@ definitions:
       username:
         type: string
     type: object
+  bo.ReturnToAllMenusBo:
+    properties:
+      cache:
+        type: boolean
+      children:
+        type: object
+      component:
+        type: string
+      createBy:
+        type: integer
+      createTime:
+        type: integer
+      hasChildren:
+        type: boolean
+      hidden:
+        type: boolean
+      icon:
+        type: string
+      id:
+        type: integer
+      iframe:
+        type: boolean
+      label:
+        type: string
+      leaf:
+        type: boolean
+      menuSort:
+        type: integer
+      name:
+        type: string
+      path:
+        type: string
+      permission:
+        type: string
+      pid:
+        type: integer
+      subCount:
+        type: integer
+      title:
+        type: string
+      type:
+        type: integer
+      updateTime:
+        type: integer
+      updatedBy:
+        type: integer
+    type: object
   bo.Role:
     properties:
       dataScope:
@@ -120,14 +205,14 @@ definitions:
         type: boolean
       children:
         items:
-          $ref: '#/definitions/bo.children'
+          $ref: '#/definitions/bo.Children'
         type: array
       component:
         type: string
       hidden:
         type: boolean
       meta:
-        $ref: '#/definitions/bo.meta'
+        $ref: '#/definitions/bo.Meta'
         type: object
       name:
         type: string
@@ -135,6 +220,55 @@ definitions:
         type: string
       redirect:
         type: string
+    type: object
+  bo.SelectMenuBo:
+    properties:
+      cache:
+        type: boolean
+      children:
+        items:
+          $ref: '#/definitions/bo.Children'
+        type: array
+      component:
+        type: string
+      createBy:
+        type: integer
+      createTime:
+        type: string
+      hasChildren:
+        type: boolean
+      hidden:
+        type: boolean
+      icon:
+        type: string
+      id:
+        type: integer
+      iframe:
+        type: boolean
+      label:
+        type: string
+      leaf:
+        type: boolean
+      menuSort:
+        type: integer
+      name:
+        type: string
+      path:
+        type: string
+      permission:
+        type: string
+      pid:
+        type: integer
+      subCount:
+        type: integer
+      title:
+        type: string
+      type:
+        type: integer
+      updateTime:
+        type: string
+      updatedBy:
+        type: integer
     type: object
   bo.UserInfoListBo:
     properties:
@@ -152,7 +286,7 @@ definitions:
         items:
           $ref: '#/definitions/bo.Order'
         type: array
-      page:
+      pages:
         type: integer
       records:
         description: 记录查询
@@ -165,26 +299,6 @@ definitions:
         type: integer
       total:
         type: integer
-    type: object
-  bo.children:
-    properties:
-      component:
-        type: string
-      hidden:
-        type: string
-      meta:
-        items:
-          $ref: '#/definitions/bo.meta'
-        type: array
-    type: object
-  bo.meta:
-    properties:
-      icon:
-        type: string
-      noCache:
-        type: boolean
-      title:
-        type: string
     type: object
   dto.AddJob:
     properties:
@@ -205,9 +319,35 @@ definitions:
     - jobSort
     - name
     type: object
+  dto.DataMenuDto:
+    properties:
+      ids:
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
   dto.DeleteMenuDto:
     type: object
   dto.DeleteUserDto:
+    type: object
+  dto.DownloadMenuDto:
+    properties:
+      current:
+        type: integer
+      orders:
+        type: string
+      pid:
+        description: 父id
+        type: integer
+      size:
+        type: integer
+    required:
+    - current
+    - orders
+    - pid
+    - size
     type: object
   dto.DownloadUserInfoDto:
     properties:
@@ -229,6 +369,9 @@ definitions:
       current:
         description: 当前页
         type: integer
+      enabled:
+        description: 状态：1启用（默认）、0禁用
+        type: boolean
       endTime:
         description: 结束时间
         type: integer
@@ -238,16 +381,15 @@ definitions:
       orders:
         description: 排序规则
         type: string
+      page:
+        description: 页数
+        type: integer
       size:
         description: 每页数据
         type: integer
       startTime:
         description: 创建时间
         type: integer
-    required:
-    - current
-    - orders
-    - size
     type: object
   dto.InsertDeptDto:
     properties:
@@ -307,19 +449,12 @@ definitions:
       title:
         type: string
       type:
+        type: string
+    type: object
+  dto.SelectChildIdDto:
+    properties:
+      id:
         type: integer
-    required:
-    - component
-    - icon
-    - id
-    - menuSort
-    - name
-    - path
-    - permission
-    - pid
-    - roles
-    - title
-    - type
     type: object
   dto.SelectDeptDto:
     properties:
@@ -344,13 +479,12 @@ definitions:
       size:
         description: 每页数据
         type: integer
+      sort:
+        description: id排序
+        type: string
       startTime:
         description: 创建时间
         type: integer
-    required:
-    - current
-    - orders
-    - size
     type: object
   dto.SelectMenuDto:
     properties:
@@ -367,12 +501,8 @@ definitions:
         type: integer
       size:
         type: integer
-      statTime:
+      startTime:
         type: integer
-    required:
-    - current
-    - orders
-    - size
     type: object
   dto.SelectUserInfoArrayDto:
     properties:
@@ -388,11 +518,15 @@ definitions:
       enabled:
         description: 是否激活
         type: boolean
+      endTime:
+        type: integer
       orders:
         description: 排序规则与字段
         type: string
       size:
         description: 当前页最大数据量
+        type: integer
+      startTime:
         type: integer
     type: object
   dto.UpdateDeptDto:
@@ -466,7 +600,7 @@ definitions:
     properties:
       gender:
         description: 性别
-        type: boolean
+        type: string
       id:
         description: id
         type: integer
@@ -664,6 +798,20 @@ definitions:
         description: 提示信息
         type: string
     type: object
+  models._ResponseMenuData:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      data:
+        description: 数据
+        items:
+          $ref: '#/definitions/bo.ReturnToAllMenusBo'
+        type: array
+      message:
+        description: 提示信息
+        type: string
+    type: object
   models._ResponseSelectDeptList:
     properties:
       code:
@@ -684,6 +832,33 @@ definitions:
         type: integer
       data:
         $ref: '#/definitions/bo.SelectForeNeedMenuBo'
+        description: 数据
+        type: object
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseSelectMeauDataInfoList:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      data:
+        description: 数据
+        items:
+          type: integer
+        type: array
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models._ResponseSelectMenu:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      data:
+        $ref: '#/definitions/bo.SelectMenuBo'
         description: 数据
         type: object
       message:
@@ -815,6 +990,52 @@ paths:
       summary: 登录授权接口
       tags:
       - 系统：系统授权接口 Authorization Controller
+  /api/auth/logout:
+    delete:
+      consumes:
+      - application/json
+      description: Author：JiaKunLi 2021/01/26 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 用户注销接口
+      tags:
+      - 系统：系统授权接口 Authorization Controller
+  /api/child:
+    get:
+      consumes:
+      - application/json
+      description: Author：Lzc 2021/01/30 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.SelectChildIdDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseSelectMeauDataInfoList'
+      security:
+      - ApiKeyAuth: []
+      summary: 返回所有子节点ID
+      tags:
+      - 系统：系统授权接口 Menu Controller
   /api/dept:
     get:
       consumes:
@@ -869,7 +1090,6 @@ paths:
       - description: 当前页
         in: query
         name: current
-        required: true
         type: integer
       - description: 状态：1启用（默认）、0禁用
         in: query
@@ -886,7 +1106,6 @@ paths:
       - description: 排序规则
         in: query
         name: orders
-        required: true
         type: string
       - description: 上级部门（顶级部门为0，默认为0）
         in: query
@@ -895,8 +1114,11 @@ paths:
       - description: 每页数据
         in: query
         name: size
-        required: true
         type: integer
+      - description: id排序
+        in: query
+        name: sort
+        type: string
       - description: 创建时间
         in: query
         name: startTime
@@ -1014,8 +1236,11 @@ paths:
       - description: 当前页
         in: query
         name: current
-        required: true
         type: integer
+      - description: 状态：1启用（默认）、0禁用
+        in: query
+        name: enabled
+        type: boolean
       - description: 结束时间
         in: query
         name: endTime
@@ -1027,12 +1252,14 @@ paths:
       - description: 排序规则
         in: query
         name: orders
-        required: true
         type: string
+      - description: 页数
+        in: query
+        name: page
+        type: integer
       - description: 每页数据
         in: query
         name: size
-        required: true
         type: integer
       - description: 创建时间
         in: query
@@ -1103,8 +1330,11 @@ paths:
       - description: 当前页
         in: query
         name: current
-        required: true
         type: integer
+      - description: 状态：1启用（默认）、0禁用
+        in: query
+        name: enabled
+        type: boolean
       - description: 结束时间
         in: query
         name: endTime
@@ -1116,12 +1346,14 @@ paths:
       - description: 排序规则
         in: query
         name: orders
-        required: true
         type: string
+      - description: 页数
+        in: query
+        name: page
+        type: integer
       - description: 每页数据
         in: query
         name: size
-        required: true
         type: integer
       - description: 创建时间
         in: query
@@ -1140,27 +1372,25 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Author：Lbl 2021/02/2 获得身份令牌
+      description: Author：Cgl 2021/01/30 获得身份令牌
       parameters:
       - description: 查询参数
         in: body
         name: object
         schema:
-          items:
-            type: integer
-          type: array
+          $ref: '#/definitions/dto.DeleteMenuDto'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models._ResponseDept'
+            $ref: '#/definitions/models._ResponseDeleteMenu'
       security:
       - ApiKeyAuth: []
-      summary: 删除部门
+      summary: 删除菜单
       tags:
-      - 系统：部门管理 Dept Controller
+      - 系统：菜单管理 Menu Controller
     get:
       consumes:
       - application/json
@@ -1177,7 +1407,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models._ResponseInsertMenu'
+            $ref: '#/definitions/models._ResponseSelectMenu'
       security:
       - ApiKeyAuth: []
       summary: 查询菜单
@@ -1250,6 +1480,74 @@ paths:
       summary: 查询前端所需菜单
       tags:
       - 系统：菜单管理 Menu Controller
+  /api/menus/download:
+    get:
+      consumes:
+      - application/json
+      description: Author：Cgl 2021/02/04 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.DownloadMenuDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseLogin'
+      security:
+      - ApiKeyAuth: []
+      summary: 导出菜单数据
+      tags:
+      - 系统：菜单管理 Menu Controller
+  /api/menus/lazy:
+    get:
+      consumes:
+      - application/json
+      description: Author：Cgl 2021/02/04 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: query
+        name: pid
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseMenuData'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询出该级别下属菜单
+      tags:
+      - 系统：菜单管理 Menu Controller
+  /api/menus/superior:
+    post:
+      consumes:
+      - application/json
+      description: Author：Lzc 2021/01/30 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.DataMenuDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseSelectMeauDataInfoList'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询菜单:根据ID获取同级与上级数据
+      tags:
+      - 系统：系统授权接口 Menu Controller
   /api/roles:
     delete:
       consumes:

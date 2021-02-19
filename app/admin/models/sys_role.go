@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
 	"project/utils"
@@ -25,8 +24,8 @@ type SysRole struct {
 	Name         string `json:"name"`                                   //角色名称
 	Description  string `json:"description"`                            //描述
 	DataScope    string `json:"data_scope"`                             //数据权限
-	Address      string `json:"address"`                                //路由
-	Action       string `json:"action"`                                 //请求方法
+	//Address      string `json:"address"`                                //路由
+	//Action       string `json:"action"`                                 //请求方法
 }
 
 type AddressAction struct {
@@ -64,7 +63,6 @@ func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sy
 	// 查询
 	if p.Blurry != "" && p.StartTime == "" {
 		// 查询Blurry
-		fmt.Println("blurry")
 		status = 1
 		err = orm.Eloquent.Where("name like ? or description like ? and is_deleted=0",
 			"%"+p.Blurry+"%", "%"+p.Blurry+"%").
@@ -73,7 +71,6 @@ func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sy
 	}
 	if p.Blurry == "" && p.StartTime != "" {
 		// 查询Time
-		fmt.Println("Time")
 		status = 1
 		startTime, err1 := strconv.ParseInt(p.StartTime, 10, 64)
 		if err1 != nil {
@@ -91,7 +88,6 @@ func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sy
 	}
 	if p.Blurry != "" && p.StartTime != "" {
 		// 查询All
-		fmt.Println("All")
 		status = 1
 		startTime, err1 := strconv.ParseInt(p.StartTime, 10, 64)
 		if err1 != nil {
@@ -109,16 +105,12 @@ func (e SysRole) SelectRoles(p dto.SelectRoleArrayDto, orderData []bo.Order) (sy
 		return
 	}
 
-	// 1.查找redis缓存
-	// TODO
-	//roleAll, err = SelectRoleAllCache()
-	//if err == nil && len(roleAll) > 0 {
+	//  2.查找mysql
+	// 带分页
+	//if err = orm.Eloquent.Where("is_deleted=0").Limit(p.Size).Offset((p.Current - 1) * p.Size).Order(order).Find(&sysRole).Error; err != nil {
 	//	return
 	//}
-
-	//  2.查找mysql
-	fmt.Println("mysql")
-	if err = orm.Eloquent.Where("is_deleted=0").Limit(p.Size).Offset((p.Current - 1) * p.Size).Order(order).Find(&sysRole).Error; err != nil {
+	if err = orm.Eloquent.Where("is_deleted=0").Order(order).Find(&sysRole).Error; err != nil {
 		return
 	}
 	return
@@ -245,6 +237,7 @@ func (e SysRole) DeleteRole(p []int) (err error) {
 	if err = DeleteRoleAll(); err != nil {
 		return
 	}
+	err = DeleteRoleAlls()
 	return
 }
 
@@ -305,7 +298,7 @@ func (e SysRole) SelectRoleOne() (role SysRole, err error) {
 // 查询所有角色
 func (e SysRole) SelectRoleAll() (roleAll []bo.RecordRole, err error) {
 	var sysRoleAll []SysRole
-	if err = orm.Eloquent.Find(&sysRoleAll).Error; err != nil {
+	if err = orm.Eloquent.Where("is_deleted=0").Find(&sysRoleAll).Error; err != nil {
 		return
 	}
 	for _, roleID := range sysRoleAll {
