@@ -14,7 +14,7 @@ import (
 type Dept struct {
 }
 
-func (d Dept) SelectDeptList(de *dto.SelectDeptDto, orderData []bo.Order) (data *bo.SelectDeptListBo, err error) {
+func (d *Dept) SelectDeptList(de *dto.SelectDeptDto, orderData []bo.Order) (data *bo.SelectDeptListBo, err error) {
 	// 声明所需变量，开辟空间
 	data = new(bo.SelectDeptListBo)
 	deptList := new([]bo.RecordDept)
@@ -89,7 +89,7 @@ func (d Dept) SelectDeptList(de *dto.SelectDeptDto, orderData []bo.Order) (data 
 }
 
 // 新增部门
-func (d Dept) InsertDept(de *dto.InsertDeptDto, userId int) (err error) {
+func (d *Dept) InsertDept(de *dto.InsertDeptDto, userId int) (err error) {
 	// 实例化
 	dept := new(models.SysDept)
 	dept.DeptSort = de.DeptSort
@@ -111,7 +111,7 @@ func (d Dept) InsertDept(de *dto.InsertDeptDto, userId int) (err error) {
 }
 
 // 修改部门
-func (d Dept) UpdateDept(de *dto.UpdateDeptDto) (err error) {
+func (d *Dept) UpdateDept(de *dto.UpdateDeptDto) (err error) {
 	dept := new(models.SysDept)
 
 	// 删除缓存
@@ -129,15 +129,23 @@ func (d Dept) UpdateDept(de *dto.UpdateDeptDto) (err error) {
 }
 
 // 删除部门
-func (d Dept) DeleteDept(ids *[]int) (count int64, err error) {
+func (d *Dept) DeleteDept(ids *[]int) (count int64, err error) {
 	dept := new(models.SysDept)
-	count, err = dept.DeleteDept(ids)
-	if count == 0 {
+	// 删除缓存
+	err = cache.DeleteRedisDeptByPids(*ids)
+	if err != nil {
+		return
 	}
+	err = cache.DeleteRedisDeptByIds(*ids)
+	if err != nil {
+		return
+	}
+	count, err = dept.DeleteDept(ids)
+
 	return
 }
 
-func (d Dept) SuperiorDept(ids *[]int) (deptList *[]bo.RecordDept, err error) {
+func (d *Dept) SuperiorDept(ids *[]int) (deptList *[]bo.RecordDept, err error) {
 	// 数据查询
 	deptList = new([]bo.RecordDept)
 	sysDeptList := new([]models.SysDept)
@@ -180,7 +188,7 @@ func (d Dept) SuperiorDept(ids *[]int) (deptList *[]bo.RecordDept, err error) {
 	return
 }
 
-func (d Dept) DownloadDeptList(dt *dto.SelectDeptDto, orderJson []bo.Order) (content io.ReadSeeker, err error) {
+func (d *Dept) DownloadDeptList(dt *dto.SelectDeptDto, orderJson []bo.Order) (content io.ReadSeeker, err error) {
 	var deptList []interface{}
 	dept := new(models.SysDept)
 	// 数据库查询数据

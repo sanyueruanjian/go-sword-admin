@@ -14,19 +14,15 @@ import (
 type Menu struct {
 }
 
-func (m *Menu) InsertMenu(p *dto.InsertMenuDto, userID int) error {
-	typeInt, err := utils.StringToInt(p.Type)
-	if err != nil {
-		return err
-	}
+func (m *Menu) InsertMenu(p *dto.InsertMenuDto, flex *dto.InsertFlexMenuDto, userID int) error {
 	menu := &models.SysMenu{
 		Cache:      utils.BoolIntoByte(p.Cache),
-		Hidden:     utils.BoolIntoByte(p.Hidden),
-		IFrame:     utils.BoolIntoByte(p.Iframe),
+		Hidden:     flex.Hidden,
+		IFrame:     flex.Iframe,
 		MenuSort:   p.MenuSort,
 		Icon:       p.Icon,
 		Pid:        p.Pid,
-		Type:       typeInt,
+		Type:       flex.Type,
 		Component:  p.Component,
 		Name:       p.Name,
 		Path:       p.Path,
@@ -43,11 +39,13 @@ func (m *Menu) InsertMenu(p *dto.InsertMenuDto, userID int) error {
 
 func (m *Menu) SelectMenu(p *dto.SelectMenuDto) (data []*bo.SelectMenuBo, err error) {
 	////查询缓存
-	var redisData []byte
-	redisData, err = cache.GetMenuListCache("menu::pid:" + strconv.Itoa(p.Pid))
-	if redisData != nil && len(redisData) != 0 {
-		err = json.Unmarshal(redisData, &data)
-		return data, nil
+	if p.Blurry == "" && p.EndTime != 0 && p.StartTime != 0 {
+		var redisData []byte
+		redisData, err = cache.GetMenuListCache("menu::pid:" + strconv.Itoa(p.Pid))
+		if redisData != nil && len(redisData) != 0 {
+			err = json.Unmarshal(redisData, &data)
+			return data, nil
+		}
 	}
 	var Menus []*models.SysMenu
 	menu := new(models.SysMenu)

@@ -1,6 +1,7 @@
 package apis
 
 import (
+	"fmt"
 	"project/app/admin/models"
 	"strconv"
 
@@ -29,6 +30,7 @@ import (
 func InsertMenuHandler(c *gin.Context) {
 	// 1.获取参数 校验参数
 	p := new(dto.InsertMenuDto)
+	flex := new(dto.InsertFlexMenuDto)
 	//获取上下文中信息
 	user, err := api.GetUserMessage(c)
 	if err != nil {
@@ -37,7 +39,6 @@ func InsertMenuHandler(c *gin.Context) {
 	}
 	if err := c.ShouldBindJSON(p); err != nil {
 		// 请求参数有误， 直接返回响应
-		zap.L().Error("InsertMenuHandler failed", zap.String("username", user.Username), zap.Error(err))
 		c.Error(err)
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
@@ -48,8 +49,11 @@ func InsertMenuHandler(c *gin.Context) {
 		return
 	}
 	//业务逻辑处理
+	flex.Type, _ = utils.StringToInt(fmt.Sprintf("%v", p.Type))
+	flex.Iframe = utils.StrBoolIntoByte(fmt.Sprintf("%v", p.Iframe))
+	flex.Hidden = utils.StrBoolIntoByte(fmt.Sprintf("%v", p.Hidden))
 	m := new(service.Menu)
-	if err := m.InsertMenu(p, user.UserId); err != nil {
+	if err := m.InsertMenu(p, flex, user.UserId); err != nil {
 		zap.L().Error("insert menu failed", zap.Error(err))
 		app.ResponseError(c, app.CodeInsertOperationFail)
 		return

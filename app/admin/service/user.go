@@ -285,7 +285,7 @@ func (u *User) InsertUser(p *dto.InsertUserDto, userID int) (err error) {
 		NickName:     p.NickName,
 		Phone:        utils.Int64ToString(p.Phone),
 		Username:     p.UserName,
-		Enabled:      utils.StrBoolIntoByte(p.Enabled),
+		Enabled:      []byte{1},
 		Gender:       utils.StrBoolIntoByte(p.Gender),
 		CreateBy:     userID,
 		UpdateBy:     userID,
