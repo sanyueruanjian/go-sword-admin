@@ -101,8 +101,13 @@ func (e *Job) GetJobList(p *dto.GetJobList) (*bo.GetJob, error) {
 }
 
 // DelJobById 删除岗位业务逻辑
-func (e *Job) DelJobById(userId int, ids *[]int) (err error) {
+func (e *Job) DelJobById(userId int, ids *[]int) (count *int64, err error) {
+	count = new(int64)
 	job := new(models.SysJob)
+	err = job.QueryRelationshipJob(count, ids)
+	if err != nil || *count > 0 {
+		return
+	}
 	err = job.DelJobById(userId, ids)
 	return
 }
