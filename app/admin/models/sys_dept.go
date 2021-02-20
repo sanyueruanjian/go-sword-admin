@@ -26,6 +26,18 @@ func (d *SysDept) TableName() string {
 	return `sys_dept`
 }
 
+// 查询部门根据部门id
+func (d *SysDept) GetDeptById() (err error) {
+	err = orm.Eloquent.Table(d.TableName()).Where("id = ? AND is_deleted = 0", d.ID, 0).Find(d).Error
+	return
+}
+
+// 查询与该部门相关的userId
+func (d *SysDept) GetDeptUserListById() (ids []int, err error) {
+	err = orm.Eloquent.Table("sys_name").Select("id").Where("dept_id = ? AND is_deleted = 0", d.ID, 0).Find(ids).Error
+	return
+}
+
 // 查询部门
 func (d *SysDept) SelectDeptListByPid(de *dto.SelectDeptDto, orderJson []bo.Order) (sysDeptList *[]SysDept, count int64, err error) {
 	sysDeptList = new([]SysDept) // 实例化
@@ -36,7 +48,7 @@ func (d *SysDept) SelectDeptListByPid(de *dto.SelectDeptDto, orderJson []bo.Orde
 	// 查询pid下的子部门数据
 	if de.Pid >= 0 {
 		//数据库查询
-		_ = orm.Eloquent.Table(d.TableName()).Where("pid = ? AND is_deleted = ?", de.Pid, 0).Count(&count).
+		err = orm.Eloquent.Table(d.TableName()).Where("pid = ? AND is_deleted = ?", de.Pid, 0).Count(&count).
 			Order(order).Limit(de.Size).Offset((de.Current - 1) * de.Size).Find(sysDeptList).Error
 		return
 	}
@@ -99,19 +111,21 @@ func (d *SysDept) UpdateDept(de *dto.UpdateDeptDto) (err error) {
 }
 
 // 删除部门
-func (d *SysDept) DeleteDept(ids *[]int) (count int64, err error) {
+func (d *SysDept) DeleteDept(ids *[]int, userId int) (count int64, err error) {
 	child := new([]int)
 	err = global.Eloquent.Table(d.TableName()).Select("id").Where("pid IN (?) AND is_deleted = ?", *ids, 0).Find(child).Error
 	if err != nil {
 		return
 	}
-	err = global.Eloquent.Table("sys_user").Where("dept_id IN (?) AND is_deleted = ?", 0).Count(&count).Error
+	*child = append(*child, *ids...)
+	err = global.Eloquent.Table("sys_user").Where("dept_id IN (?) AND is_deleted = ?", child, 0).Count(&count).Error
 	if err != nil || count > 0 {
 		return
 	}
 
 	tx := global.Eloquent.Begin()
 	err = tx.Table(d.TableName()).Where("id IN (?)", *ids).Updates(&SysDept{
+		UpdateBy: userId,
 		BaseModel: BaseModel{
 			IsDeleted: []byte{1},
 		},

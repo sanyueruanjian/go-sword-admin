@@ -62,6 +62,13 @@ func (e *SysJob) GetJobEnabledList(p *dto.GetJobList, orderRule string) (jobList
 	return
 }
 
+func (e *SysJob) QueryRelationshipJob(count *int64, ids *[]int) (err error) {
+	err = orm.Eloquent.Table("sys_users_jobs").
+		Joins("left join sys_user on sys_users_jobs.user_id = sys_user.id").
+		Where("sys_users_jobs.job_id in (?) and sys_user.is_deleted=0", *ids).Count(count).Error
+	return
+}
+
 // DelJobById 删除岗位数据持久层
 func (e *SysJob) DelJobById(userId int, ids *[]int) (err error) {
 	// 查询修改岗位对应的用户id
@@ -71,7 +78,12 @@ func (e *SysJob) DelJobById(userId int, ids *[]int) (err error) {
 	}
 	tx := orm.Eloquent.Begin()
 	// 修改数据
-	err = tx.Table(e.TableName()).Where("id in (?) AND is_deleted = ?", *ids, []byte{0}).Updates(map[string]interface{}{"is_deleted": 1, "update_by": userId}).Error
+	err = tx.Table(e.TableName()).Where("id in (?) AND is_deleted = ?", *ids, []byte{0}).Updates(&SysJob{
+		UpdateBy:  userId,
+		BaseModel: &BaseModel{
+			IsDeleted:  []byte{1},
+		},
+	}).Error
 	if err != nil {
 		return
 	}
