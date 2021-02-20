@@ -6,6 +6,7 @@ import (
 	"project/app/admin/models/bo"
 	"project/app/admin/models/cache"
 	"project/app/admin/models/dto"
+	cache2 "project/common/cache"
 	"project/utils"
 
 	"go.uber.org/zap"
@@ -113,8 +114,38 @@ func (d *Dept) InsertDept(de *dto.InsertDeptDto, userId int) (err error) {
 // 修改部门
 func (d *Dept) UpdateDept(de *dto.UpdateDeptDto) (err error) {
 	dept := new(models.SysDept)
+	var pids []int
+	var ids []int
+
+	dept.ID = de.ID
+	err = dept.GetDeptById()
+	if err != nil {
+		return
+	}
+	ids, err = dept.GetDeptUserListById()
+	if err != nil {
+		return
+	}
 
 	// 删除缓存
+	err = cache.DelAllUserCenterCache()
+	if err != nil {
+		return
+	}
+	err = cache.DelAllUserRecordsCache()
+	if err != nil {
+		return
+	}
+	err = cache2.DelUserCacheById(cache2.KeyUserDept, &ids)
+	if err != nil {
+		return
+	}
+	pids = append(pids, *de.Pid)
+	pids = append(pids, dept.Pid)
+	err = cache.DeleteRedisDeptByPids(pids)
+	if err != nil {
+		return
+	}
 	err = cache.DeleteRedisDeptByPid(*de.Pid)
 	if err != nil {
 		return
@@ -123,13 +154,14 @@ func (d *Dept) UpdateDept(de *dto.UpdateDeptDto) (err error) {
 	if err != nil {
 		return
 	}
+
 	// 持久层
 	err = dept.UpdateDept(de)
 	return
 }
 
 // 删除部门
-func (d *Dept) DeleteDept(ids *[]int) (count int64, err error) {
+func (d *Dept) DeleteDept(ids *[]int, userId int) (count int64, err error) {
 	dept := new(models.SysDept)
 	// 删除缓存
 	err = cache.DeleteRedisDeptByPids(*ids)
@@ -140,8 +172,7 @@ func (d *Dept) DeleteDept(ids *[]int) (count int64, err error) {
 	if err != nil {
 		return
 	}
-	count, err = dept.DeleteDept(ids)
-
+	count, err = dept.DeleteDept(ids, userId)
 	return
 }
 

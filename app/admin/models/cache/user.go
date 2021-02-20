@@ -85,7 +85,7 @@ func DelManyUserCenterCache(ids []int) error {
 }
 
 func DelAllUserCenterCache() error {
-	keys := global.Rdb.Keys(UserRecordsFore + "*").Val()
+	keys := global.Rdb.Keys(UserInfoKeyFore + "*").Val()
 	pipLine := global.Rdb.Pipeline()
 	for _, key := range keys {
 		pipLine.Del(key)
