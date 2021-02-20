@@ -78,7 +78,12 @@ func (e *SysJob) DelJobById(userId int, ids *[]int) (err error) {
 	}
 	tx := orm.Eloquent.Begin()
 	// 修改数据
-	err = tx.Table(e.TableName()).Where("id in (?) AND is_deleted = ?", *ids, []byte{0}).Updates(map[string]interface{}{"is_deleted": 1, "update_by": userId}).Error
+	err = tx.Table(e.TableName()).Where("id in (?) AND is_deleted = ?", *ids, []byte{0}).Updates(&SysJob{
+		UpdateBy:  userId,
+		BaseModel: &BaseModel{
+			IsDeleted:  []byte{1},
+		},
+	}).Error
 	if err != nil {
 		return
 	}
