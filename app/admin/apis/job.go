@@ -98,10 +98,15 @@ func DelJobById(c *gin.Context) {
 		return
 	}
 	job := new(service.Job)
-	if err = job.DelJobById(user.UserId, &ids); err != nil {
+	count, err := job.DelJobById(user.UserId, &ids)
+	if err != nil {
 		c.Error(err)
 		zap.L().Error("delete job service failed", zap.String("Username", user.Username), zap.Error(err))
 		app.ResponseError(c, app.CodeDeleteOperationFail)
+		return
+	}
+	if *count > 0 {
+		app.ResponseErrorWithMsg(c, app.CodeOperationFail, "请解除该岗位用户关联后再试！")
 		return
 	}
 
