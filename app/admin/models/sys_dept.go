@@ -117,7 +117,8 @@ func (d *SysDept) DeleteDept(ids *[]int, userId int) (count int64, err error) {
 	if err != nil {
 		return
 	}
-	err = global.Eloquent.Table("sys_user").Where("dept_id IN (?) AND is_deleted = ?", 0).Count(&count).Error
+	*child = append(*child, *ids...)
+	err = global.Eloquent.Table("sys_user").Where("dept_id IN (?) AND is_deleted = ?", child, 0).Count(&count).Error
 	if err != nil || count > 0 {
 		return
 	}
