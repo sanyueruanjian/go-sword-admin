@@ -2,13 +2,15 @@ package models
 
 import (
 	"encoding/json"
-
+	"fmt"
 	"project/app/admin/models/bo"
 	"project/app/admin/models/cache"
 	"project/app/admin/models/dto"
 	"project/common/global"
 	"project/utils"
 	"strconv"
+
+	"go.uber.org/zap"
 )
 
 const ForeNeed string = "menu::userNeed:"
@@ -54,6 +56,20 @@ func (m *SysMenu) InsertMenu() error {
 		tx.Rollback()
 		return err
 	}
+	//维护父级sub_count
+	var subCount int
+	err = tx.Table("sys_menu").Select("sub_count").Where("id=?", m.Pid).Find(&subCount).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	err = tx.Table("sys_menu").Where("id=?", m.Pid).Updates(map[string]interface{}{
+		"sub_count": subCount + 1,
+	}).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
 	//清除缓存
 	var keys []string
 	keys, err = global.Rdb.Keys("menu::user:*").Result()
@@ -69,6 +85,12 @@ func (m *SysMenu) InsertMenu() error {
 	err = cache.DeleteAllUserMenuCache(keys)
 	if err != nil {
 		tx.Rollback()
+		return err
+	}
+	//删除menuPid 缓存
+	pIDs := make([]int, 0, 0)
+	pIDs = append(pIDs, m.Pid)
+	if err := cache.DelMenuListCache(pIDs); err != nil {
 		return err
 	}
 	return tx.Commit().Error
@@ -104,21 +126,57 @@ func (m *SysMenu) SelectMenu(p *dto.SelectMenuDto) (data []*SysMenu, err error) 
 
 //删除菜单
 func (m *SysMenu) DeleteMenu(ids []int) (err error) {
+	tx := global.Eloquent.Begin()
 	for _, v := range ids {
 		err = utils.DeleteChild(m.TableName(), v)
 		if err != nil {
+			tx.Rollback()
 			return err
 		}
 	}
-	//删除bo缓存
+	//删除menuId缓存
 	if err := cache.DeleteMenuByIdCache(ids); err != nil {
+		tx.Rollback()
 		return err
 	}
 	//删除userMenu 缓存
 	if err := cache.DelAllUserMenuCache(); err != nil {
+		tx.Rollback()
 		return err
 	}
-	return nil
+	//删除menuPid 缓存
+	pIDs := make([]int, 0, 0)
+	//查询Pid
+	for _, id := range ids {
+		var pid int
+		err = global.Eloquent.Table("sys_menu").Select("pid").Where("id=?", id).Find(&pid).Error
+		if err != nil {
+			tx.Rollback()
+		}
+		pIDs = append(pIDs, pid)
+	}
+
+	if err := cache.DelMenuListCache(pIDs); err != nil {
+		return err
+	}
+	for _, pid := range pIDs {
+		//维护父级sub_count
+		var subCount int64
+		err = tx.Table("sys_menu").Where("pid=? AND is_deleted=?", pid, []byte{0}).Count(&subCount).Error
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		err = tx.Table("sys_menu").Where("id=?", pid).Updates(map[string]interface{}{
+			"sub_count": subCount,
+		}).Error
+		zap.L().Info(fmt.Sprintf("%d%d", subCount, pid))
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	return tx.Commit().Error
 }
 
 //更新菜单
@@ -149,6 +207,7 @@ func (m *SysMenu) UpdateMenu(p *dto.UpdateMenuDto, userId int) (err error) {
 		tx.Rollback()
 		return err
 	}
+	//删除缓存
 	err = cache.DeleteMenuByIdCache([]int{p.ID})
 	if err != nil {
 		tx.Rollback()
@@ -159,8 +218,18 @@ func (m *SysMenu) UpdateMenu(p *dto.UpdateMenuDto, userId int) (err error) {
 		tx.Rollback()
 		return err
 	}
+	//删除menuid缓存
+	if err := cache.DeleteMenuByIdCache([]int{m.ID}); err != nil {
+		return err
+	}
 	//删除userMenu 缓存
 	if err := cache.DelAllUserMenuCache(); err != nil {
+		return err
+	}
+	//删除menuPid 缓存
+	pIDs := make([]int, 0, 0)
+	pIDs = append(pIDs, p.Pid)
+	if err := cache.DelMenuListCache(pIDs); err != nil {
 		return err
 	}
 	return tx.Commit().Error
