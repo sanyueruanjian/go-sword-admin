@@ -198,7 +198,7 @@ func DeleteDeptHandle(c *gin.Context) {
 		return
 	}
 
-	count, err := d.DeleteDept(&ids)
+	count, err := d.DeleteDept(&ids, user.UserId)
 	if err != nil {
 		zap.L().Error("DeleteDeptDao failed", zap.Error(err))
 		app.ResponseError(c, app.CodeDeleteOperationFail)
