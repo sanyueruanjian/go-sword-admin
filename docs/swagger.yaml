@@ -320,13 +320,6 @@ definitions:
     - name
     type: object
   dto.DataMenuDto:
-    properties:
-      ids:
-        items:
-          type: integer
-        type: array
-    required:
-    - ids
     type: object
   dto.DeleteMenuDto:
     type: object
@@ -425,13 +418,13 @@ definitions:
       component:
         type: string
       hidden:
-        type: boolean
+        type: object
       icon:
         type: string
       id:
         type: integer
       iframe:
-        type: boolean
+        type: object
       menuSort:
         type: integer
       name:
@@ -449,7 +442,7 @@ definitions:
       title:
         type: string
       type:
-        type: string
+        type: object
     type: object
   dto.SelectChildIdDto:
     properties:
@@ -575,7 +568,6 @@ definitions:
     - id
     - name
     - pid
-    - subCount
     type: object
   dto.UpdateJob:
     properties:
@@ -1037,7 +1029,7 @@ paths:
       tags:
       - 系统：系统授权接口 Menu Controller
   /api/dept:
-    get:
+    delete:
       consumes:
       - application/json
       description: Author：Lbl 2021/02/2 获得身份令牌
@@ -1046,7 +1038,62 @@ paths:
         in: body
         name: object
         schema:
-          $ref: '#/definitions/dto.SelectDeptDto'
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseDept'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除部门
+      tags:
+      - 系统：部门管理 Dept Controller
+    get:
+      consumes:
+      - application/json
+      description: Author：Lbl 2021/02/2 获得身份令牌
+      parameters:
+      - description: 当前页
+        in: query
+        name: current
+        type: integer
+      - description: 状态：1启用（默认）、0禁用
+        in: query
+        name: enabled
+        type: boolean
+      - description: 过期时间
+        in: query
+        name: endTime
+        type: integer
+      - description: 模糊
+        in: query
+        name: name
+        type: string
+      - description: 排序规则
+        in: query
+        name: orders
+        type: string
+      - description: 上级部门（顶级部门为0，默认为0）
+        in: query
+        name: pid
+        type: integer
+      - description: 每页数据
+        in: query
+        name: size
+        type: integer
+      - description: id排序
+        in: query
+        name: sort
+        type: string
+      - description: 创建时间
+        in: query
+        name: startTime
+        type: integer
       produces:
       - application/json
       responses:
@@ -1060,6 +1107,28 @@ paths:
       tags:
       - 系统：部门管理 Dept Controller
     post:
+      consumes:
+      - application/json
+      description: Author：Lbl 2021/02/2 获得身份令牌
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/dto.InsertDeptDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models._ResponseDept'
+      security:
+      - ApiKeyAuth: []
+      summary: 添加部门
+      tags:
+      - 系统：部门管理 Dept Controller
+    put:
       consumes:
       - application/json
       description: Author：Lbl 2021/02/2 获得身份令牌
