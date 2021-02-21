@@ -7,6 +7,8 @@ import (
 	orm "project/common/global"
 	"project/utils"
 
+	"go.uber.org/zap"
+
 	"gorm.io/gorm"
 )
 
@@ -34,7 +36,7 @@ func (d *SysDept) GetDeptById() (err error) {
 
 // 查询与该部门相关的userId
 func (d *SysDept) GetDeptUserListById() (ids []int, err error) {
-	err = orm.Eloquent.Table("sys_name").Select("id").Where("dept_id = ? AND is_deleted = 0", d.ID, 0).Find(ids).Error
+	err = orm.Eloquent.Table("sys_user").Select("id").Where("dept_id = ? AND is_deleted = 0", d.ID, 0).Find(&ids).Error
 	return
 }
 
@@ -112,19 +114,25 @@ func (d *SysDept) UpdateDept(de *dto.UpdateDeptDto) (err error) {
 
 // 删除部门
 func (d *SysDept) DeleteDept(ids *[]int, userId int) (count int64, err error) {
-	child := new([]int)
-	err = global.Eloquent.Table(d.TableName()).Select("id").Where("pid IN (?) AND is_deleted = ?", *ids, 0).Find(child).Error
+	var child []string
+	var idsStr []string
+
+	idsStr = utils.IntSliceToStringSlice(*ids)
+
+	err = global.Eloquent.Table(d.TableName()).Select("id").Where("pid IN (?) AND is_deleted = ?", idsStr, 0).Find(child).Error
 	if err != nil {
+		zap.L().Error("DeleteDept Select id Filed", zap.Error(err))
 		return
 	}
-	*child = append(*child, *ids...)
+	child = append(child, idsStr...)
 	err = global.Eloquent.Table("sys_user").Where("dept_id IN (?) AND is_deleted = ?", child, 0).Count(&count).Error
 	if err != nil || count > 0 {
+		zap.L().Error("DeleteDept count child Filed", zap.Error(err))
 		return
 	}
 
 	tx := global.Eloquent.Begin()
-	err = tx.Table(d.TableName()).Where("id IN (?)", *ids).Updates(&SysDept{
+	err = tx.Table(d.TableName()).Where("id IN (?)", idsStr).Updates(&SysDept{
 		UpdateBy: userId,
 		BaseModel: BaseModel{
 			IsDeleted: []byte{1},
@@ -135,7 +143,7 @@ func (d *SysDept) DeleteDept(ids *[]int, userId int) (count int64, err error) {
 		return
 	}
 
-	err = tx.Table(d.TableName()).Where("pid IN (?)", *ids).Update("sub_count", gorm.Expr("sub_count - ?", 1)).Error
+	err = tx.Table(d.TableName()).Where("pid IN (?)", idsStr).Update("sub_count", gorm.Expr("sub_count - ?", 1)).Error
 	if err != nil {
 		tx.Rollback()
 		return

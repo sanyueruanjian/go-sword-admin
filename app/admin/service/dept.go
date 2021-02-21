@@ -220,13 +220,15 @@ func (d *Dept) SuperiorDept(ids *[]int) (deptList *[]bo.RecordDept, err error) {
 }
 
 func (d *Dept) DownloadDeptList(dt *dto.SelectDeptDto, orderJson []bo.Order) (content io.ReadSeeker, err error) {
-	var deptList []interface{}
+	var res []interface{}
 	dept := new(models.SysDept)
+
 	// 数据库查询数据
 	sysDeptList, err := dept.DownloadDept(dt, orderJson)
-	// 对数据库取出的sysDept封住存入deptList
+
+	// 返回文件数据
 	for _, dept := range sysDeptList {
-		deptList = append(deptList, bo.DownloadDeptList{
+		res = append(res, &bo.DownloadDeptList{
 			Name:       dept.Name,
 			Enabled:    utils.ByteEnabledToString(dept.Enabled),
 			CreateTime: utils.UnixTimeToString(dept.CreateTime),
@@ -234,7 +236,7 @@ func (d *Dept) DownloadDeptList(dt *dto.SelectDeptDto, orderJson []bo.Order) (co
 	}
 
 	// 生成excel
-	content = utils.ToExcel([]string{`部门名称`, `部门状态`, `创建日期`}, deptList)
+	content = utils.ToExcel([]string{`部门名称`, `部门状态`, `创建日期`}, res)
 	return
 }
 
