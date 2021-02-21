@@ -22,7 +22,7 @@ var d = new(service.Dept)
 // @Tags 系统：部门管理 Dept Controller
 // @Accept application/json
 // @Produce application/json
-// @Param object body dto.SelectDeptDto false "查询参数"
+// @Param object query dto.SelectDeptDto false "查询参数"
 // @Security ApiKeyAuth
 // @Success 200 {object} models._ResponseSelectDeptList
 // @Router /api/dept [get]
@@ -181,7 +181,7 @@ func UpdateDeptHandler(c *gin.Context) {
 // @Param object body []int false "查询参数"
 // @Security ApiKeyAuth
 // @Success 200 {object} models._ResponseDept
-// @Router /api/menus [delete]
+// @Router /api/dept [delete]
 func DeleteDeptHandle(c *gin.Context) {
 	//获取上下文中信息
 	user, err := api.GetUserMessage(c)
