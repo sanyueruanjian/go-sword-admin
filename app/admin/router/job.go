@@ -19,7 +19,6 @@ func jobRouter(v1 *gin.RouterGroup) {
 		r.GET("ping", func(c *gin.Context) {
 			c.String(int(app.CodeSuccess), "ok")
 		})
-		r.GET("download", apis.JobDownload)
 	}
 }
 
@@ -31,6 +30,7 @@ func jobAuthRouter(v1 *gin.RouterGroup) {
 		r.DELETE("", apis.DelJobById)
 		r.POST("", apis.AddJob)
 		r.PUT("", apis.UpdateJob)
+		r.GET("download", apis.JobDownload)
 
 	}
 }

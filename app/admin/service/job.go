@@ -3,7 +3,6 @@ package service
 import (
 	"errors"
 	"io"
-
 	"project/app/admin/models"
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
@@ -26,7 +25,7 @@ func (e *Job) JobListDownload(p *dto.GetJobList) (content io.ReadSeeker, err err
 		res = append(res, &bo.JobListDownload{
 			Name:       job.Name,
 			Enabled:    utils.ByteEnabledToString(job.Enabled),
-			CreateTime: utils.UnixToFormatTime(job.CreateTime),
+			CreateTime: utils.UnixTimeToString(job.CreateTime),
 		})
 	}
 

@@ -72,15 +72,6 @@ type SysUser struct {
 	UpdateBy     int    `json:"update_by"`      //
 }
 
-//redis 缓存model
-// TODO 需要删除
-type RedisUserInfo struct {
-	UserId   int      `json:"user_id"`
-	UserName string   `json:"user_name"`
-	Role     []string `json:"role"`
-	DeptId   int      `json:"dept_id"` //部门id
-}
-
 // OnlineUser 用户线上数据
 type OnlineUser struct {
 	LoginTime     int64  `json:"loginTime"`     //登录时间
@@ -462,7 +453,7 @@ func (u *SysUser) UpdateUser(p *dto.UpdateUserDto, optionId int) (err error) {
 	tx := global.Eloquent.Begin()
 	//校验用户是否存在
 	test := new(SysUser)
-	err = tx.Table("sys_user").Where("id=? AND is_delete=?", p.ID, []byte{0}).First(test).Error
+	err = tx.Table("sys_user").Where("id=? AND is_deleted=?", p.ID, []byte{0}).First(test).Error
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -679,7 +670,7 @@ func (u *SysUser) UserDownload(p *dto.DownloadUserInfoDto) (data *bo.UserInfoLis
 	var usersHalf []*bo.RecordUserHalf
 	//分页
 	var total int64
-	err = global.Eloquent.Limit(p.Size).Offset(p.Current - 1*p.Size).Count(&total).Order(orderRule).Find(&usersHalf).Error
+	err = global.Eloquent.Table("sys_user").Limit(p.Size).Offset(p.Current - 1*p.Size).Count(&total).Order(orderRule).Find(&usersHalf).Error
 	pages := (int(total) + p.Size - 1) / p.Size
 	if err != nil {
 		return nil, err
