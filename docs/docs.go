@@ -218,12 +218,58 @@ var doc = `{
                 "summary": "查询部门",
                 "parameters": [
                     {
-                        "description": "查询参数",
-                        "name": "object",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SelectDeptDto"
-                        }
+                        "type": "integer",
+                        "description": "当前页",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "状态：1启用（默认）、0禁用",
+                        "name": "enabled",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "过期时间",
+                        "name": "endTime",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "模糊",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序规则",
+                        "name": "orders",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "上级部门（顶级部门为0，默认为0）",
+                        "name": "pid",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "id排序",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "创建时间",
+                        "name": "startTime",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -235,7 +281,7 @@ var doc = `{
                     }
                 }
             },
-            "post": {
+            "put": {
                 "security": [
                     {
                         "ApiKeyAuth": []
@@ -259,6 +305,81 @@ var doc = `{
                         "in": "body",
                         "schema": {
                             "$ref": "#/definitions/dto.UpdateDeptDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseDept"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Lbl 2021/02/2 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：部门管理 Dept Controller"
+                ],
+                "summary": "添加部门",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.InsertDeptDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models._ResponseDept"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Author：Lbl 2021/02/2 获得身份令牌",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统：部门管理 Dept Controller"
+                ],
+                "summary": "删除部门",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
                         }
                     }
                 ],
@@ -2149,18 +2270,7 @@ var doc = `{
             }
         },
         "dto.DataMenuDto": {
-            "type": "object",
-            "required": [
-                "ids"
-            ],
-            "properties": {
-                "ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                }
-            }
+            "type": "object"
         },
         "dto.DeleteMenuDto": {
             "type": "object"
@@ -2296,7 +2406,7 @@ var doc = `{
                     "type": "string"
                 },
                 "hidden": {
-                    "type": "boolean"
+                    "type": "object"
                 },
                 "icon": {
                     "type": "string"
@@ -2305,7 +2415,7 @@ var doc = `{
                     "type": "integer"
                 },
                 "iframe": {
-                    "type": "boolean"
+                    "type": "object"
                 },
                 "menuSort": {
                     "type": "integer"
@@ -2332,7 +2442,7 @@ var doc = `{
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
+                    "type": "object"
                 }
             }
         },
@@ -2454,8 +2564,7 @@ var doc = `{
                 "enabled",
                 "id",
                 "name",
-                "pid",
-                "subCount"
+                "pid"
             ],
             "properties": {
                 "creatTime": {

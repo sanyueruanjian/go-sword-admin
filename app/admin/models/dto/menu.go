@@ -23,6 +23,8 @@ type InsertMenuDto struct {
 	Path       string      `json:"path"`
 	Permission string      `json:"permission"`
 	Title      string      `json:"title"`
+	Address    string      `json:"address"`
+	Action     string      `json:"action"`
 	Roles      []int       `json:"roles"`
 	Hidden     interface{} `json:"hidden"`
 	Iframe     interface{} `json:"iframe"`
