@@ -90,7 +90,7 @@ func (d *Dept) SelectDeptList(de *dto.SelectDeptDto, orderData []bo.Order) (data
 }
 
 // 新增部门
-func (d *Dept) InsertDept(de *dto.InsertDeptDto, userId int) (err error) {
+func (d *Dept) InsertDept(de *dto.InsertDeptDto, userId int) (count int64, err error) {
 	// 实例化
 	dept := new(models.SysDept)
 	dept.DeptSort = de.DeptSort
@@ -100,6 +100,13 @@ func (d *Dept) InsertDept(de *dto.InsertDeptDto, userId int) (err error) {
 	dept.SubCount = *de.SubCount
 	dept.CreateBy = userId
 	dept.UpdateBy = userId
+
+	// 判断该部门是否存在
+	count, err = dept.GetDeptByPidName()
+	if count > 0 {
+		zap.L().Error("InsertDept Failed 该部门已存在不能创建")
+		return
+	}
 
 	// 删除缓存
 	err = cache.DeleteRedisDeptByPid(*de.Pid)
@@ -112,46 +119,65 @@ func (d *Dept) InsertDept(de *dto.InsertDeptDto, userId int) (err error) {
 }
 
 // 修改部门
-func (d *Dept) UpdateDept(de *dto.UpdateDeptDto) (err error) {
+func (d *Dept) UpdateDept(de *dto.UpdateDeptDto) (count int64, err error) {
 	dept := new(models.SysDept)
 	var pids []int
 	var ids []int
 
+	// 查看部门是否存在
 	dept.ID = de.ID
 	err = dept.GetDeptById()
 	if err != nil {
+		zap.L().Error("UpdateDept GetDeptById Failed", zap.Error(err))
 		return
 	}
+
+	// 查看要修改的部门是否存在
+	dept.Pid = *de.Pid
+	dept.Name = de.Name
+	count, err = dept.GetDeptByPidName()
+	if count > 0 {
+		zap.L().Error("UpdateDept Failed 该部门已存在不能更改")
+		return
+	}
+
 	ids, err = dept.GetDeptUserListById()
 	if err != nil {
+		zap.L().Error("UpdateDept GetDeptUserListById Failed", zap.Error(err))
 		return
 	}
 
 	// 删除缓存
 	err = cache.DelAllUserCenterCache()
 	if err != nil {
+		zap.L().Error("UpdateDept DelAllUserCenterCache Failed", zap.Error(err))
 		return
 	}
 	err = cache.DelAllUserRecordsCache()
 	if err != nil {
+		zap.L().Error("UpdateDept DelAllUserRecordsCache Failed", zap.Error(err))
 		return
 	}
 	err = cache2.DelUserCacheById(cache2.KeyUserDept, &ids)
 	if err != nil {
+		zap.L().Error("UpdateDept DelUserCacheById Failed", zap.Error(err))
 		return
 	}
 	pids = append(pids, *de.Pid)
 	pids = append(pids, dept.Pid)
 	err = cache.DeleteRedisDeptByPids(pids)
 	if err != nil {
+		zap.L().Error("DeleteDept GetPidList Failed", zap.Error(err))
 		return
 	}
 	err = cache.DeleteRedisDeptByPid(*de.Pid)
 	if err != nil {
+		zap.L().Error("DeleteDept GetPidList Failed", zap.Error(err))
 		return
 	}
 	err = cache.DeleteRedisDeptById(de.ID)
 	if err != nil {
+		zap.L().Error("DeleteDept GetPidList Failed", zap.Error(err))
 		return
 	}
 
@@ -163,13 +189,27 @@ func (d *Dept) UpdateDept(de *dto.UpdateDeptDto) (err error) {
 // 删除部门
 func (d *Dept) DeleteDept(ids *[]int, userId int) (count int64, err error) {
 	dept := new(models.SysDept)
+
+	// 获取pid集合
+	pids, err := dept.GetPidList(ids)
+	if err != nil {
+		zap.L().Error("DeleteDept GetPidList Failed", zap.Error(err))
+		return
+	}
 	// 删除缓存
+	err = cache.DeleteRedisDeptByPids(*pids)
+	if err != nil {
+		zap.L().Error("DeleteDept DeleteRedisDeptByPids Failed", zap.Error(err))
+		return
+	}
 	err = cache.DeleteRedisDeptByPids(*ids)
 	if err != nil {
+		zap.L().Error("DeleteDept DeleteRedisDeptByPids Failed", zap.Error(err))
 		return
 	}
 	err = cache.DeleteRedisDeptByIds(*ids)
 	if err != nil {
+		zap.L().Error("DeleteDept DeleteRedisDeptByIds Failed", zap.Error(err))
 		return
 	}
 	count, err = dept.DeleteDept(ids, userId)

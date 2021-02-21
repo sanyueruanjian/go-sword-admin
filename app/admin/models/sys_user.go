@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"project/app/admin/models/bo"
 	"project/app/admin/models/cache"
 	"project/app/admin/models/dto"
@@ -107,6 +108,7 @@ var (
 	ErrorInvalidPassword  = errors.New("用户名或密码错误")
 	ErrorServerBusy       = errors.New("服务器繁忙")
 	ErrorUserIsNotEnabled = errors.New("用户未激活")
+	ErrorUserIsExist      = errors.New("用户已存在")
 )
 
 func (a *Admin) GetIsAdmin(userId int) error {
@@ -140,6 +142,12 @@ func (u *SysUser) Login() error {
 }
 
 func (u *SysUser) InsertUser(jobs []int, roles []int) (err error) {
+	var num int64
+	global.Eloquent.Table("sys_user").Where("username=?", u.Username).Count(&num)
+	if num != 0 {
+		zap.L().Info(fmt.Sprintf("%d", num))
+		return ErrorUserIsExist
+	}
 	//创建事务
 	tx := global.Eloquent.Begin()
 	//用户表 增添
@@ -200,22 +208,25 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto, currentUser 
 		var total int
 		total = len(userRecords)
 		start := p.Size * (p.Current - 1)
-		end := p.Size*(p.Current-1) + p.Size - 1
-		if end > total {
-			end = total
+		end := start + p.Size - 1
+		zap.L().Info(fmt.Sprintf("%s%d", "11111     ", total))
+		zap.L().Info(fmt.Sprintf("%d        %d", start, end))
+		records := make([]*bo.RecordUser, 0, 0)
+		if end >= total-1 {
+			records = userRecords[start:]
+		} else if len(userRecords) != 0 {
+			records = userRecords[start:end]
 		}
-		records := userRecords[start:end]
 		//查询页数
-
 		data = &bo.UserInfoListBo{Records: records}
 		data.Orders = orderJson
 		data.Size = p.Size
 		data.Current = p.Current
 		data.Pages = (total + p.Size - 1) / p.Size
-		data.Total = int(total)
+		data.Total = total
 		data.SearchCount = true
 		data.OptimizeCountSql = true
-		if records != nil && total >= 0 {
+		if records != nil && total > 0 {
 			return data, nil
 		}
 	}
@@ -236,9 +247,9 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto, currentUser 
 		table = table.Where("create_time > ? AND create_time < ?", p.StartTime, p.EndTime)
 	}
 
-	//分页 排序
+	//排序
 	var total int64
-	err = table.Limit(p.Size).Offset(p.Current - 1*p.Size).Count(&total).Order(orderRule).Find(&usersHalf).Error
+	err = table.Count(&total).Order(orderRule).Find(&usersHalf).Error
 	pages := (int(total) + p.Size - 1) / p.Size
 	if err != nil {
 		return nil, err
@@ -303,6 +314,7 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto, currentUser 
 		users = append(users, user)
 	}
 
+	zap.L().Info("set ok")
 	//设置records缓存
 	if p.StartTime == 0 && p.EndTime == 0 && p.Blurry == "" {
 		zap.L().Info("set ok")
@@ -311,8 +323,17 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto, currentUser 
 			zap.L().Error("SetUserRecordsCache failed", zap.Error(err))
 		}
 	}
+	start := p.Size * (p.Current - 1)
+	end := start + p.Size - 1
+	if end > int(total) {
+		end = int(total) - 1
+	}
+	records := make([]*bo.RecordUser, 0, 0)
+	if len(users) != 0 {
+		records = users[start:end]
+	}
 
-	data = &bo.UserInfoListBo{Records: users}
+	data = &bo.UserInfoListBo{Records: records}
 	data.Orders = orderJson
 	data.Size = p.Size
 	data.Current = p.Current

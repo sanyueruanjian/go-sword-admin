@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"project/app/admin/models/bo"
 	"project/app/admin/models/cache"
@@ -14,6 +15,8 @@ import (
 )
 
 const ForeNeed string = "menu::userNeed:"
+
+var MenuIsExistError = errors.New("菜单已存在")
 
 type SysMenu struct {
 	*BaseModel
@@ -50,6 +53,11 @@ func (m *SysMenu) TableName() string {
 }
 
 func (m *SysMenu) InsertMenu() error {
+	var num int64
+	global.Eloquent.Table("sys_menu").Where("title=? AND type=? AND is_deleted=?", m.Title, m.Type, []byte{0}).Count(&num)
+	if num != 0 {
+		return MenuIsExistError
+	}
 	tx := global.Eloquent.Begin()
 	err := tx.Create(&m).Error
 	if err != nil {

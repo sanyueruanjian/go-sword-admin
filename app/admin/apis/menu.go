@@ -1,6 +1,7 @@
 package apis
 
 import (
+	"errors"
 	"fmt"
 	"project/app/admin/models"
 	"strconv"
@@ -54,6 +55,11 @@ func InsertMenuHandler(c *gin.Context) {
 	flex.Hidden = utils.StrBoolIntoByte(fmt.Sprintf("%v", p.Hidden))
 	m := new(service.Menu)
 	if err := m.InsertMenu(p, flex, user.UserId); err != nil {
+		if errors.Is(err, models.MenuIsExistError) {
+			zap.L().Error("insert menu failed", zap.Error(err))
+			app.ResponseErrorWithMsg(c, app.CodeInsertOperationFail, "菜单已存在")
+			return
+		}
 		zap.L().Error("insert menu failed", zap.Error(err))
 		app.ResponseError(c, app.CodeInsertOperationFail)
 		return
