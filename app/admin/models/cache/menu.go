@@ -84,7 +84,8 @@ func DeleteAllMenuIdCache() error {
 	return err
 }
 
-func DeleteAllUserMenuCache(keys []string) error {
+func DeleteAllUserNeedMenuCache() error {
+	keys := global.Rdb.Keys("menu::userNeed:").Val()
 	pipLine := global.Rdb.Pipeline()
 	for _, key := range keys {
 		pipLine.Del(key)
