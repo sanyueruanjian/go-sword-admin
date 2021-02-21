@@ -338,18 +338,22 @@ func (m *SysMenu) ReturnToAllMenus(pid int) (data []*SysMenu, err error) {
 }
 
 // 多条件查询
-func (m *SysMenu) DownloadMenu(p dto.DownloadMenuDto, orderData []bo.Order) (sysMenu []SysMenu, err error) {
+func (m *SysMenu) DownloadMenu(p *dto.DownloadMenuDto) (sysMenu []SysMenu, err error) {
+	orderJsonData, err := utils.OrderJson(p.Orders)
+	if err != nil {
+		return
+	}
 	var order string
-	for key, value := range orderData {
+	for key, value := range orderJsonData {
 		order += value.Column + " "
 		if value.Asc == "true" {
-			if key == len(orderData)-1 {
+			if key == len(orderJsonData)-1 {
 				order += "asc "
 			} else {
 				order += "asc, "
 			}
 		} else {
-			if key == len(orderData)-1 {
+			if key == len(orderJsonData)-1 {
 				order += "desc "
 			} else {
 				order += "desc, "
@@ -358,7 +362,7 @@ func (m *SysMenu) DownloadMenu(p dto.DownloadMenuDto, orderData []bo.Order) (sys
 	}
 	// 查询pid
 	if err := global.Eloquent.
-		Where("pid = ? or is_deleted = ?", m.Pid, []byte{0}).Order(order).
+		Where("pid = ? or is_deleted = ?", p.Pid, []byte{0}).Order(order).
 		Find(&sysMenu).Error; err != nil {
 		return nil, err
 	}

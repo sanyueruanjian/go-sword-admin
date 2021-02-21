@@ -273,15 +273,9 @@ func DownMenusHandler(c *gin.Context) {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
-	orderJsonData, err := utils.OrderJson(menu.Orders)
-	if err != nil {
-		app.ResponseError(c, app.CodeParamNotComplete)
-		return
-	}
-
 	// 2. 参数正确执行响应
-	m := service.Menu{}
-	menuData, err := m.DownloadMenuInfoBo(menu, orderJsonData)
+	m := new(service.Menu)
+	menuData, err := m.DownloadMenuInfoBo(menu)
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return

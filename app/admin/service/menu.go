@@ -1,7 +1,6 @@
 package service
 
 import (
-	"bytes"
 	"encoding/json"
 	"project/app/admin/models"
 	"project/app/admin/models/bo"
@@ -223,9 +222,9 @@ func (m *Menu) ChildMenu(p int) (data []int, err error) {
 	return data, err
 }
 
-func (m *Menu) DownloadMenuInfoBo(p *dto.DownloadMenuDto, orderData []bo.Order) (menuData []*bo.DownloadMenuInfoBo, err error) {
+func (m *Menu) DownloadMenuInfoBo(p *dto.DownloadMenuDto) (menuData []*bo.DownloadMenuInfoBo, err error) {
 	menu := new(models.SysMenu)
-	sysMenu, err := menu.DownloadMenu(*p, orderData)
+	sysMenu, err := menu.DownloadMenu(p)
 	if err != nil {
 		return
 	}
@@ -237,15 +236,25 @@ func (m *Menu) DownloadMenuInfoBo(p *dto.DownloadMenuDto, orderData []bo.Order) 
 			IFrame:     "否",
 			Hidden:     "否",
 			Cache:      "否",
-			CreateTime: utils.Int64ToString(v.CreateTime),
+			CreateTime: utils.UnixTimeToString(v.CreateTime),
+		}
+
+		if v.IFrame[0] == 1 {
+			tmp.IFrame = "是"
+		}
+		if v.Hidden[0] == 0 {
+			tmp.Hidden = "是"
+		}
+		if v.Cache[0] == 1 {
+			tmp.Cache = "是"
 		}
 		switch {
-		case bytes.Equal(v.IFrame, []byte{1}):
-			tmp.IFrame = "是"
-		case bytes.Equal(v.Hidden, []byte{1}):
-			tmp.Hidden = "是"
-		case bytes.Equal(v.Cache, []byte{1}):
-			tmp.Cache = "是"
+		case v.Type == 0:
+			tmp.Type = "目录"
+		case v.Type == 1:
+			tmp.Type = "菜单"
+		case v.Type == 2:
+			tmp.Type = "按钮"
 		}
 		menuData = append(menuData, tmp)
 	}
