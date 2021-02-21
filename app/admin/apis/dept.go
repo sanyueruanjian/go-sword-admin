@@ -120,10 +120,14 @@ func InsertDeptHandler(c *gin.Context) {
 	}
 
 	// 参数正确执行相应业务
-	err = d.InsertDept(dept, user.UserId)
+	count, err := d.InsertDept(dept, user.UserId)
 	if err != nil {
 		zap.L().Error("InsertDeptDao Insert failed", zap.String("Username", user.Username), zap.Error(err))
 		app.ResponseError(c, app.CodeSelectOperationFail)
+		return
+	}
+	if count > 0 {
+		app.ResponseErrorWithMsg(c, app.CodeUpdateOperationFail, "部门已存在，不能重复添加")
 		return
 	}
 
@@ -164,9 +168,14 @@ func UpdateDeptHandler(c *gin.Context) {
 	// 替换更新者
 	dept.UpdateBy = user.UserId
 	// 业务处理
-	if err := d.UpdateDept(dept); err != nil {
+	count, err := d.UpdateDept(dept)
+	if err != nil {
 		zap.L().Error("UpdateDeptHandler UpdateSQL failed", zap.Error(err))
 		app.ResponseError(c, app.CodeUpdateOperationFail)
+		return
+	}
+	if count > 0 {
+		app.ResponseErrorWithMsg(c, app.CodeUpdateOperationFail, "部门已存在，不能更改")
 		return
 	}
 	app.ResponseSuccess(c, nil)
