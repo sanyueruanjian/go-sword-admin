@@ -1,13 +1,14 @@
 package apis
 
 import (
-	"github.com/gin-gonic/gin"
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
 	"project/app/admin/service"
 	"project/common/api"
 	"project/utils"
 	"project/utils/app"
+
+	"github.com/gin-gonic/gin"
 )
 
 var r = new(service.Role)
@@ -168,9 +169,9 @@ func MenuRolesHandler(c *gin.Context) {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
-
+	userMessage, err := api.GetUserMessage(c)
 	// 2.参数正确执行响应
-	err = r.UpdateRoleMenu(roleMenus.ID, roleMenus.Menus)
+	err = r.UpdateRoleMenu(roleMenus.ID, roleMenus.Menus, userMessage.UserId)
 	if err != nil {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return

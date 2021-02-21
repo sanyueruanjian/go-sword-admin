@@ -10,7 +10,6 @@ import (
 )
 
 //权限检查中间件
-// TODO 前端需要修改
 func AuthCheckRole() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		data := new(api.UserInfo)

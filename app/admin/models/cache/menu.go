@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"fmt"
 	"project/common/global"
 	"strconv"
 )
@@ -84,8 +85,13 @@ func DeleteAllMenuIdCache() error {
 	return err
 }
 
+func DeleteUserNeedMenuCacheById(id int) error {
+	key := fmt.Sprintf("%s%d", "menu::userNeed:", id)
+	return global.Rdb.Del(key).Err()
+}
+
 func DeleteAllUserNeedMenuCache() error {
-	keys := global.Rdb.Keys("menu::userNeed:").Val()
+	keys := global.Rdb.Keys("menu::userNeed:" + "*").Val()
 	pipLine := global.Rdb.Pipeline()
 	for _, key := range keys {
 		pipLine.Del(key)

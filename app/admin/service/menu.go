@@ -14,6 +14,9 @@ type Menu struct {
 }
 
 func (m *Menu) InsertMenu(p *dto.InsertMenuDto, flex *dto.InsertFlexMenuDto, userID int) error {
+	if flex.Type == 0 {
+		p.Component = "Layout"
+	}
 	menu := &models.SysMenu{
 		Cache:      utils.BoolIntoByte(p.Cache),
 		Hidden:     flex.Hidden,
@@ -29,6 +32,8 @@ func (m *Menu) InsertMenu(p *dto.InsertMenuDto, flex *dto.InsertFlexMenuDto, use
 		Title:      p.Title,
 		CreateBy:   userID,
 		UpdateBy:   userID,
+		Action:     p.Action,
+		Address:    p.Address,
 	}
 	if err := menu.InsertMenu(); err != nil {
 		return err
