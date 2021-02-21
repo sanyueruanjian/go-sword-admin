@@ -72,15 +72,6 @@ type SysUser struct {
 	UpdateBy     int    `json:"update_by"`      //
 }
 
-//redis 缓存model
-// TODO 需要删除
-type RedisUserInfo struct {
-	UserId   int      `json:"user_id"`
-	UserName string   `json:"user_name"`
-	Role     []string `json:"role"`
-	DeptId   int      `json:"dept_id"` //部门id
-}
-
 // OnlineUser 用户线上数据
 type OnlineUser struct {
 	LoginTime     int64  `json:"loginTime"`     //登录时间

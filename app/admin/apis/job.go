@@ -218,16 +218,16 @@ func JobDownload(c *gin.Context) {
 	p := new(dto.GetJobList)
 
 	//获取上下文中信息
-	//user, err := api.GetUserMessage(c)
-	//if err != nil {
-	//	c.Error(err)
-	//	zap.L().Error("GetUserMessage failed", zap.Error(err))
-	//	return
-	//}
+	user, err := api.GetUserMessage(c)
+	if err != nil {
+		c.Error(err)
+		zap.L().Error("GetUserMessage failed", zap.Error(err))
+		return
+	}
 
 	if err := c.ShouldBindQuery(p); err != nil {
 		// 请求参数有误， 直接返回响应
-		//zap.L().Error("job bind params failed", zap.String("Username", user.Username), zap.Error(err))
+		zap.L().Error("JobDownload bind params failed", zap.String("Username", user.Username), zap.Error(err))
 		c.Error(err)
 		_, ok := err.(validator.ValidationErrors)
 		if !ok {
@@ -243,7 +243,7 @@ func JobDownload(c *gin.Context) {
 	res, err := s.JobListDownload(p)
 	if err != nil {
 		c.Error(err)
-		//zap.L().Error("get job list failed", zap.String("Username", user.Username), zap.Error(err))
+		zap.L().Error("JobDownload service failed", zap.String("Username", user.Username), zap.Error(err))
 		app.ResponseError(c, app.CodeSelectOperationFail)
 		return
 	}

@@ -62,6 +62,7 @@ func (e *SysJob) GetJobEnabledList(p *dto.GetJobList, orderRule string) (jobList
 	return
 }
 
+// 查询岗位有没有关联用户
 func (e *SysJob) QueryRelationshipJob(count *int64, ids *[]int) (err error) {
 	err = orm.Eloquent.Table("sys_users_jobs").
 		Joins("left join sys_user on sys_users_jobs.user_id = sys_user.id").

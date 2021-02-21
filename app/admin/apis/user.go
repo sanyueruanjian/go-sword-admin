@@ -3,7 +3,7 @@ package apis
 import (
 	"errors"
 	"fmt"
-
+	"github.com/mojocn/base64Captcha"
 	"project/app/admin/models"
 	"project/app/admin/models/bo"
 	"project/app/admin/models/dto"
@@ -20,6 +20,8 @@ import (
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
+
+var store = base64Captcha.DefaultMemStore
 
 // LoginHandler 登录授权接口
 // @Summary 登录授权接口
@@ -46,9 +48,13 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
+	// 校验验证码
+	//if !store.Verify(p.UuId, p.Code, true) {
+	//	app.ResponseError(c, app.CodeLoginFailCode)
+	//	return
+	//}
+
 	// 2.业务逻辑处理
-	//TODO 方便postman测试 (模拟前端数据)
-	//p.Password, _ = utils.RsaPubEncode(p.Password)
 	value, err := utils.RsaPriDecode(p.Password)
 	if err != nil {
 		zap.L().Error("ras decode fail", zap.Error(err))

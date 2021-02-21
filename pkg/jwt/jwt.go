@@ -2,8 +2,6 @@ package jwt
 
 import (
 	"errors"
-	"time"
-
 	"project/utils/config"
 
 	"github.com/dgrijalva/jwt-go"
@@ -22,7 +20,7 @@ func GenToken(userID int, username string) (string, error) {
 		userID,
 		username, // 自定义字段
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Duration(config.JwtConfig.Timeout) * time.Second).Unix(), // 过期时间
+			//ExpiresAt: time.Now().Add(time.Duration(config.JwtConfig.Timeout) * time.Second).Unix(), // 过期时间
 			Issuer:    "my-project",                                                                 // 签发人
 		},
 	}
