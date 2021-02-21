@@ -5,6 +5,7 @@ import (
 	"project/common/global"
 	"project/utils/config"
 	"strings"
+	"time"
 
 	"project/common/api"
 	"project/pkg/jwt"
@@ -41,6 +42,10 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 			c.Abort()
 			return
 		}
+
+		// token延期
+		global.Rdb.Set(fmt.Sprintf("%s%s%s", config.JwtConfig.RedisHeader, "-", parts[1]), res, time.Second*time.Duration(config.JwtConfig.Timeout))
+
 		c.Set(api.CtxUserOnline, res)
 
 		// 将当前请求的user_id信息保存到请求的上下文c上
