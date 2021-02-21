@@ -30,7 +30,13 @@ func (d *SysDept) TableName() string {
 
 // 查询部门根据部门id
 func (d *SysDept) GetDeptById() (err error) {
-	err = orm.Eloquent.Table(d.TableName()).Where("id = ? AND is_deleted = 0", d.ID, 0).Find(d).Error
+	err = orm.Eloquent.Table(d.TableName()).Where("id = ? AND is_deleted = 0", d.ID, 0).First(d).Error
+	return
+}
+
+// 查询部门是否存在根据部门pid和部门名称
+func (d *SysDept) GetDeptByPidName() (count int64, err error) {
+	err = orm.Eloquent.Table(d.TableName()).Where("pid = ? AND name = ? AND is_deleted = 0", d.ID, d.Name).Count(&count).Error
 	return
 }
 
@@ -114,17 +120,14 @@ func (d *SysDept) UpdateDept(de *dto.UpdateDeptDto) (err error) {
 
 // 删除部门
 func (d *SysDept) DeleteDept(ids *[]int, userId int) (count int64, err error) {
-	var child []string
-	var idsStr []string
+	var child []int
 
-	idsStr = utils.IntSliceToStringSlice(*ids)
-
-	err = global.Eloquent.Table(d.TableName()).Select("id").Where("pid IN (?) AND is_deleted = ?", idsStr, 0).Find(child).Error
+	err = global.Eloquent.Table(d.TableName()).Select("id").Where("pid IN (?) AND is_deleted = ?", *ids, 0).Find(&child).Error
 	if err != nil {
 		zap.L().Error("DeleteDept Select id Filed", zap.Error(err))
 		return
 	}
-	child = append(child, idsStr...)
+	child = append(child, *ids...)
 	err = global.Eloquent.Table("sys_user").Where("dept_id IN (?) AND is_deleted = ?", child, 0).Count(&count).Error
 	if err != nil || count > 0 {
 		zap.L().Error("DeleteDept count child Filed", zap.Error(err))
@@ -132,7 +135,7 @@ func (d *SysDept) DeleteDept(ids *[]int, userId int) (count int64, err error) {
 	}
 
 	tx := global.Eloquent.Begin()
-	err = tx.Table(d.TableName()).Where("id IN (?)", idsStr).Updates(&SysDept{
+	err = tx.Table(d.TableName()).Where("id IN (?)", *ids).Updates(&SysDept{
 		UpdateBy: userId,
 		BaseModel: BaseModel{
 			IsDeleted: []byte{1},
@@ -143,7 +146,7 @@ func (d *SysDept) DeleteDept(ids *[]int, userId int) (count int64, err error) {
 		return
 	}
 
-	err = tx.Table(d.TableName()).Where("pid IN (?)", idsStr).Update("sub_count", gorm.Expr("sub_count - ?", 1)).Error
+	err = tx.Table(d.TableName()).Where("pid IN (?)", *ids).Update("sub_count", gorm.Expr("sub_count - ?", 1)).Error
 	if err != nil {
 		tx.Rollback()
 		return
@@ -177,5 +180,12 @@ func (d *SysDept) DownloadDept(de *dto.SelectDeptDto, orderJson []bo.Order) (sys
 		err = global.Eloquent.Table(d.TableName()).Where("pid = ? AND is_deleted=? AND name like ?", 0, 0, blurry).
 			Order(order).Limit(de.Size).Offset((de.Current - 1) * de.Size).Find(&sysDeptList).Error
 	}
+	return
+}
+
+func (d *SysDept) GetPidList(ids *[]int) (pids *[]int, err error) {
+	pids = new([]int)
+	err = global.Eloquent.Table(d.TableName()).Select("pid").
+		Where("id IN (?) AND is_deleted = 0", *ids).Find(pids).Error
 	return
 }
