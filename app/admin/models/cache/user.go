@@ -126,7 +126,7 @@ func DelUsersAboutCache(usersId []int) error {
 func DelAllUserMenuCache() error {
 	pipLine := global.Rdb.Pipeline()
 	var userKeys []string
-	userKeys = global.Rdb.Keys(KeyUserMenu).Val()
+	userKeys = global.Rdb.Keys(KeyUserMenu + "*").Val()
 	for _, userKey := range userKeys {
 		pipLine.Del(userKey)
 	}

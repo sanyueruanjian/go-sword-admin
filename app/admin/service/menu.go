@@ -144,7 +144,7 @@ func (m *Menu) ReturnToAllMenus(pid int) (data []*bo.ReturnToAllMenusBo, err err
 	return data, nil
 }
 
-func (m *Menu) SuperiorMenu(p *dto.DataMenuDto) (data []*bo.SelectSuperMenuBo, err error) {
+func (m *Menu) SuperiorMenu(p []int) (data []*bo.SelectSuperMenuBo, err error) {
 	//var Menus []*models.SysMenu
 	var children []*bo.SelectSuperMenuBo
 	menu := new(models.SysMenu)

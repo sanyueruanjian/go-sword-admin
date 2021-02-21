@@ -97,5 +97,5 @@ type SelectCurrentLevelAndUpLevelInfo struct {
 
 //DataMenuDto 同级上级菜单数据获取
 type DataMenuDto struct {
-	Ids []int `json:"ids" binding:"required"`
+	//int[] 接受即可 id列表`
 }

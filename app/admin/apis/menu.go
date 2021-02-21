@@ -317,14 +317,14 @@ func DownMenusHandler(c *gin.Context) {
 // @Router /api/menus/superior [post]
 func SuperiorMenuHandler(c *gin.Context) {
 	// 1.获取参数 校验参数
-	p := new(dto.DataMenuDto)
+	var p []int
 	//获取上下文中信息
 	user, err := api.GetUserMessage(c)
 	if err != nil {
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
 		return
 	}
-	if err := c.ShouldBindJSON(p); err != nil {
+	if err := c.ShouldBind(&p); err != nil {
 		// 请求参数有误， 直接返回响应
 		zap.L().Error("InsertMenuHandler failed", zap.String("username", user.Username), zap.Error(err))
 		c.Error(err)
