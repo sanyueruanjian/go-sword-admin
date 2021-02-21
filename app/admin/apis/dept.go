@@ -166,7 +166,7 @@ func UpdateDeptHandler(c *gin.Context) {
 	// 业务处理
 	if err := d.UpdateDept(dept); err != nil {
 		zap.L().Error("UpdateDeptHandler UpdateSQL failed", zap.Error(err))
-		app.ResponseError(c, app.CodeDeleteOperationFail)
+		app.ResponseError(c, app.CodeUpdateOperationFail)
 		return
 	}
 	app.ResponseSuccess(c, nil)
