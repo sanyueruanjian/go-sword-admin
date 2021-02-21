@@ -181,9 +181,9 @@ func (e Role) DeleteRole(p []int, userId int) (err error) {
 }
 
 // 修改角色菜单
-func (e Role) UpdateRoleMenu(id int, p []int) (err error) {
+func (e Role) UpdateRoleMenu(id int, p []int, userId int) (err error) {
 	role := new(models.SysRole)
-	if err = role.UpdateRoleMenu(id, p); err != nil {
+	if err = role.UpdateRoleMenu(id, p, userId); err != nil {
 		return
 	}
 

@@ -2,6 +2,7 @@ package models
 
 import (
 	"project/app/admin/models/bo"
+	"project/app/admin/models/cache"
 	"project/app/admin/models/dto"
 	"project/utils"
 	"reflect"
@@ -242,7 +243,7 @@ func (e SysRole) DeleteRole(p []int) (err error) {
 }
 
 // 修改角色菜单
-func (e SysRole) UpdateRoleMenu(id int, p []int) (err error) {
+func (e SysRole) UpdateRoleMenu(id int, p []int, userId int) (err error) {
 	tx := orm.Eloquent.Begin()
 	//修改菜单
 	var sysRoleMenus SysRolesMenus
@@ -257,7 +258,12 @@ func (e SysRole) UpdateRoleMenu(id int, p []int) (err error) {
 			return results.Error
 		}
 	}
-
+	//删除前端所需菜单缓存
+	err = cache.DeleteUserNeedMenuCacheById(userId)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
 	//删除原有策略
 	idStr := utils.IntToString(id)
 	err = DeletePolicyByRoleId(idStr)
