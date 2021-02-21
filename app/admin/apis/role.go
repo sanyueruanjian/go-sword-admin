@@ -71,7 +71,7 @@ func InsertRolesHandler(c *gin.Context) {
 	err = r.InsertRole(insertrole, user.UserId)
 	if err != nil {
 		if err.Error()[0:10] == "Error 1062" {
-			app.ResponseError(c, app.CodeUserNameExist)
+			app.ResponseError(c, app.CodeRoleNameExist)
 			return
 		}
 		app.ResponseError(c, app.CodeParamNotComplete)
@@ -106,7 +106,7 @@ func UpdateRolesHandler(c *gin.Context) {
 	err = r.UpdateRole(updateRole, user.UserId)
 	if err != nil {
 		if err.Error()[0:10] == "Error 1062" {
-			app.ResponseError(c, app.CodeUserNameExist)
+			app.ResponseError(c, app.CodeRoleNameExist)
 			return
 		}
 		app.ResponseError(c, app.CodeParamNotComplete)
