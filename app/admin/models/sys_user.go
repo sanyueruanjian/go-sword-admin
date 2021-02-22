@@ -383,6 +383,7 @@ func GetUserJob(jobs *[]SysJob, userId int) (err error) {
 func GetUserRole(role *[]SysRole, userId int) (err error) {
 	//连表查询角色
 	err = global.Eloquent.Table("sys_role").
+		Select("sys_role.id, sys_role.level, sys_role.create_by, sys_role.update_by, sys_role.create_time, sys_role.update_time, sys_role.is_protection, sys_role.is_deleted, sys_role.name, sys_role.description, sys_role.data_scope").
 		Joins("left join sys_users_roles on sys_users_roles.role_id = sys_role.id").
 		Joins("left join sys_user on sys_user.id = sys_users_roles.user_id").
 		Where("sys_role.is_deleted=? and sys_user.id=?", []byte{0}, userId).
@@ -401,6 +402,7 @@ func GetUserRole(role *[]SysRole, userId int) (err error) {
 func SelectUserJob(userId int) (jobs []*bo.Job, err error) {
 	//连表查询岗位
 	err = global.Eloquent.Table("sys_job").
+		Select("sys_job.id, sys_job.name").
 		Joins("left join sys_users_jobs on sys_users_jobs.job_id = sys_job.id").
 		Joins("left join sys_user on sys_user.id = sys_users_jobs.user_id").
 		Where("sys_job.is_deleted=? and sys_user.id=?", []byte{0}, userId).
@@ -419,6 +421,7 @@ func SelectUserJob(userId int) (jobs []*bo.Job, err error) {
 // SelectUserDept 查询部门
 func SelectUserDept(dept *SysDept, userId int) (err error) {
 	err = global.Eloquent.Table("sys_dept").
+		Select("sys_dept.name, sys_dept.pid, sys_dept.sub_count, sys_dept.dept_sort, sys_dept.create_by, sys_dept.update_by, sys_dept.enabled, sys_dept.id, sys_dept.is_deleted, sys_dept.create_time, sys_dept.update_time").
 		Joins("left join sys_user on sys_user.dept_id = sys_dept.id").
 		Where("sys_user.id=? AND sys_dept.is_deleted=?", userId, []byte{0}).
 		Scan(dept).Error
