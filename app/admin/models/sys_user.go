@@ -438,8 +438,8 @@ func SelectUserMenuPermission(menus *[]SysMenu, roles *[]SysRole) (err error) {
 	for _, role := range *roles {
 		rolesId = append(rolesId, role.ID)
 	}
-	err = global.Eloquent.Table("sys_roles_menus").
-		Joins("left join sys_menu on sys_roles_menus.menu_id = sys_menu.id").
+	err = global.Eloquent.Table("sys_menu").
+		Joins("left join sys_roles_menus on sys_roles_menus.menu_id = sys_menu.id").
 		Where("sys_roles_menus.role_id in (?)", rolesId).Find(menus).Error
 	return
 }
