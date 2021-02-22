@@ -30,19 +30,19 @@ func (d *SysDept) TableName() string {
 
 // 查询部门根据部门id
 func (d *SysDept) GetDeptById() (err error) {
-	err = orm.Eloquent.Table(d.TableName()).Where("id = ? AND is_deleted = 0", d.ID, 0).First(d).Error
+	err = orm.Eloquent.Table(d.TableName()).Where("id = ? AND is_deleted = 0", d.ID).First(d).Error
 	return
 }
 
 // 查询部门是否存在根据部门pid和部门名称
 func (d *SysDept) GetDeptByPidName() (count int64, err error) {
-	err = orm.Eloquent.Table(d.TableName()).Where("pid = ? AND name = ? AND is_deleted = 0", d.ID, d.Name).Count(&count).Error
+	err = orm.Eloquent.Debug().Table(d.TableName()).Where("pid = ? AND name = ? AND is_deleted = 0", d.Pid, d.Name).Count(&count).Error
 	return
 }
 
 // 查询与该部门相关的userId
 func (d *SysDept) GetDeptUserListById() (ids []int, err error) {
-	err = orm.Eloquent.Table("sys_user").Select("id").Where("dept_id = ? AND is_deleted = 0", d.ID, 0).Find(&ids).Error
+	err = orm.Eloquent.Table("sys_user").Select("id").Where("dept_id = ? AND is_deleted = 0", d.ID).Find(&ids).Error
 	return
 }
 

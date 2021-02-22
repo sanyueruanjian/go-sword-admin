@@ -136,6 +136,10 @@ func (d *Dept) UpdateDept(de *dto.UpdateDeptDto) (count int64, err error) {
 	dept.Pid = *de.Pid
 	dept.Name = de.Name
 	count, err = dept.GetDeptByPidName()
+	if err != nil {
+		zap.L().Error("UpdateDept GetDeptByPidName Failed", zap.Error(err))
+		return
+	}
 	if count > 0 {
 		zap.L().Error("UpdateDept Failed 该部门已存在不能更改")
 		return
