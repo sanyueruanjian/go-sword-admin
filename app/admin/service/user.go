@@ -163,12 +163,12 @@ func GetUserRoleData(cacheRole string, rolesErr error, roles *[]models.SysRole, 
 
 // GetUserMenuData 获取用户菜单权限
 func GetUserMenuData(cacheMenu string, menuErr error, userId int, menuPermission *[]string, roles *[]models.SysRole) (err error) {
+	*menuPermission = []string{}
 	if menuErr != nil {
 		a := new(models.Admin)
 		if err = a.GetIsAdmin(userId); err != nil {
 			return
 		}
-
 		if utils.ByteIntoInt(a.IsAdmin) == 1 {
 			*menuPermission = []string{`admin`}
 			go cache.SetUserCache(userId, menuPermission, cache.KeyUserMenu)
