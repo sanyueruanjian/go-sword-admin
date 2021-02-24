@@ -1791,7 +1791,7 @@ var doc = `{
         }
     },
     "definitions": {
-        "bo.Children": {
+        "bo.Child": {
             "type": "object",
             "properties": {
                 "component": {
@@ -2100,7 +2100,7 @@ var doc = `{
                 "children": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/bo.Children"
+                        "$ref": "#/definitions/bo.Child"
                     }
                 },
                 "component": {
@@ -2133,7 +2133,7 @@ var doc = `{
                 "children": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/bo.Children"
+                        "$ref": "#/definitions/bo.Child"
                     }
                 },
                 "component": {

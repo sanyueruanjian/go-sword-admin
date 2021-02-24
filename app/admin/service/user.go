@@ -60,7 +60,7 @@ func (u *User) Login(c *gin.Context, p *dto.UserLoginDto) (data *bo.LoginData, e
 	}
 
 	dept := new(models.SysDept)
-	if err = GetUserDeptData(cacheDept, deptErr, dept, user.ID); err != nil {
+	if err = GetUserDeptData(cacheDept, deptErr, dept, user.DeptId); err != nil {
 		return
 	}
 
@@ -163,12 +163,12 @@ func GetUserRoleData(cacheRole string, rolesErr error, roles *[]models.SysRole, 
 
 // GetUserMenuData 获取用户菜单权限
 func GetUserMenuData(cacheMenu string, menuErr error, userId int, menuPermission *[]string, roles *[]models.SysRole) (err error) {
+	*menuPermission = []string{}
 	if menuErr != nil {
 		a := new(models.Admin)
 		if err = a.GetIsAdmin(userId); err != nil {
 			return
 		}
-
 		if utils.ByteIntoInt(a.IsAdmin) == 1 {
 			*menuPermission = []string{`admin`}
 			go cache.SetUserCache(userId, menuPermission, cache.KeyUserMenu)
@@ -239,7 +239,14 @@ func GetUserDataScopes(cacheDataScopes string, dataScopesErr error, dataScopes *
 			if err != nil {
 				return err
 			}
-			*dataScopes = append(*dataScopes, deptIds...)
+			//去重
+			temp := make(map[int]interface{})
+			for _, item := range deptIds {
+				if _, ok := temp[item]; !ok { //如果字典中找不到元素，ok=false，!ok为true，就往切片中append元素。
+					temp[item] = struct{}{}
+					*dataScopes = append(*dataScopes, item)
+				}
+			}
 		}
 		go cache.SetUserCache(userId, dataScopes, cache.KeyUserDataScope)
 	} else {

@@ -14,7 +14,7 @@ type UserLoginDto struct {
 type SelectUserInfoArrayDto struct {
 	Current   int    `form:"current"` //current 当前页
 	Size      int    `form:"size"`    // 当前页最大数据量
-	DepID     int    `form:"depid"`   //本门id
+	DepID     int    `form:"deptId"`  //本门id
 	Orders    string `form:"orders"`  //排序规则与字段
 	Blurry    string `form:"blurry"`  //模糊
 	Enabled   bool   `form:"enabled"` //是否激活

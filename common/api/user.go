@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	"math"
 	"project/app/admin/models"
 	"project/app/admin/service"
 	"project/common/cache"
@@ -119,4 +120,37 @@ func GetUserOnline(c *gin.Context) (userOnline *models.OnlineUser, err error) {
 	userOnline = new(models.OnlineUser)
 	err = json.Unmarshal([]byte(res.(string)), userOnline)
 	return
+}
+func CheckDataScope(dataScope []int, deptID int) bool {
+	if len(dataScope) == 0 {
+		return true
+	}
+	for _, v := range dataScope {
+		if v == deptID {
+			return true
+		}
+	}
+	return false
+}
+
+func CheckLevel(operatorRoles []models.SysRole, id int) bool {
+	//查找操作者最高等级
+	operatorMaxLevel := math.MaxInt64
+	for _, role := range operatorRoles {
+		if role.Level < operatorMaxLevel {
+			operatorMaxLevel = role.Level
+		}
+	}
+	//根据id查找用户角色最高等级
+	byOperateRoles, err := models.SelectUserRole(id)
+	if err != nil {
+		return false
+	}
+	byOperatorMaxLevel := math.MaxInt64
+	for _, role := range byOperateRoles {
+		if role.Level < byOperatorMaxLevel {
+			byOperatorMaxLevel = role.Level
+		}
+	}
+	return operatorMaxLevel < byOperatorMaxLevel
 }

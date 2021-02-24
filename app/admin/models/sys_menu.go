@@ -16,7 +16,10 @@ import (
 
 const ForeNeed string = "menu::userNeed:"
 
-var MenuIsExistError = errors.New("菜单已存在")
+var (
+	MenuIsExistError = errors.New("菜单已存在")
+	MenuInvalidError = errors.New("菜单下层不能创建目录")
+)
 
 type SysMenu struct {
 	*BaseModel
@@ -53,10 +56,17 @@ func (m *SysMenu) TableName() string {
 }
 
 func (m *SysMenu) InsertMenu() error {
+	//查询名字是否重复
 	var num int64
 	global.Eloquent.Table("sys_menu").Where("title=? AND type=? AND is_deleted=?", m.Title, m.Type, []byte{0}).Count(&num)
 	if num != 0 {
 		return MenuIsExistError
+	}
+	parentMenu := new(SysMenu)
+	//查询菜单类型是否匹配  (菜单下面不能有目录)
+	global.Eloquent.Table("sys_menu").Where("id=? AND is_deleted=?", m.Pid, []byte{0}).First(parentMenu)
+	if parentMenu.Type == 1 && m.Type == 0 {
+		return MenuInvalidError
 	}
 	tx := global.Eloquent.Begin()
 	err := tx.Create(&m).Error
@@ -266,7 +276,7 @@ func (m *SysMenu) SelectForeNeedMenu(user *ModelUserMessage) (data []*bo.SelectF
 	//查找角色Id
 	parentIds := make([]int, 0)
 	err = global.Eloquent.Table("sys_roles_menus").Select("menu_id").Where("role_id=?", 1).Joins("left join sys_menu "+
-		"on sys_menu.id=sys_roles_menus.menu_id").Where("sys_menu.type=? AND sys_menu.is_deleted=?", 0, []byte{0}).Find(&parentIds).Error
+		"on sys_menu.id=sys_roles_menus.menu_id").Where("sys_menu.type=? AND sys_menu.is_deleted=? AND sys_menu.pid=?", 0, []byte{0}, 0).Find(&parentIds).Error
 	if err != nil {
 		return
 	}
@@ -274,8 +284,6 @@ func (m *SysMenu) SelectForeNeedMenu(user *ModelUserMessage) (data []*bo.SelectF
 	for _, pid := range parentIds {
 		parentMenu := new(SysMenu)
 		//查找父亲信息
-		childMenus := make([]*SysMenu, 0)
-		childS := make([]*bo.Children, 0)
 		err = global.Eloquent.Table("sys_menu").Where("id=? AND is_deleted=?", pid, []byte{0}).First(parentMenu).Error
 		if err != nil {
 			return
@@ -291,33 +299,13 @@ func (m *SysMenu) SelectForeNeedMenu(user *ModelUserMessage) (data []*bo.SelectF
 				Title:   parentMenu.Title,
 			},
 		}
-		//查找多个父级菜单的子信息
-		err = global.Eloquent.Table("sys_menu").Where("pid=? AND is_deleted=?", pid, []byte{0}).Find(&childMenus).Error
-		if err != nil {
-			return
-		}
 		result.AlwaysShow = false
 		result.Redirect = "index"
-		if len(childMenus) != 0 {
+		result.Children, err = CreteChildTree(parentMenu.ID)
+		if len(result.Children) != 0 {
 			result.AlwaysShow = true
 			result.Redirect = "noredirect"
 		}
-		//查询下一级
-		for _, menu := range childMenus {
-			child := &bo.Children{
-				Component: menu.Component,
-				Hidden:    utils.ByteIntoBool(menu.Hidden),
-				Name:      menu.Name,
-				Path:      menu.Path,
-				Meta: &bo.Meta{
-					Icon:    menu.Icon,
-					NoCache: !utils.ByteIntoBool(menu.Cache),
-					Title:   menu.Title,
-				},
-			}
-			childS = append(childS, child)
-		}
-		result.Children = childS
 		results = append(results, result)
 	}
 	//序列化结果
@@ -422,4 +410,40 @@ func (m *SysMenu) ChildMenu(p int) (data []int, err error) {
 		}
 	}
 	return data, nil
+}
+
+func CreteChildTree(parentId int) (result []*bo.Children, err error) {
+	//查找父级菜单的子菜单
+	var childMenu []*SysMenu
+	var childNum int64
+	err = global.Eloquent.Table("sys_menu").Not("type=?", 2).Where("pid=? AND is_deleted=?", parentId, []byte{0}).Count(&childNum).Find(&childMenu).Error
+	if err != nil {
+		return
+	}
+	var tmpResult []*bo.Children
+	if int(childNum) <= 0 {
+		return tmpResult, nil
+	}
+	for _, menu := range childMenu {
+		hidden := utils.ByteIntoBool(menu.Hidden)
+		cache := !utils.ByteIntoBool(menu.Cache)
+		resultCurrent := &bo.Children{
+			Component: menu.Component,
+			Hidden:    hidden,
+			Name:      menu.Name,
+			Path:      menu.Path,
+			Meta: &bo.Meta{
+				Icon:    menu.Icon,
+				NoCache: cache,
+				Title:   menu.Title,
+			},
+		}
+		resultChildren, err := CreteChildTree(menu.ID)
+		if err != nil {
+			return nil, err
+		}
+		resultCurrent.Child = resultChildren
+		tmpResult = append(tmpResult, resultCurrent)
+	}
+	return tmpResult, nil
 }

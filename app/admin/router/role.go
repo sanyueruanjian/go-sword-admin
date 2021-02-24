@@ -1,9 +1,11 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"project/app/admin/apis"
+	"project/app/admin/middleware"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 func init() {
@@ -14,10 +16,6 @@ func init() {
 }
 
 func roleAuthRouter(v1 *gin.RouterGroup) {
-	v1.GET("roles", apis.SelectRolesHandler)
-	v1.POST("roles", apis.InsertRolesHandler)
-	v1.PUT("roles", apis.UpdateRolesHandler)
-	v1.DELETE("roles", apis.DeleteRolesHandler)
 	r := v1.Group("/roles")
 	{
 		r.PUT("menu", apis.MenuRolesHandler)
@@ -36,5 +34,11 @@ func roleAuthRouter(v1 *gin.RouterGroup) {
 				apis.LevelRolesHandler(c)
 			}
 		})
+		r.Use(middleware.AuthCheckRole())
+		r.GET("", apis.SelectRolesHandler)
+		r.POST("", apis.InsertRolesHandler)
+		r.PUT("", apis.UpdateRolesHandler)
+		r.DELETE("", apis.DeleteRolesHandler)
 	}
+
 }

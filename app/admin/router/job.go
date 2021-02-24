@@ -2,6 +2,7 @@ package router
 
 import (
 	"project/app/admin/apis"
+	"project/app/admin/middleware"
 	"project/utils/app"
 
 	"github.com/gin-gonic/gin"
@@ -26,11 +27,13 @@ func jobRouter(v1 *gin.RouterGroup) {
 func jobAuthRouter(v1 *gin.RouterGroup) {
 	r := v1.Group("/job")
 	{
+		//权限认证的接口
+		r.Use(middleware.AuthCheckRole())
+		r.GET("download", apis.JobDownload)
 		r.GET("", apis.GetJobList)
 		r.DELETE("", apis.DelJobById)
 		r.POST("", apis.AddJob)
 		r.PUT("", apis.UpdateJob)
-		r.GET("download", apis.JobDownload)
 
 	}
 }
