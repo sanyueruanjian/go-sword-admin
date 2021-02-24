@@ -1,10 +1,10 @@
 package middleware
 
 import (
-	"net/http"
 	"project/common/api"
 	mycasbin "project/pkg/casbin"
 	"project/utils"
+	"project/utils/app"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,19 +33,21 @@ func AuthCheckRole() gin.HandlerFunc {
 		//检查权限
 		//此处为多角色 要在做处理
 		var res bool
-		res, err = e.Enforce(role, c.Request.URL.Path, c.Request.Method)
-		if err != nil {
-			c.Abort()
-			return
+		for _, roleID := range role {
+			res, err = e.Enforce(roleID, c.Request.URL.Path, c.Request.Method)
+			if err != nil {
+				c.Abort()
+				return
+			}
+			if res {
+				break
+			}
 		}
 
 		if res {
 			c.Next()
 		} else {
-			c.JSON(http.StatusOK, gin.H{
-				"code": 403,
-				"msg":  "对不起，您没有该接口访问权限，请联系管理员",
-			})
+			app.ResponseError(c, app.CodeIdentityNotRow)
 			c.Abort()
 			return
 		}

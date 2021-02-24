@@ -60,6 +60,11 @@ func InsertMenuHandler(c *gin.Context) {
 			app.ResponseErrorWithMsg(c, app.CodeInsertOperationFail, "菜单已存在")
 			return
 		}
+		if errors.Is(err, models.MenuInvalidError) {
+			zap.L().Error("insert menu failed", zap.Error(err))
+			app.ResponseErrorWithMsg(c, app.CodeInsertOperationFail, "菜单下层不能创建目录")
+			return
+		}
 		zap.L().Error("insert menu failed", zap.Error(err))
 		app.ResponseError(c, app.CodeInsertOperationFail)
 		return
@@ -206,17 +211,18 @@ func UpdateMenuHandler(c *gin.Context) {
 func SelectForeNeedMenuHandler(c *gin.Context) {
 	//获取上下文中信息
 	userMessage, err := api.GetUserMessage(c)
+	userData, err := api.GetUserData(c)
 	if err != nil {
 		zap.L().Error("GetCurrentUserInfo failed", zap.Error(err))
 		return
 	}
 	//业务逻辑处理
-	//TODO
 	m := new(service.Menu)
 	var data []*bo.SelectForeNeedMenuBo
 	data, err = m.SelectForeNeedMenu(&models.ModelUserMessage{
 		Username: userMessage.Username,
 		UserId:   userMessage.UserId,
+		Roles:    userData.Roles,
 	})
 	if err != nil {
 		zap.L().Error("select menu failed", zap.Error(err))

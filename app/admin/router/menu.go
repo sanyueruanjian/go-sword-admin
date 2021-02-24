@@ -2,6 +2,7 @@ package router
 
 import (
 	"project/app/admin/apis"
+	"project/app/admin/middleware"
 	"project/utils/app"
 
 	"github.com/gin-gonic/gin"
@@ -28,12 +29,14 @@ func menuAuthRouter(v1 *gin.RouterGroup) {
 	{
 		r.GET("/build", apis.SelectForeNeedMenuHandler)
 		r.GET("/", apis.SelectMenuHandler)
-		r.POST("/", apis.InsertMenuHandler)
-		r.DELETE("/", apis.DeleteMenuHandler)
-		r.PUT("/", apis.UpdateMenuHandler)
 		r.POST("/superior", apis.SuperiorMenuHandler)
 		r.GET("/child", apis.ChildMenuHandler)
 		r.GET("/lazy", apis.ReturnToAllMenusHandler)
 		r.GET("/download", apis.DownMenusHandler)
+		//添加权限的接口
+		r.Use(middleware.AuthCheckRole())
+		r.POST("/", apis.InsertMenuHandler)
+		r.DELETE("/", apis.DeleteMenuHandler)
+		r.PUT("/", apis.UpdateMenuHandler)
 	}
 }
