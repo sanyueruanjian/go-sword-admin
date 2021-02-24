@@ -25,8 +25,6 @@ type SysRole struct {
 	Name         string `json:"name"`                                   //角色名称
 	Description  string `json:"description"`                            //描述
 	DataScope    string `json:"data_scope"`                             //数据权限
-	//Address      string `json:"address"`                                //路由
-	//Action       string `json:"action"`                                 //请求方法
 }
 
 type AddressAction struct {
