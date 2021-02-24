@@ -32,11 +32,12 @@ type Meta struct {
 }
 
 type Children struct {
-	Component string `json:"component"`
-	Name      string `json:"name"`
-	Path      string `json:"path"`
-	Hidden    bool   `json:"hidden"`
-	Meta      *Meta  `json:"meta"`
+	Component string      `json:"component"`
+	Name      string      `json:"name"`
+	Path      string      `json:"path"`
+	Hidden    bool        `json:"hidden"`
+	Meta      *Meta       `json:"meta"`
+	Child     []*Children `json:"children,omitempty"`
 }
 
 type SelectForeNeedMenuBo struct {

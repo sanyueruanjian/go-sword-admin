@@ -69,7 +69,7 @@ type UpdateAvatarBo struct {
 
 //个人中心详细信息
 type UserCenterInfoBo struct {
-	DataScopes []string    `json:"dataScopes"`
+	DataScopes []int       `json:"dataScopes"`
 	Roles      []string    `json:"roles"`
 	User       *RecordUser `json:"user"`
 }

@@ -18,7 +18,6 @@ func InitAdminRouter(r *gin.Engine) *gin.Engine {
 	adminNoCheckRoleRouter(r)
 	// 需要认证的路由
 	adminCheckRoleRouter(r)
-
 	return r
 }
 

@@ -135,6 +135,17 @@ func InsertUserHandler(c *gin.Context) {
 		app.ResponseError(c, app.CodeParamNotComplete)
 		return
 	}
+	userInfo, _ := api.GetUserData(c)
+	//验证数据权限
+	if permission := api.CheckDataScope(*userInfo.DataScopes, p.DeptId); !permission {
+		//app.ResponseError(c, app.CodeIdentityNotRow)
+		return
+	}
+	//验证角色等级
+	if permission := api.CheckLevel(*userInfo.Roles, p.ID); !permission {
+		//app.ResponseError(c, app.CodeIdentityNotRow)
+		return
+	}
 	//业务逻辑处理
 	u := new(service.User)
 	if err := u.InsertUser(p, user.UserId); err != nil {
@@ -272,6 +283,18 @@ func UpdateUserHandler(c *gin.Context) {
 		}
 		app.ResponseError(c, app.CodeParamNotComplete)
 	}
+	//获取当前用户
+	userInfo, _ := api.GetUserData(c)
+	//验证数据权限
+	if permission := api.CheckDataScope(*userInfo.DataScopes, p.DeptId); !permission {
+		app.ResponseError(c, app.CodeIdentityNotRow)
+		return
+	}
+	//验证角色等级
+	if permission := api.CheckLevel(*userInfo.Roles, p.ID); !permission {
+		app.ResponseError(c, app.CodeIdentityNotRow)
+		return
+	}
 	//处理逻辑
 	u := new(service.User)
 	if err := u.UpdateUser(p, user.UserId); err != nil {
@@ -346,6 +369,7 @@ func SelectUserInfoHandler(c *gin.Context) {
 		Username:       userMessage.Username,
 		UserId:         userMessage.UserId,
 		MenuPermission: userInfo.MenuPermission,
+		DataScopes:     userInfo.DataScopes,
 	})
 	if err != nil {
 		zap.L().Error("SelectUserInfo failed", zap.Error(err))

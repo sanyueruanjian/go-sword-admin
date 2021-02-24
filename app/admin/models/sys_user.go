@@ -199,26 +199,35 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto, currentUser 
 
 	//查询缓存
 	if p.StartTime == 0 && p.EndTime == 0 && p.Blurry == "" {
-		userRecords := make([]*bo.RecordUser, 0, 0)
+		var userRecords []*bo.RecordUser
 		userRecords, err = cache.GetUserRecordsCache(currentUser.UserId)
 		if err != nil {
 			zap.L().Error("GetUserRecordsCache failed", zap.Error(err))
 		}
+		//筛选部门
+		records := make([]*bo.RecordUser, 0, 0)
+		if p.DepID == 0 {
+			records = append(records, userRecords...)
+		} else {
+			for _, record := range userRecords {
+				if record.DeptId == p.DepID {
+					records = append(records, record)
+				}
+			}
+		}
 		//分页
 		var total int
-		total = len(userRecords)
+		total = len(records)
 		start := p.Size * (p.Current - 1)
 		end := start + p.Size - 1
-		zap.L().Info(fmt.Sprintf("%s%d", "11111     ", total))
-		zap.L().Info(fmt.Sprintf("%d        %d", start, end))
-		records := make([]*bo.RecordUser, 0, 0)
+		resRecords := make([]*bo.RecordUser, 0, 0)
 		if end >= total-1 {
-			records = userRecords[start:]
-		} else if len(userRecords) != 0 {
-			records = userRecords[start:end]
+			resRecords = records[start:]
+		} else if len(records) != 0 {
+			resRecords = records[start:end]
 		}
 		//查询页数
-		data = &bo.UserInfoListBo{Records: records}
+		data = &bo.UserInfoListBo{Records: resRecords}
 		data.Orders = orderJson
 		data.Size = p.Size
 		data.Current = p.Current
@@ -226,7 +235,7 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto, currentUser 
 		data.Total = total
 		data.SearchCount = true
 		data.OptimizeCountSql = true
-		if records != nil && total > 0 {
+		if resRecords != nil && total > 0 {
 			return data, nil
 		}
 	}
@@ -241,6 +250,8 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto, currentUser 
 	if len(*currentUser.DataScopes) != 0 {
 		table = table.Where("dept_id in (?)", *currentUser.DataScopes)
 	}
+
+	zap.L().Info(fmt.Sprintf("%v", *currentUser.DataScopes))
 
 	//日期筛选
 	if p.EndTime != 0 && p.StartTime != 0 {
@@ -420,11 +431,15 @@ func SelectUserJob(userId int) (jobs []*bo.Job, err error) {
 
 // SelectUserDept 查询部门
 func SelectUserDept(dept *SysDept, userId int) (err error) {
+	fmt.Println(userId)
+	fmt.Printf("%#v\n", dept)
 	err = global.Eloquent.Table("sys_dept").
 		Select("sys_dept.name, sys_dept.pid, sys_dept.sub_count, sys_dept.dept_sort, sys_dept.create_by, sys_dept.update_by, sys_dept.enabled, sys_dept.id, sys_dept.is_deleted, sys_dept.create_time, sys_dept.update_time").
 		Joins("left join sys_user on sys_user.dept_id = sys_dept.id").
 		Where("sys_user.id=? AND sys_dept.is_deleted=?", userId, []byte{0}).
-		Scan(dept).Error
+		Find(dept).Error
+	fmt.Printf("%#v\n", dept)
+	zap.L().Info(fmt.Sprintf("%s%d  %d", "dept:id", dept.ID, userId))
 	return
 }
 
@@ -534,7 +549,7 @@ func (u *SysUser) UpdateUser(p *dto.UpdateUserDto, optionId int) (err error) {
 		}
 	}
 	//	删除用户缓存
-	if err := cache.DelUserCenterCache(optionId); err != nil {
+	if err := cache.DelUserCenterCache(p.ID); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -545,7 +560,7 @@ func (u *SysUser) UpdateUser(p *dto.UpdateUserDto, optionId int) (err error) {
 		return err
 	}
 	//删除用户相关缓存
-	if err := cache.DelUserAboutCache(optionId); err != nil {
+	if err := cache.DelUserAboutCache(p.ID); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -608,8 +623,7 @@ func (u *SysUser) SelectUserInfo(p *ModelUserMessage) (data *bo.UserCenterInfoBo
 		return nil, err
 	}
 	//查询部门
-	err = global.Eloquent.Table("sys_dept").Joins("left join sys_user "+
-		"on sys_user.dept_id = sys_dept.id").Where("sys_user.id=?", userHalf.Id).Scan(dept).Error
+	err = global.Eloquent.Table("sys_dept").Where("id=?", userHalf.DeptId).Find(dept).Error
 	if err != nil {
 		zap.L().Debug("查询部门", zap.Error(err))
 		return nil, err
@@ -641,9 +655,8 @@ func (u *SysUser) SelectUserInfo(p *ModelUserMessage) (data *bo.UserCenterInfoBo
 	user.Username = userHalf.Username
 	user.Enabled = utils.ByteIntoBool(genderEnabled.Enabled)
 	user.Gender = utils.ByteIntoBool(genderEnabled.Gender)
-	dataScopes := make([]string, 0)
 	data = &bo.UserCenterInfoBo{
-		DataScopes: dataScopes,
+		DataScopes: *p.DataScopes,
 		User:       user,
 		Roles:      *p.MenuPermission,
 	}

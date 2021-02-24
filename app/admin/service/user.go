@@ -60,7 +60,7 @@ func (u *User) Login(c *gin.Context, p *dto.UserLoginDto) (data *bo.LoginData, e
 	}
 
 	dept := new(models.SysDept)
-	if err = GetUserDeptData(cacheDept, deptErr, dept, user.ID); err != nil {
+	if err = GetUserDeptData(cacheDept, deptErr, dept, user.DeptId); err != nil {
 		return
 	}
 
@@ -239,7 +239,14 @@ func GetUserDataScopes(cacheDataScopes string, dataScopesErr error, dataScopes *
 			if err != nil {
 				return err
 			}
-			*dataScopes = append(*dataScopes, deptIds...)
+			//去重
+			temp := make(map[int]interface{})
+			for _, item := range deptIds {
+				if _, ok := temp[item]; !ok { //如果字典中找不到元素，ok=false，!ok为true，就往切片中append元素。
+					temp[item] = struct{}{}
+					*dataScopes = append(*dataScopes, item)
+				}
+			}
 		}
 		go cache.SetUserCache(userId, dataScopes, cache.KeyUserDataScope)
 	} else {
