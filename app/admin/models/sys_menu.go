@@ -280,6 +280,12 @@ func (m *SysMenu) SelectForeNeedMenu(user *ModelUserMessage) (data []*bo.SelectF
 	if err != nil {
 		return
 	}
+	allId := make([]int, 0)
+	err = global.Eloquent.Table("sys_roles_menus").Select("menu_id").Where("role_id=?", 1).Joins("left join sys_menu "+
+		"on sys_menu.id=sys_roles_menus.menu_id").Where("sys_menu.is_deleted=?", 0, []byte{0}, 0).Find(&allId).Error
+	if err != nil {
+		return
+	}
 	var results []*bo.SelectForeNeedMenuBo
 	for _, pid := range parentIds {
 		parentMenu := new(SysMenu)
@@ -301,7 +307,7 @@ func (m *SysMenu) SelectForeNeedMenu(user *ModelUserMessage) (data []*bo.SelectF
 		}
 		result.AlwaysShow = false
 		result.Redirect = "index"
-		result.Children, err = CreteChildTree(parentMenu.ID)
+		result.Children, err = CreteChildTree(parentMenu.ID, allId)
 		if len(result.Children) != 0 {
 			result.AlwaysShow = true
 			result.Redirect = "noredirect"
@@ -412,11 +418,11 @@ func (m *SysMenu) ChildMenu(p int) (data []int, err error) {
 	return data, nil
 }
 
-func CreteChildTree(parentId int) (result []*bo.Children, err error) {
+func CreteChildTree(parentId int, allId []int) (result []*bo.Children, err error) {
 	//查找父级菜单的子菜单
 	var childMenu []*SysMenu
 	var childNum int64
-	err = global.Eloquent.Table("sys_menu").Not("type=?", 2).Where("pid=? AND is_deleted=?", parentId, []byte{0}).Count(&childNum).Find(&childMenu).Error
+	err = global.Eloquent.Table("sys_menu").Not("type=?", 2).Where("pid=? AND is_deleted=? AND id in (?)", parentId, []byte{0}, allId).Count(&childNum).Find(&childMenu).Error
 	if err != nil {
 		return
 	}
@@ -438,7 +444,7 @@ func CreteChildTree(parentId int) (result []*bo.Children, err error) {
 				Title:   menu.Title,
 			},
 		}
-		resultChildren, err := CreteChildTree(menu.ID)
+		resultChildren, err := CreteChildTree(menu.ID, allId)
 		if err != nil {
 			return nil, err
 		}

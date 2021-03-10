@@ -257,7 +257,7 @@ func (e SysRole) UpdateRoleMenu(id int, p []int, userId int) (err error) {
 		}
 	}
 	//删除前端所需菜单缓存
-	err = cache.DeleteUserNeedMenuCacheById(userId)
+	err = cache.DeleteAllUserNeedMenuCache()
 	if err != nil {
 		tx.Rollback()
 		return err
