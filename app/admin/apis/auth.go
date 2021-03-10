@@ -18,7 +18,7 @@ import (
 // @Success 200 {object} models._ResponseCode
 // @Router /api/auth/code [get]
 func Captcha(c *gin.Context) {
-	id, b64s, err := captcha.DriverStringFunc()
+	id, b64s, err := captcha.DriverDigitFunc()
 	utils.HasError(err, "验证码获取失败", 500)
 	app.ResponseSuccess(c, gin.H{
 		"code":    app.CodeSuccess,
