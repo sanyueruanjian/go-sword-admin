@@ -132,7 +132,7 @@ func (m *SysMenu) SelectMenu(p *dto.SelectMenuDto) (data []*SysMenu, err error) 
 	if p.EndTime != 0 && p.StartTime != 0 {
 		table = table.Where("create_time > ? AND create_time < ?", p.StartTime, p.EndTime)
 	}
-	table = table.Limit(p.Size).Offset(p.Current - 1*p.Size).Count(&total)
+	table = table.Limit(p.Size).Offset((p.Current - 1) * p.Size).Count(&total)
 	if orderRule != "" {
 		table = table.Order(orderRule)
 	}

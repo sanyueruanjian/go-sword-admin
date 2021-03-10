@@ -707,7 +707,7 @@ func (u *SysUser) UserDownload(p *dto.DownloadUserInfoDto) (data *bo.UserInfoLis
 	var usersHalf []*bo.RecordUserHalf
 	//分页
 	var total int64
-	err = global.Eloquent.Table("sys_user").Limit(p.Size).Offset(p.Current - 1*p.Size).Count(&total).Order(orderRule).Find(&usersHalf).Error
+	err = global.Eloquent.Table("sys_user").Limit(p.Size).Offset((p.Current - 1) * p.Size).Count(&total).Order(orderRule).Find(&usersHalf).Error
 	pages := (int(total) + p.Size - 1) / p.Size
 	if err != nil {
 		return nil, err
