@@ -44,13 +44,13 @@ type InsertUserDto struct {
 type UpdateUserDto struct {
 	DeptId     int    `json:"deptid" binding:"required"`   //部门
 	ID         int    `json:"id" binding:"required"`       //用户id
+	Enabled    bool   `json:"enabled"`                     //是否激活
 	Email      string `json:"email"`                       //邮箱 (目前不传)
 	NickName   string `json:"nickName" binding:"required"` //昵称
 	Phone      string `json:"phone" binding:"required"`    //手机号
 	UserName   string `json:"username" binding:"required"` //用户名
 	AvatarName string `json:"avatarName"`                  //头像名字
 	AvatarPath string `json:"avatarPath"`                  //头像地址
-	Enabled    string `json:"enabled"`                     //是否激活
 	Gender     string `json:"gender"`                      //性别
 	Jobs       []int  `json:"jobs"`                        //职位
 	Roles      []int  `json:"roles"`                       //角色
@@ -84,6 +84,6 @@ type UpdateUserAvatarDto struct {
 
 //UpdateUserPassDtp 修改用户密码
 type UpdateUserPassDto struct {
-	OldPass string `form:"oldPass"`                    //旧密码
-	NewPass string `form:"newPass" binding:"required"` //新密码
+	OldPass string `json:"oldPass" binding:"required"` //旧密码
+	NewPass string `json:"newPass" binding:"required"` //新密码
 }

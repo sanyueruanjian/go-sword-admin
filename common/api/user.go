@@ -5,8 +5,10 @@ import (
 	"errors"
 	"math"
 	"project/app/admin/models"
+	"project/app/admin/models/dto"
 	"project/app/admin/service"
 	"project/common/cache"
+	"project/common/global"
 
 	"github.com/gin-gonic/gin"
 )
@@ -133,7 +135,8 @@ func CheckDataScope(dataScope []int, deptID int) bool {
 	return false
 }
 
-func CheckLevel(operatorRoles []models.SysRole, id int) bool {
+func CheckUpdateLevel(operatorId int, operatorRoles []models.SysRole, byOperator *dto.UpdateUserDto) bool {
+	//验证是否为自己
 	//查找操作者最高等级
 	operatorMaxLevel := math.MaxInt64
 	for _, role := range operatorRoles {
@@ -141,13 +144,44 @@ func CheckLevel(operatorRoles []models.SysRole, id int) bool {
 			operatorMaxLevel = role.Level
 		}
 	}
-	//根据id查找用户角色最高等级
-	byOperateRoles, err := models.SelectUserRole(id)
-	if err != nil {
-		return false
+	if operatorId != byOperator.ID {
+		//根据id查找用户角色最高等级
+		byOperateRoles, err := models.SelectUserRole(byOperator.ID)
+		if err != nil {
+			return false
+		}
+		byOperatorMaxLevel := math.MaxInt64
+		for _, role := range byOperateRoles {
+			if role.Level < byOperatorMaxLevel {
+				byOperatorMaxLevel = role.Level
+			}
+		}
+		return operatorMaxLevel < byOperatorMaxLevel
 	}
+	//验证是否有权利修改目标用户
+	changeToRoles := make([]models.SysRole, 0)
+	global.Eloquent.Table("sys_role").Where("id in (?) AND is_delete = ?", byOperator.Roles, []byte{0}).Find(changeToRoles)
+	changeToRolesMaxLevel := math.MaxInt64
+	for _, role := range changeToRoles {
+		if role.Level < changeToRolesMaxLevel {
+			changeToRolesMaxLevel = role.Level
+		}
+	}
+	return changeToRolesMaxLevel >= operatorMaxLevel
+}
+
+func CheckInsertLevel(operatorRoles []models.SysRole, byOperatorRoleId []int) bool {
+	//查找操作者最高等级
+	operatorMaxLevel := math.MaxInt64
+	for _, role := range operatorRoles {
+		if role.Level < operatorMaxLevel {
+			operatorMaxLevel = role.Level
+		}
+	}
+	byOperatorRoles := make([]models.SysRole, 0)
+	global.Eloquent.Table("sys_role").Where("id in (?) AND is_delete = ?", byOperatorRoleId, []byte{0}).Find(byOperatorRoles)
 	byOperatorMaxLevel := math.MaxInt64
-	for _, role := range byOperateRoles {
+	for _, role := range byOperatorRoles {
 		if role.Level < byOperatorMaxLevel {
 			byOperatorMaxLevel = role.Level
 		}

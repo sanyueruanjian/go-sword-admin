@@ -138,12 +138,12 @@ func InsertUserHandler(c *gin.Context) {
 	userInfo, _ := api.GetUserData(c)
 	//验证数据权限
 	if permission := api.CheckDataScope(*userInfo.DataScopes, p.DeptId); !permission {
-		//app.ResponseError(c, app.CodeIdentityNotRow)
+		app.ResponseError(c, app.CodeIdentityNotRow)
 		return
 	}
 	//验证角色等级
-	if permission := api.CheckLevel(*userInfo.Roles, p.ID); !permission {
-		//app.ResponseError(c, app.CodeIdentityNotRow)
+	if permission := api.CheckInsertLevel(*userInfo.Roles, p.Roles); !permission {
+		app.ResponseError(c, app.CodeIdentityNotRow)
 		return
 	}
 	//业务逻辑处理
@@ -291,7 +291,9 @@ func UpdateUserHandler(c *gin.Context) {
 		return
 	}
 	//验证角色等级
-	if permission := api.CheckLevel(*userInfo.Roles, p.ID); !permission {
+	//1验证是否可以修改
+	//2验证所要修改的权限是否大于操作者的权限
+	if permission := api.CheckUpdateLevel(user.UserId, *userInfo.Roles, p); !permission {
 		app.ResponseError(c, app.CodeIdentityNotRow)
 		return
 	}
@@ -398,7 +400,7 @@ func UpdatePassWordHandler(c *gin.Context) {
 	}
 	//	绑定校验参数
 	p := new(dto.UpdateUserPassDto)
-	if err := c.ShouldBindQuery(p); err != nil {
+	if err := c.ShouldBind(p); err != nil {
 		// 请求参数有误， 直接返回响应
 		zap.L().Error("UpdatePassWordHandler failed", zap.String("username", user.Username), zap.Error(err))
 		_, ok := err.(validator.ValidationErrors)
@@ -408,7 +410,6 @@ func UpdatePassWordHandler(c *gin.Context) {
 		}
 		app.ResponseError(c, app.CodeParamNotComplete)
 	}
-	p.NewPass, err = utils.RsaPubEncode(p.NewPass)
 	//私钥解密
 	valueNew, err := utils.RsaPriDecode(p.NewPass)
 	if err != nil {
@@ -429,9 +430,17 @@ func UpdatePassWordHandler(c *gin.Context) {
 		app.ResponseError(c, app.CodeParamIsBlank)
 		return
 	}
+	if p.NewPass == p.OldPass {
+		app.ResponseErrorWithMsg(c, app.CodeParamIsInvalid, "新密码不能与原密码重复")
+		return
+	}
 	//处理逻辑
 	u := new(service.User)
-	if err := u.UpdatePassWord(p, user.UserId); err != nil {
+	if err := u.UpdatePassWord(p, user.Username, user.UserId); err != nil {
+		if errors.Is(models.ErrorInvalidPassword, err) {
+			app.ResponseErrorWithMsg(c, app.CodeLoginFailResCode, "原密码错误")
+			return
+		}
 		zap.L().Error("UpdateUser failed", zap.Error(err))
 		app.ResponseError(c, app.CodeUpdateOperationFail)
 		return
