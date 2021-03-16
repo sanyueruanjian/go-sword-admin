@@ -325,10 +325,8 @@ func (u *SysUser) SelectUserInfoList(p *dto.SelectUserInfoArrayDto, currentUser 
 		users = append(users, user)
 	}
 
-	zap.L().Info("set ok")
 	//设置records缓存
 	if p.StartTime == 0 && p.EndTime == 0 && p.Blurry == "" {
-		zap.L().Info("set ok")
 		err = cache.SetUserRecordsCache(users, currentUser.UserId)
 		if err != nil {
 			zap.L().Error("SetUserRecordsCache failed", zap.Error(err))
@@ -505,7 +503,7 @@ func (u *SysUser) UpdateUser(p *dto.UpdateUserDto, optionId int) (err error) {
 		"phone":       p.Phone,
 		"username":    p.UserName,
 		"avatar_path": p.AvatarPath,
-		"enabled":     utils.StrBoolIntoByte(p.Enabled),
+		"enabled":     p.Enabled,
 		"gender":      utils.StrBoolIntoByte(p.Gender),
 		"update_by":   optionId,
 	}).Error
@@ -663,13 +661,24 @@ func (u *SysUser) SelectUserInfo(p *ModelUserMessage) (data *bo.UserCenterInfoBo
 	return data, nil
 }
 
-func (u *SysUser) UpdatePassWord(p *dto.UpdateUserPassDto, optionId int) (err error) {
+func (u *SysUser) UpdatePassWord(p *dto.UpdateUserPassDto) (err error) {
 	//md5加密
+	newPwd := utils.EncodeMD5(p.NewPass)
+	oldPwd := utils.EncodeMD5(p.OldPass)
+	//查询当前用户密码
+	err = global.Eloquent.Table(u.TableName()).Where("username = ?", u.Username).First(u).Error
+	if err != nil {
+		return
+	}
+	if oldPwd != u.Password {
+		zap.L().Error("user account or password is error")
+		return ErrorInvalidPassword
+	}
+	//验证旧密码
 	tx := global.Eloquent.Begin()
-	pwd := utils.EncodeMD5(p.NewPass)
-	err = tx.Table("sys_user").Where("id=?", optionId).Updates(map[string]interface{}{
-		"password":       pwd,
-		"update_by":      optionId,
+	err = tx.Table("sys_user").Where("id=?", u.ID).Updates(map[string]interface{}{
+		"password":       newPwd,
+		"update_by":      u.ID,
 		"pwd_reset_time": utils.GetCurrentTimeUnix(),
 	}).Error
 	if err != nil {
@@ -677,7 +686,7 @@ func (u *SysUser) UpdatePassWord(p *dto.UpdateUserPassDto, optionId int) (err er
 		return err
 	}
 	//	删除缓存
-	if err := cache.DelUserCenterCache(optionId); err != nil {
+	if err := cache.DelUserCenterCache(u.ID); err != nil {
 		tx.Rollback()
 		return err
 	}

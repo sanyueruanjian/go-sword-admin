@@ -351,9 +351,13 @@ func (u *User) SelectUserInfo(p *models.ModelUserMessage) (data *bo.UserCenterIn
 	return data, nil
 }
 
-func (u *User) UpdatePassWord(p *dto.UpdateUserPassDto, optionId int) (err error) {
+func (u *User) UpdatePassWord(p *dto.UpdateUserPassDto, userName string, userID int) (err error) {
 	user := new(models.SysUser)
-	return user.UpdatePassWord(p, optionId)
+	base := new(models.BaseModel)
+	user.BaseModel = base
+	user.Username = userName
+	user.ID = userID
+	return user.UpdatePassWord(p)
 }
 
 func (u *User) UpdateAvatar(path string, userId int) (err error) {

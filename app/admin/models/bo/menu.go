@@ -48,7 +48,7 @@ type SelectForeNeedMenuBo struct {
 	Path       string      `json:"path"`
 	Redirect   string      `json:"redirect"`
 	Meta       *Meta       `json:"meta"`
-	Children   []*Children `json:"children"`
+	Children   []*Children `json:"children,omitempty"`
 }
 
 type ReturnToAllMenusBo struct {
