@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"project/common/file"
 	mycasbin "project/pkg/casbin"
 	"project/utils"
 
@@ -62,6 +63,11 @@ func main() {
 	//初始化casbin
 	if err := mycasbin.Setup(); err != nil {
 		zap.L().Error("casbin failed set up", zap.Error(err))
+	}
+
+	//初始化静态目录
+	if err := file.Init(); err != nil {
+		zap.L().Error(fmt.Sprintf("init static file failed, err:%v\n", err))
 	}
 	// 5. 注册路由
 	run.Run()
