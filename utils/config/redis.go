@@ -3,7 +3,7 @@ package config
 import "github.com/spf13/viper"
 
 type Redis struct {
-	PoolSize      int
+	PoolSize       int
 	IdleTimeOutSec int
 	DB             int
 	Port           int
@@ -15,7 +15,7 @@ type Redis struct {
 func InitRedis(cfg *viper.Viper) *Redis {
 
 	db := &Redis{
-		PoolSize:        cfg.GetInt("poolsize"),
+		PoolSize:       cfg.GetInt("poolsize"),
 		IdleTimeOutSec: cfg.GetInt("idletimeoutsec"),
 		DB:             cfg.GetInt("db"),
 		Port:           cfg.GetInt("port"),

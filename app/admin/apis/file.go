@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
+	"project/utils/config"
 	"strings"
 
 	"project/app/admin/models"
@@ -140,7 +141,7 @@ func singleFile(c *gin.Context, fileResponse models.FileResponse, urlPerfix stri
 	// 上传文件至指定目录
 	guid := uuid.New().String()
 	fileName := guid + tools.GetExt(files.Filename)
-	singleFile := "static/uploadfile/" + fileName
+	singleFile := config.ApplicationConfig.StaticPath + fileName
 	err = c.SaveUploadedFile(files, singleFile)
 	if err != nil {
 		app.ResponseError(c, app.CodeFileUploadFail)
@@ -150,7 +151,7 @@ func singleFile(c *gin.Context, fileResponse models.FileResponse, urlPerfix stri
 	fileResponse = models.FileResponse{
 		Size:     utils.GetFileSize(singleFile),
 		Path:     fileName,
-		FullPath: urlPerfix + "api/file/download/" + fileName,
+		FullPath: urlPerfix + config.ApplicationConfig.StaticFileUrl + fileName,
 		Name:     files.Filename,
 		Type:     fileType,
 	}
