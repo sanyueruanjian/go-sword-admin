@@ -570,7 +570,7 @@ func (u *SysUser) UpdateUserCenter(p *dto.UpdateUserCenterDto, optionId int) (er
 	//创建事务
 	tx := global.Eloquent.Begin()
 	err = tx.Table("sys_user").Where("id=?", p.Id).Updates(map[string]interface{}{
-		"gender":    utils.StrGenderIntoByte(p.Gender),
+		"gender":    utils.BoolIntoByte(p.Gender),
 		"phone":     p.Phone,
 		"nick_name": p.NickName,
 		"update_by": optionId,

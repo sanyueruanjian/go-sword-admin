@@ -65,7 +65,7 @@ type DeleteUserDto struct {
 type UpdateUserCenterDto struct {
 	NickName string `json:"nickName" binding:"required"` //昵称
 	Phone    string `json:"phone" binding:"required"`    //手机号
-	Gender   string `json:"gender"`                      //性别
+	Gender   bool   `json:"gender"`                      //性别
 	Id       int    `json:"id" binding:"required"`       //id
 }
 
