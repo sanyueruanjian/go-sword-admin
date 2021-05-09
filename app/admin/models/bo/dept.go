@@ -22,7 +22,6 @@ type SelectDeptListBo struct {
 	Total   int          `json:"total"`
 	Orders  []Order      `json:"orders"`
 	Records []RecordDept `json:"records"`
-	paging
 }
 
 type DownloadDeptList struct {
